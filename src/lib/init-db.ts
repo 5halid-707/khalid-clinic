@@ -380,8 +380,13 @@ async function createSchemaViaSQL() {
     try {
       await db.$executeRawUnsafe(sql)
     } catch (e: any) {
-      if (!e.message.includes('already exists') && !e.message.includes('duplicate')) {
-        console.error('[init-db] SQL error:', e.message?.substring(0, 100))
+      // Ignore "already exists" errors — tables/constraints may already be there
+      const msg = e.message || ''
+      if (!msg.includes('already exists') && !msg.includes('duplicate') && !msg.includes('constraint') && !msg.includes('relation')) {
+        // Only log unexpected errors
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('[init-db] SQL error:', msg.substring(0, 150))
+        }
       }
     }
   }
