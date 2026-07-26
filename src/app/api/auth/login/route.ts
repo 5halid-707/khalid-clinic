@@ -124,7 +124,6 @@ export async function POST(req: NextRequest) {
     return res;
   } catch (e: any) {
     console.error("[login] error:", e);
-    // Return the actual error message for debugging (remove in production later)
-    return NextResponse.json({ error: "فشل تسجيل الدخول", debug: e.message?.substring(0, 200) }, { status: 500 });
+    return NextResponse.json({ error: "فشل تسجيل الدخول — تحقق من إعداد قاعدة البيانات" }, { status: 500 });
   }
 }
