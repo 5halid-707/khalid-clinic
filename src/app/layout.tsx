@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Cairo, Geist_Mono } from "next/font/google";
+import { Cairo, Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 
 const cairo = Cairo({
@@ -11,36 +10,23 @@ const cairo = Cairo({
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "KMH ERP Suite | نظام الإدارة المتكامل — كاشير + محاسبة + موارد بشرية + ERP",
-  description:
-    "نظام إدارة أعمال متكامل يحاكي أضخم الأنظمة العالمية (SAP / Oracle / Odoo) مع أتمتة كاملة للعمليات بين الوحدات. تصميم خالد الحربي.",
-  keywords: ["ERP", "Cashier", "Accounting", "HR", "نظام إدارة", "محاسبة", "موارد بشرية"],
-  authors: [{ name: "Khalid Al-harbi" }],
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
-  },
-  manifest: "/favicon.svg",
+  title: "عيادة خالد | Khalid Clinic — رعاية صحية متكاملة",
+  description: "عيادة خالد الطبية المتكاملة - خدمات طبية احترافية بأحدث الأجهزة وفريق طبي متخصص. Khalid Clinic - Professional medical services.",
+  keywords: ["عيادة خالد", "Khalid Clinic", "عيادة طبية", "medical clinic", "رعاية صحية", "healthcare Saudi Arabia"],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ar" dir="rtl" className="dark" suppressHydrationWarning>
-      <body
-        className={`${cairo.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
-      >
+    <html lang="ar" suppressHydrationWarning>
+      <body className={`${cairo.variable} ${inter.variable} antialiased`}>
         {children}
-        <Toaster />
         <SonnerToaster position="top-center" richColors />
       </body>
     </html>

@@ -1,3077 +1,512 @@
 "use client";
 
-import { useState, useEffect, useCallback, createContext, useContext, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, ShoppingCart, Calculator, Users, Package,
-  TrendingUp, TrendingDown, Wallet, AlertTriangle, Receipt,
-  Plus, Search, Barcode, CreditCard, Banknote, Smartphone,
-  CheckCircle2, Clock, XCircle, Calendar, Phone, Mail, MapPin,
-  ChevronLeft, Activity, ShieldCheck, Boxes, Building2,
-  FileText, LogOut, Settings, Bell, RefreshCw, ArrowDownLeft,
-  ArrowUpRight, Percent, UserCheck, UserX, Coffee, ShieldAlert,
-  Edit, Trash2, UserPlus, KeyRound, Eye, EyeOff, History, Save,
-  Lock, Crown, Database, Loader2, Printer, Filter, Download, X,
-  Keyboard, Zap, ChevronDown, ChevronUp, Star, StarOff, MoreHorizontal,
-  Upload, Image as ImageIcon, FileX, UserCog, Key, PowerOff,
+  Menu, X, Phone, Mail, MapPin, Calendar, Clock, Stethoscope,
+  Heart, Brain, Bone, Eye, Baby, Activity, Pill, Syringe,
+  User, Star, ChevronLeft, ChevronRight, Globe, Facebook,
+  Twitter, Instagram, Youtube, Send, ArrowUp, ShieldCheck,
+  Award, Users, Smile, CheckCircle2, Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
-// ============================================================
-// AUTH CONTEXT
-// ============================================================
-type AuthUser = {
-  id: string; name: string; email: string; role: string;
-  branchId?: string | null; organizationId: string;
-  avatarColor: string; isActive: boolean;
-};
-type AuthOrg = { id: string; name: string; currency: string; vatRate: number };
+const SITE_URL = "https://khalid-cyber-security.vercel.app/";
 
-type AuthCtx = {
-  user: AuthUser | null;
-  org: AuthOrg | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => Promise<void>;
-  refresh: () => Promise<void>;
-};
-const AuthContext = createContext<AuthCtx>({} as any);
-export const useAuth = () => useContext(AuthContext);
-
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "مدير النظام", ACCOUNTANT: "محاسب", HR_MANAGER: "مدير موارد بشرية",
-  CASHIER: "كاشير", INVENTORY_MANAGER: "أمين مخزن", BRANCH_MANAGER: "مدير فرع",
-};
-
-const ROLE_PERMISSIONS: Record<string, string[]> = {
-  ADMIN: ["*"],
-  ACCOUNTANT: ["dashboard", "cashier", "customers", "accounting", "hr.view", "erp.view", "reports"],
-  HR_MANAGER: ["dashboard", "customers", "hr", "erp.view", "reports"],
-  CASHIER: ["dashboard", "cashier", "customers", "erp.view"],
-  INVENTORY_MANAGER: ["dashboard", "customers", "erp", "reports"],
-  BRANCH_MANAGER: ["dashboard", "cashier", "customers", "hr.view", "erp.view", "reports"],
-};
-
-function hasPermission(role: string, perm: string): boolean {
-  return ROLE_PERMISSIONS[role]?.includes("*") || ROLE_PERMISSIONS[role]?.includes(perm);
-}
-
-// ============================================================
-// ROOT APP
-// ============================================================
 export default function Home() {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [org, setOrg] = useState<AuthOrg | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [lang, setLang] = useState<"ar" | "en">("ar");
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      const r = await fetch("/api/auth/me");
-      const j = await r.json();
-      setUser(j.user || null);
-      setOrg(j.organization || null);
-    } catch {
-      setUser(null);
-    }
-    setLoading(false);
-  }, []);
+  const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
+  const isRTL = lang === "ar";
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (cancelled) return;
-      await refresh();
-    })();
-    return () => { cancelled = true; };
-  }, [refresh]);
-
-  const login = useCallback(async (email: string, password: string) => {
-    const r = await fetch("/api/auth/login", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const j = await r.json();
-    if (!r.ok) {
-      toast.error(j.error || "فشل تسجيل الدخول");
-      return false;
-    }
-    setUser(j.user);
-    setOrg(j.organization);
-    toast.success(`أهلاً ${j.user.name}!`);
-    return true;
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const logout = useCallback(async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
-    setOrg(null);
-    toast.success("تم تسجيل الخروج");
-  }, []);
-
-  if (loading) return <FullScreenLoader />;
-
   return (
-    <AuthContext.Provider value={{ user, org, loading, login, logout, refresh }}>
-      {!user ? <LoginScreen /> : <AppShell />}
-    </AuthContext.Provider>
-  );
-}
-
-function FullScreenLoader() {
-  return (
-    <div className="min-h-screen bg-background cyber-grid flex items-center justify-center" dir="rtl">
-      <div className="text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center font-extrabold text-white text-2xl glow-primary animate-pulse">
-          K
+    <div dir={isRTL ? "rtl" : "ltr"} className={`min-h-screen bg-white ${isRTL ? "font-cairo" : "font-sans"}`}>
+      {/* Top Bar */}
+      <div className="bg-teal-700 text-white text-sm py-2 px-4">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-4">
+            <a href="tel:+966575015019" className="flex items-center gap-1 hover:text-teal-200">
+              <Phone className="w-3.5 h-3.5" /> +966 57 501 5019
+            </a>
+            <a href="mailto:khalid-alharbi@zohomail.sa" className="hidden sm:flex items-center gap-1 hover:text-teal-200">
+              <Mail className="w-3.5 h-3.5" /> khalid-alharbi@zohomail.sa
+            </a>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="hidden md:flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {t("السبت - الخميس: 9ص - 9م", "Sat - Thu: 9AM - 9PM")}</span>
+            <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="flex items-center gap-1 hover:text-teal-200">
+              <Globe className="w-3.5 h-3.5" /> {lang === "ar" ? "EN" : "عربي"}
+            </button>
+          </div>
         </div>
-        <Loader2 className="w-5 h-5 animate-spin text-cyan-400 mx-auto" />
-        <p className="text-xs text-muted-foreground mt-2">جارٍ التحميل...</p>
       </div>
+
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-600 to-cyan-700 flex items-center justify-center">
+              <Stethoscope className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-teal-800">{t("عيادة خالد", "Khalid Clinic")}</h1>
+              <p className="text-[10px] text-gray-500">{t("رعاية صحية متكاملة", "Comprehensive Healthcare")}</p>
+            </div>
+          </div>
+
+          <nav className="hidden lg:flex items-center gap-6">
+            {[
+              { href: "#home", label: t("الرئيسية", "Home") },
+              { href: "#about", label: t("من نحن", "About") },
+              { href: "#services", label: t("خدماتنا", "Services") },
+              { href: "#doctors", label: t("الأطباء", "Doctors") },
+              { href: "#appointment", label: t("حجز موعد", "Appointment") },
+              { href: "#contact", label: t("اتصل بنا", "Contact") },
+            ].map((item) => (
+              <a key={item.href} href={item.href} className="text-sm font-medium text-gray-700 hover:text-teal-600 transition-colors">
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <a href="#appointment">
+              <Button className="bg-teal-600 hover:bg-teal-700 text-white text-sm rounded-full px-5">
+                {t("احجز الآن", "Book Now")}
+              </Button>
+            </a>
+            <button className="lg:hidden p-2" onClick={() => setMobileMenu(!mobileMenu)}>
+              {mobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenu && (
+            <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="lg:hidden overflow-hidden bg-white border-t">
+              <div className="px-4 py-3 space-y-2">
+                {[
+                  { href: "#home", label: t("الرئيسية", "Home") },
+                  { href: "#about", label: t("من نحن", "About") },
+                  { href: "#services", label: t("خدماتنا", "Services") },
+                  { href: "#doctors", label: t("الأطباء", "Doctors") },
+                  { href: "#appointment", label: t("حجز موعد", "Appointment") },
+                  { href: "#contact", label: t("اتصل بنا", "Contact") },
+                ].map((item) => (
+                  <a key={item.href} href={item.href} onClick={() => setMobileMenu(false)} className="block py-2 text-sm font-medium text-gray-700 hover:text-teal-600">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Hero */}
+      <section id="home" className="relative bg-gradient-to-br from-teal-50 via-cyan-50 to-white py-20 overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23008080\" fill-opacity=\"0.1\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }} />
+        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center relative">
+          <motion.div initial={{ opacity: 0, x: isRTL ? 30 : -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+            <span className="inline-block bg-teal-100 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+              {t("رعاية صحية متكاملة", "Comprehensive Healthcare")}
+            </span>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-4 leading-tight">
+              {t("صحتك أولويتنا", "Your Health is Our Priority")} <span className="text-teal-600">{t("في عيادة خالد", "at Khalid Clinic")}</span>
+            </h2>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {t("نقدم خدمات طبية متكاملة بأحدث الأجهزة وفريق طبي متخصص. نحن هنا لرعايتك في كل خطوة.",
+                "We provide comprehensive medical services with state-of-the-art equipment and specialized medical team. We are here to care for you every step of the way.")}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a href="#appointment">
+                <Button className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-7 py-3 text-base">
+                  <Calendar className="w-5 h-5 ml-2" /> {t("احجز موعدك", "Book Appointment")}
+                </Button>
+              </a>
+              <a href="#services">
+                <Button variant="outline" className="border-teal-600 text-teal-600 hover:bg-teal-50 rounded-full px-7 py-3 text-base">
+                  {t("خدماتنا", "Our Services")}
+                </Button>
+              </a>
+            </div>
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 mt-8">
+              {[
+                { icon: Users, value: "15K+", label: t("مريض سعيد", "Happy Patients") },
+                { icon: Award, value: "10+", label: t("سنوات خبرة", "Years Experience") },
+                { icon: Stethoscope, value: "8+", label: t("أطباء متخصصون", "Specialist Doctors") },
+              ].map((s, i) => (
+                <div key={i} className="text-center">
+                  <s.icon className="w-6 h-6 text-teal-600 mx-auto mb-1" />
+                  <div className="text-2xl font-bold text-gray-800">{s.value}</div>
+                  <div className="text-[10px] text-gray-500">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative">
+            <div className="aspect-square max-w-md mx-auto rounded-3xl bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center relative overflow-hidden">
+              <div className="w-3/4 h-3/4 rounded-full bg-white/50 flex items-center justify-center">
+                <Stethoscope className="w-32 h-32 text-teal-600" />
+              </div>
+              {/* Floating badges */}
+              <div className="absolute top-6 right-6 bg-white rounded-xl shadow-lg p-3 flex items-center gap-2">
+                <Heart className="w-5 h-5 text-rose-500" />
+                <div><div className="text-xs font-bold">24/7</div><div className="text-[9px] text-gray-500">{t("طوارئ", "Emergency")}</div></div>
+              </div>
+              <div className="absolute bottom-6 left-6 bg-white rounded-xl shadow-lg p-3 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-teal-600" />
+                <div><div className="text-xs font-bold">100%</div><div className="text-[9px] text-gray-500">{t("آمن", "Safe")}</div></div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About */}
+      <section id="about" className="py-20 px-4">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { icon: Heart, title: t("طب القلب", "Cardiology"), color: "from-rose-400 to-rose-600" },
+              { icon: Brain, title: t("الأعصاب", "Neurology"), color: "from-purple-400 to-purple-600" },
+              { icon: Bone, title: t("العظام", "Orthopedics"), color: "from-amber-400 to-amber-600" },
+              { icon: Eye, title: t("العيون", "Ophthalmology"), color: "from-cyan-400 to-cyan-600" },
+            ].map((d, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className={`bg-gradient-to-br ${d.color} rounded-2xl p-6 text-white text-center`}>
+                <d.icon className="w-10 h-10 mx-auto mb-2" />
+                <div className="text-sm font-semibold">{d.title}</div>
+              </motion.div>
+            ))}
+          </div>
+          <div>
+            <span className="text-teal-600 font-semibold text-sm">{t("من نحن", "About Us")}</span>
+            <h2 className="text-3xl font-bold text-gray-800 mt-2 mb-4">{t("عيادة خالد الطبية المتكاملة", "Khalid Comprehensive Medical Clinic")}</h2>
+            <p className="text-gray-600 mb-4 leading-relaxed">
+              {t("عيادة خالد هي مركز طبي متكامل يقدم خدمات صحية احترافية بفريق طبي متخصص وأحدث المعدات. نحن ملتزمون بتقديم أفضل رعاية لمرضانا في بيئة آمنة ومريحة.",
+                "Khalid Clinic is a comprehensive medical center providing professional healthcare services with a specialized medical team and state-of-the-art equipment. We are committed to providing the best care for our patients in a safe and comfortable environment.")}
+            </p>
+            <div className="space-y-2 mb-6">
+              {[
+                t("فريق طبي متخصص وذو خبرة", "Specialized and experienced medical team"),
+                t("أحدث المعدات والتقنيات الطبية", "State-of-the-art medical equipment and technology"),
+                t("خدمات طوارئ على مدار الساعة", "24/7 emergency services"),
+                t("بيئة آمنة ومريحة للمرضى", "Safe and comfortable environment for patients"),
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-teal-600 shrink-0" />
+                  <span className="text-sm text-gray-700">{item}</span>
+                </div>
+              ))}
+            </div>
+            <a href="#appointment">
+              <Button className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6">{t("احجز موعد", "Book Appointment")}</Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section id="services" className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-teal-600 font-semibold text-sm">{t("خدماتنا", "Our Services")}</span>
+            <h2 className="text-3xl font-bold text-gray-800 mt-2">{t("خدمات طبية متكاملة", "Comprehensive Medical Services")}</h2>
+            <p className="text-gray-500 mt-2">{t("نقدم مجموعة واسعة من الخدمات الطبية المتخصصة", "We offer a wide range of specialized medical services")}</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: Heart, title: t("طب القلب", "Cardiology"), desc: t("تشخيص وعلاج أمراض القلب والشرايين", "Diagnosis and treatment of heart and artery diseases"), color: "text-rose-500 bg-rose-50" },
+              { icon: Brain, title: t("طب الأعصاب", "Neurology"), desc: t("علاج اضطرابات الجهاز العصبي", "Treatment of nervous system disorders"), color: "text-purple-500 bg-purple-50" },
+              { icon: Bone, title: t("العظام", "Orthopedics"), desc: t("علاج إصابات وأمراض العظام", "Treatment of bone injuries and diseases"), color: "text-amber-500 bg-amber-50" },
+              { icon: Eye, title: t("العيون", "Ophthalmology"), desc: t("فحص وعلاج أمراض العيون", "Eye examination and treatment"), color: "text-cyan-500 bg-cyan-50" },
+              { icon: Baby, title: t("الأطفال", "Pediatrics"), desc: t("رعاية صحية متكاملة للأطفال", "Comprehensive healthcare for children"), color: "text-green-500 bg-green-50" },
+              { icon: Activity, title: t("الطوارئ", "Emergency"), desc: t("خدمات طوارئ على مدار الساعة", "24/7 emergency services"), color: "text-red-500 bg-red-50" },
+              { icon: Pill, title: t("الصيدلية", "Pharmacy"), desc: t("صيدلية متكاملة بجميع الأدوية", "Full pharmacy with all medications"), color: "text-teal-500 bg-teal-50" },
+              { icon: Syringe, title: t("التطعيمات", "Vaccination"), desc: t("تطعيمات للأطفال والكبار", "Vaccinations for children and adults"), color: "text-indigo-500 bg-indigo-50" },
+            ].map((s, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
+                <Card className="bg-white hover:shadow-xl transition-shadow group cursor-pointer">
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-14 h-14 rounded-2xl ${s.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
+                      <s.icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="font-bold text-gray-800 mb-1">{s.title}</h3>
+                    <p className="text-xs text-gray-500 leading-relaxed">{s.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Doctors */}
+      <section id="doctors" className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-teal-600 font-semibold text-sm">{t("فريقنا", "Our Team")}</span>
+            <h2 className="text-3xl font-bold text-gray-800 mt-2">{t("أطباؤنا المتخصصون", "Our Specialist Doctors")}</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: t("د. خالد الحربي", "Dr. Khalid Alharbi"), role: t("مدير عام", "General Director"), icon: Stethoscope, color: "from-teal-400 to-cyan-600" },
+              { name: t("د. أحمد العتيبي", "Dr. Ahmed Alotaibi"), role: t("استشاري قلب", "Cardiology Consultant"), icon: Heart, color: "from-rose-400 to-rose-600" },
+              { name: t("د. سارة الدوسري", "Dr. Sarah Aldosari"), role: t("أطفال", "Pediatrician"), icon: Baby, color: "from-green-400 to-green-600" },
+              { name: t("د. محمد القحطاني", "Dr. Mohammed Alqahtani"), role: t("عظام", "Orthopedic Surgeon"), icon: Bone, color: "from-amber-400 to-amber-600" },
+            ].map((doc, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <Card className="bg-white hover:shadow-xl transition-shadow text-center group">
+                  <CardContent className="p-6">
+                    <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${doc.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform`}>
+                      <doc.icon className="w-12 h-12 text-white" />
+                    </div>
+                    <h3 className="font-bold text-gray-800">{doc.name}</h3>
+                    <p className="text-xs text-teal-600 font-medium mt-1">{doc.role}</p>
+                    <div className="flex justify-center gap-1 mt-2">
+                      {[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Appointment */}
+      <section id="appointment" className="py-20 px-4 bg-gradient-to-br from-teal-600 to-cyan-700 text-white">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <Calendar className="w-12 h-12 mx-auto mb-2" />
+            <h2 className="text-3xl font-bold">{t("احجز موعدك", "Book Your Appointment")}</h2>
+            <p className="text-teal-100 mt-2">{t("املأ النموذج وسنتواصل معك لتأكيد الموعد", "Fill the form and we will contact you to confirm")}</p>
+          </div>
+          <AppointmentForm lang={lang} />
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-teal-600 font-semibold text-sm">{t("آراء المرضى", "Testimonials")}</span>
+            <h2 className="text-3xl font-bold text-gray-800 mt-2">{t("ماذا يقول مرضانا", "What Our Patients Say")}</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { name: t("محمد العمري", "Mohammed Alomari"), text: t("خدمة ممتازة وفريق طبي محترف. أنصح الجميع بزيارة العيادة.", "Excellent service and professional medical team. I recommend everyone to visit the clinic."), rating: 5 },
+              { name: t("سارة الدوسري", "Sarah Aldosari"), text: t("عيادة نظيفة ومرتبة والأطباء على مستوى عالٍ من الاحترافية.", "Clean and organized clinic with highly professional doctors."), rating: 5 },
+              { name: t("عبدالله الشهري", "Abdullah Alshehri"), text: t("حجزت موعد بسهولة وكانت المعاملة راقية من الجميع. شكراً.", "Booked an appointment easily and everyone was very professional. Thank you."), rating: 5 },
+            ].map((rev, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <Card className="bg-white">
+                  <CardContent className="p-6">
+                    <Quote className="w-8 h-8 text-teal-200 mb-3" />
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">{rev.text}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-sm">{rev.name.charAt(0)}</div>
+                        <span className="text-sm font-semibold text-gray-800">{rev.name}</span>
+                      </div>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: rev.rating }).map((_, s) => <Star key={s} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section id="contact" className="py-20 px-4">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12">
+          <div>
+            <span className="text-teal-600 font-semibold text-sm">{t("تواصل معنا", "Contact Us")}</span>
+            <h2 className="text-3xl font-bold text-gray-800 mt-2 mb-6">{t("نحن هنا لخدمتك", "We Are Here to Serve You")}</h2>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center"><Phone className="w-5 h-5 text-teal-600" /></div>
+                <div><div className="text-xs text-gray-500">{t("الهاتف", "Phone")}</div><a href="tel:+966575015019" className="text-sm font-semibold text-gray-800 hover:text-teal-600" dir="ltr">+966 57 501 5019</a></div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center"><Mail className="w-5 h-5 text-teal-600" /></div>
+                <div><div className="text-xs text-gray-500">{t("البريد", "Email")}</div><a href="mailto:khalid-alharbi@zohomail.sa" className="text-sm font-semibold text-gray-800 hover:text-teal-600">khalid-alharbi@zohomail.sa</a></div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center"><MapPin className="w-5 h-5 text-teal-600" /></div>
+                <div><div className="text-xs text-gray-500">{t("العنوان", "Address")}</div><span className="text-sm font-semibold text-gray-800">{t("المملكة العربية السعودية", "Saudi Arabia")}</span></div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center"><Clock className="w-5 h-5 text-teal-600" /></div>
+                <div><div className="text-xs text-gray-500">{t("ساعات العمل", "Working Hours")}</div><span className="text-sm font-semibold text-gray-800">{t("السبت - الخميس: 9ص - 9م", "Sat - Thu: 9AM - 9PM")}</span></div>
+              </div>
+            </div>
+            {/* Social */}
+            <div className="flex gap-2 mt-6">
+              {[
+                { icon: Facebook, href: "https://github.com/5halid-707" },
+                { icon: Twitter, href: "https://www.linkedin.com/in/khalid-alharbi-8953a4b3" },
+                { icon: Instagram, href: "https://github.com/5halid-707" },
+                { icon: Youtube, href: "https://khalid-cyber-security.vercel.app/" },
+              ].map((s, i) => (
+                <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-100 hover:bg-teal-600 hover:text-white flex items-center justify-center text-gray-600 transition-colors">
+                  <s.icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
+          </div>
+          <Card className="bg-gray-50">
+            <CardContent className="p-6">
+              <h3 className="font-bold text-gray-800 mb-4">{t("أرسل رسالة", "Send a Message")}</h3>
+              <ContactForm lang={lang} />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center"><Stethoscope className="w-5 h-5 text-white" /></div>
+                <span className="text-white font-bold text-lg">{t("عيادة خالد", "Khalid Clinic")}</span>
+              </div>
+              <p className="text-sm">{t("رعاية صحية متكاملة بأحدث التقنيات وفريق طبي متخصص.", "Comprehensive healthcare with state-of-the-art technology and specialized medical team.")}</p>
+            </div>
+            <div>
+              <h4 className="text-white font-bold mb-3">{t("روابط سريعة", "Quick Links")}</h4>
+              <ul className="space-y-1 text-sm">
+                <li><a href="#home" className="hover:text-teal-400">{t("الرئيسية", "Home")}</a></li>
+                <li><a href="#about" className="hover:text-teal-400">{t("من نحن", "About")}</a></li>
+                <li><a href="#services" className="hover:text-teal-400">{t("خدماتنا", "Services")}</a></li>
+                <li><a href="#appointment" className="hover:text-teal-400">{t("حجز موعد", "Appointment")}</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-bold mb-3">{t("تواصل معنا", "Contact")}</h4>
+              <div className="space-y-1 text-sm">
+                <a href="tel:+966575015019" className="flex items-center gap-2 hover:text-teal-400"><Phone className="w-4 h-4" /> +966 57 501 5019</a>
+                <a href="mailto:khalid-alharbi@zohomail.sa" className="flex items-center gap-2 hover:text-teal-400"><Mail className="w-4 h-4" /> khalid-alharbi@zohomail.sa</a>
+                <a href="https://github.com/5halid-707" target="_blank" className="flex items-center gap-2 hover:text-teal-400">GitHub: 5halid-707</a>
+                <a href="https://www.linkedin.com/in/khalid-alharbi-8953a4b3" target="_blank" className="flex items-center gap-2 hover:text-teal-400">LinkedIn</a>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 pt-6 text-center text-xs">
+            <p>
+              © 2026 {t("عيادة خالد", "Khalid Clinic")}. {t("جميع الحقوق محفوظة", "All rights reserved")}.{" | "}
+              <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-300 font-semibold">
+                {t("تصميم خالد الحربي", "Designed by Khalid Alharbi")}
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {/* Scroll to top */}
+      {showScrollTop && (
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="fixed bottom-6 left-6 z-50 w-11 h-11 rounded-full bg-teal-600 text-white flex items-center justify-center shadow-lg hover:bg-teal-700 transition-colors">
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
+
+      {/* WhatsApp float */}
+      <a href="https://wa.me/966575015019" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-colors">
+        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
     </div>
   );
 }
 
-// ============================================================
-// LOGIN SCREEN
-// ============================================================
-function LoginScreen() {
-  const { login } = useAuth();
-  const [email, setEmail] = useState("admin@kmh-erp.sa");
-  const [password, setPassword] = useState("admin123");
-  const [showPass, setShowPass] = useState(false);
+function AppointmentForm({ lang }: { lang: "ar" | "en" }) {
+  const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
+  const [form, setForm] = useState({ name: "", phone: "", email: "", department: "", date: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
-
-  const fillDemo = (em: string, pw: string) => {
-    setEmail(em); setPassword(pw);
-  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await login(email, password);
+    await new Promise(r => setTimeout(r, 1500));
+    toast.success(t("تم حجز موعدك بنجاح! سنتواصل معك قريباً.", "Appointment booked successfully! We will contact you soon."));
+    setForm({ name: "", phone: "", email: "", department: "", date: "", message: "" });
     setSubmitting(false);
   };
 
   return (
-    <div className="min-h-screen bg-background cyber-grid flex items-center justify-center p-4" dir="rtl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        {/* Logo header */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center font-extrabold text-white text-3xl glow-primary">
-            K
-          </div>
-          <h1 className="text-2xl font-bold">KMH ERP Suite</h1>
-          <p className="text-xs text-muted-foreground mt-1">نظام الإدارة المتكامل — كاشير + محاسبة + موارد بشرية + ERP</p>
-        </div>
-
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Lock className="w-4 h-4 text-cyan-400" />
-              تسجيل الدخول
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={submit} className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="text-xs">البريد الإلكتروني</Label>
-                <Input
-                  id="email" type="email" required value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-muted/40 mt-1" placeholder="you@company.sa"
-                />
-              </div>
-              <div>
-                <Label htmlFor="password" className="text-xs">كلمة المرور</Label>
-                <div className="relative mt-1">
-                  <Input
-                    id="password" type={showPass ? "text" : "password"} required
-                    value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="bg-muted/40 pl-10" placeholder="••••••••"
-                  />
-                  <button
-                    type="button" onClick={() => setShowPass(!showPass)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-              <Button type="submit" disabled={submitting} className="w-full glow-primary" size="lg">
-                {submitting ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Lock className="w-4 h-4 ml-2" />}
-                {submitting ? "جارٍ الدخول..." : "دخول"}
-              </Button>
-            </form>
-
-            <Separator className="my-4" />
-            <div className="text-[10px] text-muted-foreground mb-2">حسابات تجريبية سريعة:</div>
-            <div className="grid grid-cols-1 gap-1.5">
-              {[
-                { role: "👑 Admin", email: "admin@kmh-erp.sa", pw: "admin123", color: "text-cyan-400" },
-                { role: "🛒 Cashier", email: "cashier@kmh-erp.sa", pw: "cashier123", color: "text-emerald-400" },
-                { role: "🧮 Accountant", email: "accountant@kmh-erp.sa", pw: "acc123", color: "text-amber-400" },
-                { role: "👥 HR Manager", email: "hr@kmh-erp.sa", pw: "hr123", color: "text-purple-400" },
-                { role: "📦 Inventory", email: "inventory@kmh-erp.sa", pw: "inv123", color: "text-rose-400" },
-              ].map((d) => (
-                <button
-                  key={d.email} type="button" onClick={() => fillDemo(d.email, d.pw)}
-                  className="text-right text-[11px] p-2 rounded-md bg-muted/30 hover:bg-muted/60 border border-transparent hover:border-border transition-all flex items-center justify-between"
-                >
-                  <span className={d.color}>{d.role}</span>
-                  <span className="text-muted-foreground font-mono">{d.email}</span>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
-  );
-}
-
-// ============================================================
-// APP SHELL - main layout after login
-// ============================================================
-type ModuleKey = "dashboard" | "cashier" | "accounting" | "hr" | "erp" | "admin" | "reports" | "customers";
-
-function AppShell() {
-  const { user, logout } = useAuth();
-  const [active, setActive] = useState<ModuleKey>("dashboard");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  if (!user) return null;
-
-  const handleModuleClick = (key: ModuleKey) => {
-    setActive(key);
-    setMobileSidebarOpen(false);
-  };
-
-  const modules: { key: ModuleKey; label: string; icon: any; color: string; perm: string }[] = [
-    { key: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard, color: "text-cyan-400", perm: "dashboard" },
-    { key: "cashier", label: "نقطة البيع", icon: ShoppingCart, color: "text-emerald-400", perm: "cashier" },
-    { key: "customers", label: "العملاء", icon: UserCheck, color: "text-blue-400", perm: "customers" },
-    { key: "accounting", label: "المحاسبة", icon: Calculator, color: "text-amber-400", perm: "accounting" },
-    { key: "hr", label: "الموارد البشرية", icon: Users, color: "text-purple-400", perm: "hr" },
-    { key: "erp", label: "إدارة المخزون", icon: Package, color: "text-rose-400", perm: "erp" },
-    { key: "reports", label: "التقارير", icon: TrendingUp, color: "text-indigo-400", perm: "reports" },
-    { key: "admin", label: "لوحة الإدارة", icon: ShieldCheck, color: "text-yellow-400", perm: "admin" },
-  ].filter((m) => hasPermission(user.role, m.perm));
-
-  const avatarColorMap: Record<string, string> = {
-    cyan: "from-cyan-500 to-blue-700",
-    emerald: "from-emerald-500 to-teal-700",
-    amber: "from-amber-500 to-orange-700",
-    purple: "from-purple-500 to-fuchsia-700",
-    rose: "from-rose-500 to-pink-700",
-    blue: "from-blue-500 to-indigo-700",
-  };
-
-  return (
-    <div className="min-h-screen bg-background cyber-grid flex" dir="rtl">
-      {/* Mobile sidebar overlay */}
-      {mobileSidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
-      )}
-
-      <aside
-        className={`${sidebarCollapsed ? "w-20" : "w-72"} ${
-          mobileSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
-        } fixed lg:sticky top-0 right-0 z-50 lg:z-auto shrink-0 bg-sidebar border-l border-sidebar-border flex flex-col transition-all duration-300 h-screen`}
-      >
-        <div className="h-20 flex items-center gap-3 px-5 border-b border-sidebar-border">
-          <div className="w-10 h-10 shrink-0 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center font-extrabold text-white text-lg glow-primary">
-            K
-          </div>
-          {!sidebarCollapsed && (
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-bold text-foreground truncate">KMH ERP Suite</div>
-              <div className="text-[10px] text-muted-foreground truncate">نظام الإدارة المتكامل</div>
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden h-8 w-8"
-            onClick={() => setMobileSidebarOpen(false)}
-          >
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
-
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {modules.map((m) => {
-            const Icon = m.icon;
-            const isActive = active === m.key;
-            return (
-              <button
-                key={m.key} onClick={() => handleModuleClick(m.key)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  isActive ? "bg-primary/15 text-primary" : "text-sidebar-foreground hover:bg-sidebar-accent"
-                }`}
-                title={m.label}
-              >
-                <Icon className={`w-5 h-5 ${isActive ? m.color : ""}`} />
-                {!sidebarCollapsed && <span className="flex-1 text-right">{m.label}</span>}
-                {isActive && !sidebarCollapsed && <ChevronLeft className="w-4 h-4 rotate-180" />}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="p-3 border-t border-sidebar-border space-y-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent">
-                <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarColorMap[user.avatarColor] || avatarColorMap.cyan} flex items-center justify-center text-white text-xs font-bold`}>
-                  {user.name.charAt(0)}
-                </div>
-                {!sidebarCollapsed && (
-                  <div className="flex-1 min-w-0 text-right">
-                    <div className="text-xs font-semibold text-foreground truncate">{user.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{ROLE_LABELS[user.role]}</div>
-                  </div>
-                )}
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem className="flex-col items-start">
-                <span className="text-sm font-medium">{user.name}</span>
-                <span className="text-[10px] text-muted-foreground font-mono">{user.email}</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="hidden lg:flex">
-                <Settings className="w-4 h-4 ml-2" />
-                {sidebarCollapsed ? "توسيع القائمة" : "طيّ القائمة"}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => logout()} className="text-rose-400">
-                <LogOut className="w-4 h-4 ml-2" />
-                تسجيل الخروج
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </aside>
-
-      <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
-        <header className="h-16 sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border flex items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setMobileSidebarOpen(true)}
-            >
-              <LayoutDashboard className="w-5 h-5" />
-            </Button>
-            <h1 className="text-base sm:text-lg font-bold">
-              {modules.find((m) => m.key === active)?.label}
-            </h1>
-            <Badge variant="outline" className="text-cyan-400 border-cyan-400/30 bg-cyan-400/5 hidden sm:flex">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 pulse-cyan ml-1.5" />
-              مباشر
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Badge variant="outline" className="text-[10px] hidden sm:flex">
-              <Crown className="w-3 h-3 ml-1 text-amber-400" />
-              {ROLE_LABELS[user.role]}
-            </Badge>
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
-              <Bell className="w-5 h-5" />
-            </Button>
-            <div className="text-xs sm:text-sm text-muted-foreground hidden md:block">
-              {new Intl.DateTimeFormat("ar-SA", { weekday: "long", day: "numeric", month: "long" }).format(new Date())}
-            </div>
-          </div>
-        </header>
-
-        <div className="flex-1 p-3 sm:p-4 lg:p-6 overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              {active === "dashboard" && <DashboardModule />}
-              {active === "cashier" && <CashierModule />}
-              {active === "customers" && <CustomersModule />}
-              {active === "accounting" && <AccountingModule />}
-              {active === "hr" && <HRModule />}
-              {active === "erp" && <ERPModule />}
-              {active === "reports" && <ReportsModule />}
-              {active === "admin" && <AdminModule />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        {/* Status bar */}
-        <StatusBar user={user} />
-      </main>
-    </div>
-  );
-}
-
-// ============================================================
-// STATUS BAR - bottom strip showing live stats + clock + user
-// ============================================================
-function StatusBar({ user }: { user: any }) {
-  const [time, setTime] = useState(new Date());
-  const [stats, setStats] = useState<any>(null);
-
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    const fetchStats = async () => {
-      try {
-        const r = await fetch("/api/dashboard");
-        if (!r.ok) return;
-        const j = await r.json();
-        if (!cancelled) setStats(j);
-      } catch {}
-    };
-    fetchStats();
-    const t = setInterval(fetchStats, 30000); // refresh every 30s
-    return () => { cancelled = true; clearInterval(t); };
-  }, []);
-
-  return (
-    <footer className="h-8 border-t border-border bg-sidebar/50 backdrop-blur flex items-center justify-between px-4 text-[10px] text-muted-foreground">
-      <div className="flex items-center gap-4">
-        <span className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-cyan" />
-          النظام يعمل
-        </span>
-        {stats && (
-          <>
-            <span className="hidden sm:flex items-center gap-1">
-              <ShoppingCart className="w-3 h-3" />
-              مبيعات اليوم: <span className="font-mono text-emerald-400">{fmtSAR(stats.today.sales)}</span>
-            </span>
-            <span className="hidden md:flex items-center gap-1">
-              <Receipt className="w-3 h-3" />
-              {stats.today.invoices} فاتورة
-            </span>
-            <span className="hidden lg:flex items-center gap-1">
-              <Boxes className="w-3 h-3" />
-              {stats.inventory.items} منتج
-            </span>
-          </>
-        )}
+    <form onSubmit={submit} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 space-y-3">
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div><Label className="text-white text-xs mb-1">{t("الاسم", "Name")}</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required className="bg-white/20 border-white/30 text-white placeholder:text-white/50" placeholder={t("الاسم الكامل", "Full name")} /></div>
+        <div><Label className="text-white text-xs mb-1">{t("الهاتف", "Phone")}</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} required className="bg-white/20 border-white/30 text-white placeholder:text-white/50" placeholder="05xxxxxxxx" dir="ltr" /></div>
       </div>
-      <div className="flex items-center gap-3">
-        <span className="hidden sm:flex items-center gap-1">
-          <Database className="w-3 h-3" />
-          {user?.organizationId ? "متصل" : "غير متصل"}
-        </span>
-        <span className="flex items-center gap-1 font-mono">
-          <Clock className="w-3 h-3" />
-          {time.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-        </span>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div><Label className="text-white text-xs mb-1">{t("البريد", "Email")}</Label><Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="bg-white/20 border-white/30 text-white placeholder:text-white/50" placeholder="email@example.com" dir="ltr" /></div>
+        <div><Label className="text-white text-xs mb-1">{t("التاريخ", "Date")}</Label><Input type="date" value={form.date} onChange={e => setForm({...form, date: e.target.value})} required className="bg-white/20 border-white/30 text-white" /></div>
       </div>
-    </footer>
-  );
-}
-
-// ============================================================
-// DASHBOARD MODULE
-// ============================================================
-function DashboardModule() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const r = await fetch("/api/dashboard");
-        if (!r.ok) return;
-        const j = await r.json();
-        if (!cancelled) { setData(j); }
-      } catch {}
-      if (!cancelled) setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
-  if (loading) return <SkeletonRow />;
-  if (!data || !data.today) return <ErrorState onRetry={() => window.location.reload()} message="تعذّر تحميل لوحة التحكم" />;
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title="مبيعات اليوم" value={fmtSAR(data.today?.sales || 0)} subtitle={`${data.today?.invoices || 0} فاتورة`} icon={ShoppingCart} color="emerald" />
-        <KpiCard title="مبيعات الشهر" value={fmtSAR(data.month?.sales || 0)} subtitle={`${data.month?.invoices || 0} فاتورة`} icon={TrendingUp} color="cyan" />
-        <KpiCard title="الذمم المدينة" value={fmtSAR(data.receivables || 0)} subtitle={`${data.customers || 0} عميل`} icon={Wallet} color="amber" />
-        <KpiCard title="قيمة المخزون" value={fmtSAR(data.inventory?.costValue || 0)} subtitle={`${data.inventory?.items || 0} منتج`} icon={Boxes} color="purple" />
+      <div>
+        <Label className="text-white text-xs mb-1">{t("القسم", "Department")}</Label>
+        <Select value={form.department} onValueChange={v => setForm({...form, department: v})}>
+          <SelectTrigger className="bg-white/20 border-white/30 text-white"><SelectValue placeholder={t("اختر القسم", "Select department")} /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cardiology">{t("طب القلب", "Cardiology")}</SelectItem>
+            <SelectItem value="neurology">{t("الأعصاب", "Neurology")}</SelectItem>
+            <SelectItem value="orthopedics">{t("العظام", "Orthopedics")}</SelectItem>
+            <SelectItem value="ophthalmology">{t("العيون", "Ophthalmology")}</SelectItem>
+            <SelectItem value="pediatrics">{t("الأطفال", "Pediatrics")}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MiniStat label="مستحقات الموردين" value={fmtSAR(data.payables || 0)} icon={Building2} />
-        <MiniStat label="الرواتب الشهرية" value={fmtSAR(data.hr?.monthlyPayroll || 0)} icon={Users} />
-        <MiniStat label="موظفين نشطين" value={String(data.hr?.activeEmployees || 0)} icon={UserCheck} />
-        <MiniStat label="طلبات إجازة معلّقة" value={String(data.hr?.pendingLeaves || 0)} icon={Clock} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2 bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Activity className="w-4 h-4 text-cyan-400" />
-              مبيعات آخر 14 يوم
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SalesChart data={data?.sales14Days || []} />
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-400" />
-              الأكثر مبيعًا (30 يوم)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {(data?.topProducts || []).map((p: any, i: number) => (
-              <div key={p.sku} className="flex items-center gap-3">
-                <div className="w-7 h-7 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium truncate">{p.name}</div>
-                  <div className="text-[10px] text-muted-foreground">{p.qty} قطعة</div>
-                </div>
-                <div className="text-xs font-bold text-emerald-400">{fmtSAR(p.revenue)}</div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-purple-400" />
-              توزيع طرق الدفع (30 يوم)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PaymentMethods methods={data?.paymentMethods || []} />
-          </CardContent>
-        </Card>
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Receipt className="w-4 h-4 text-cyan-400" />
-              أحدث الفواتير
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="max-h-72">
-              <div className="space-y-2">
-                {(data?.recentInvoices || []).map((inv: any) => (
-                  <div key={inv.id} className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-mono font-semibold">{inv.invoiceNumber}</div>
-                      <div className="text-[10px] text-muted-foreground">{inv.customer?.name || "عميل نقدي"} • {new Date(inv.invoiceDate).toLocaleDateString("ar-SA")}</div>
-                    </div>
-                    <Badge variant="outline" className="text-[10px]">{paymentLabel(inv.paymentMethod)}</Badge>
-                    <div className="text-sm font-bold text-emerald-400">{fmtSAR(inv.grandTotal)}</div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="bg-card border-border">
-        <CardHeader><CardTitle className="text-base flex items-center gap-2"><Clock className="w-4 h-4 text-emerald-400" />حضور اليوم</CardTitle></CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {(data?.hr?.attendanceToday || []).map((a: any) => (
-              <div key={a.status} className="text-center p-3 rounded-lg bg-muted/40">
-                <div className="text-2xl font-bold">{a._count}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">{attendanceLabel(a.status)}</div>
-              </div>
-            ))}
-            {(data?.hr?.attendanceToday || []).length === 0 && (
-              <div className="col-span-5 text-center text-muted-foreground py-6 text-sm">لا توجد سجلات حضور لليوم بعد</div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Activity Timeline */}
-      <Card className="bg-card border-border">
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <History className="w-4 h-4 text-cyan-400" />
-            آخر النشاطات
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScrollArea className="max-h-72">
-            <div className="space-y-2">
-              {data?.recentActivity && data.recentActivity.length > 0 ? data.recentActivity.map((log: any) => (
-                <div key={log.id} className="flex items-start gap-3 py-2 border-b border-border/40 last:border-0">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                    log.action === "CREATE" ? "bg-emerald-400/15 text-emerald-400" :
-                    log.action === "UPDATE" ? "bg-amber-400/15 text-amber-400" :
-                    log.action === "DELETE" ? "bg-rose-400/15 text-rose-400" :
-                    log.action === "LOGIN" ? "bg-cyan-400/15 text-cyan-400" :
-                    "bg-muted text-muted-foreground"
-                  }`}>
-                    {log.action === "CREATE" ? <Plus className="w-4 h-4" /> :
-                     log.action === "UPDATE" ? <Edit className="w-4 h-4" /> :
-                     log.action === "DELETE" ? <Trash2 className="w-4 h-4" /> :
-                     log.action === "LOGIN" ? <UserCheck className="w-4 h-4" /> :
-                     <Activity className="w-4 h-4" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium truncate">{log.description}</div>
-                    <div className="text-[10px] text-muted-foreground flex items-center gap-2 mt-0.5">
-                      <span>{log.userName}</span>
-                      <span>•</span>
-                      <span>{new Date(log.createdAt).toLocaleString("ar-SA", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })}</span>
-                    </div>
-                  </div>
-                </div>
-              )) : (
-                <div className="text-center text-muted-foreground py-6 text-sm">لا توجد نشاطات بعد</div>
-              )}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    </div>
+      <Button type="submit" disabled={submitting} className="w-full bg-white text-teal-700 hover:bg-teal-50 font-bold rounded-full">
+        {submitting ? t("جارٍ الحجز...", "Booking...") : t("تأكيد الحجز", "Confirm Booking")}
+      </Button>
+    </form>
   );
 }
 
-function KpiCard({ title, value, subtitle, icon: Icon, color }: any) {
-  const colorMap: any = {
-    emerald: "text-emerald-400 bg-emerald-400/10",
-    cyan: "text-cyan-400 bg-cyan-400/10",
-    amber: "text-amber-400 bg-amber-400/10",
-    purple: "text-purple-400 bg-purple-400/10",
-  };
-  return (
-    <Card className="bg-card border-border hover:border-primary/40 transition-colors">
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="text-xs text-muted-foreground mb-1">{title}</div>
-            <div className="text-2xl font-bold tracking-tight">{value}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">{subtitle}</div>
-          </div>
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorMap[color]}`}>
-            <Icon className="w-5 h-5" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+function ContactForm({ lang }: { lang: "ar" | "en" }) {
+  const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
 
-function MiniStat({ label, value, icon: Icon }: any) {
-  return (
-    <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border/50">
-      <Icon className="w-4 h-4 text-muted-foreground" />
-      <div className="flex-1 min-w-0">
-        <div className="text-[10px] text-muted-foreground">{label}</div>
-        <div className="text-sm font-bold truncate">{value}</div>
-      </div>
-    </div>
-  );
-}
-
-function SalesChart({ data }: any) {
-  if (!data || data.length === 0) return null;
-  const max = Math.max(...data.map((d: any) => d.total), 1);
-  return (
-    <div className="flex items-end gap-1 h-44">
-      {data.map((d: any, i: number) => {
-        const h = (d.total / max) * 100;
-        return (
-          <div key={i} className="flex-1 group relative flex flex-col items-center">
-            <div className="text-[9px] text-muted-foreground mb-1 opacity-0 group-hover:opacity-100 whitespace-nowrap">{fmtShort(d.total)}</div>
-            <div className="w-full rounded-t-md bg-gradient-to-t from-cyan-500/30 to-cyan-400 hover:from-cyan-500/50 hover:to-cyan-300 transition-all" style={{ height: `${h}%` }} />
-            <div className="text-[8px] text-muted-foreground mt-1">{new Date(d.date).toLocaleDateString("ar-SA", { day: "numeric" })}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function PaymentMethods({ methods }: any) {
-  if (!methods || methods.length === 0) return null;
-  const total = methods.reduce((s: number, m: any) => s + (m._sum.grandTotal || 0), 0);
-  const colors = ["#00a8e8", "#10b981", "#f59e0b", "#a855f7", "#ef4444"];
-  return (
-    <div className="space-y-3">
-      {methods.map((m: any, i: number) => {
-        const amt = m._sum.grandTotal || 0;
-        const pct = total > 0 ? (amt / total) * 100 : 0;
-        return (
-          <div key={m.paymentMethod}>
-            <div className="flex items-center justify-between text-xs mb-1">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: colors[i] }} />
-                {paymentLabel(m.paymentMethod)}
-                <span className="text-muted-foreground">({m._count})</span>
-              </span>
-              <span className="font-bold">{fmtSAR(amt)}</span>
-            </div>
-            <Progress value={pct} className="h-1.5" style={{ backgroundColor: colors[i] + "30" } as any} />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function SkeletonRow() {
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-32 rounded-lg bg-muted/30 animate-pulse" />)}
-      </div>
-      <div className="h-64 rounded-lg bg-muted/30 animate-pulse" />
-    </div>
-  );
-}
-
-function ErrorState({ onRetry, message = "حدث خطأ" }: { onRetry?: () => void; message?: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <AlertTriangle className="w-12 h-12 text-amber-400 mb-4" />
-      <p className="text-sm text-muted-foreground mb-4">{message}</p>
-      {onRetry && (
-        <Button onClick={onRetry} variant="outline" size="sm">
-          <RefreshCw className="w-4 h-4 ml-2" />
-          إعادة المحاولة
-        </Button>
-      )}
-    </div>
-  );
-}
-
-// ============================================================
-// CASHIER MODULE
-// ============================================================
-function CashierModule() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [cart, setCart] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("CASH");
-  const [paidAmount, setPaidAmount] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
-  const [lastReceipt, setLastReceipt] = useState<any>(null);
-  const [showInvoices, setShowInvoices] = useState(false);
-  const [invoices, setInvoices] = useState<any[]>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const r = await fetch("/api/cashier/products");
-        if (!r.ok) { if (!cancelled) setLoading(false); return; }
-        const j = await r.json();
-        if (!cancelled) { setProducts(j.products || []); setLoading(false); }
-      } catch { if (!cancelled) setLoading(false); }
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
-  const filtered = products.filter((p) => !search || p.name.includes(search) || p.sku.toLowerCase().includes(search.toLowerCase()) || p.barcode?.includes(search));
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const vat = cart.reduce((s, i) => s + i.price * i.qty * (i.vat / 100), 0);
-  const total = subtotal + vat;
-  const paid = parseFloat(paidAmount) || 0;
-  const change = Math.max(0, paid - total);
-
-  const addToCart = (p: any) => {
-    setCart((prev) => {
-      const ex = prev.find((i) => i.id === p.id);
-      if (ex) return prev.map((i) => (i.id === p.id ? { ...i, qty: i.qty + 1 } : i));
-      return [...prev, { id: p.id, name: p.name, price: p.salePrice, qty: 1, vat: p.vatRate }];
-    });
-  };
-  const updateQty = (id: string, delta: number) => setCart((prev) => prev.map((i) => (i.id === id ? { ...i, qty: i.qty + delta } : i)).filter((i) => i.qty > 0));
-
-  const checkout = async () => {
-    if (cart.length === 0) { toast.error("السلة فارغة"); return; }
-    setProcessing(true);
-    try {
-      const r = await fetch("/api/cashier/checkout", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: cart.map((i) => ({ productId: i.id, quantity: i.qty, unitPrice: i.price, vatRate: i.vat })), paymentMethod, paidAmount: paid || total }),
-      });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      setLastReceipt(j.invoice);
-      setCart([]); setPaidAmount("");
-      toast.success(`فاتورة ${j.invoice.number} + قيد محاسبي تلقائي`);
-    } catch (e: any) { toast.error(e.message); }
-    finally { setProcessing(false); }
-  };
-
-  const loadInvoices = async () => {
-    const r = await fetch("/api/cashier/invoices");
-    const j = await r.json();
-    setInvoices(j.invoices || []);
-    setShowInvoices(true);
-  };
-
-  // Keyboard shortcuts for cashier: F1-F4 = payment methods, F9 = checkout, ESC = clear cart
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "F1") { e.preventDefault(); setPaymentMethod("CASH"); toast.info("طريقة الدفع: نقدي"); }
-      else if (e.key === "F2") { e.preventDefault(); setPaymentMethod("CARD"); toast.info("طريقة الدفع: بطاقة"); }
-      else if (e.key === "F3") { e.preventDefault(); setPaymentMethod("TRANSFER"); toast.info("طريقة الدفع: تحويل"); }
-      else if (e.key === "F4") { e.preventDefault(); setPaymentMethod("WALLET"); toast.info("طريقة الدفع: محفظة"); }
-      else if (e.key === "F9") { e.preventDefault(); checkout(); }
-      else if (e.key === "Escape" && cart.length > 0) {
-        if (confirm("تفريغ السلة؟")) { setCart([]); setPaidAmount(""); }
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [cart, paymentMethod, paidAmount]);
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 h-[calc(100vh-11rem)]">
-      <div className="lg:col-span-2 flex flex-col min-h-0">
-        <Card className="bg-card border-border flex-1 flex flex-col">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle className="text-base">منتجات الفرع</CardTitle>
-              <Button variant="outline" size="sm" onClick={loadInvoices}><Receipt className="w-4 h-4 ml-1.5" />الفواتير</Button>
-            </div>
-            <div className="relative">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="ابحث بالاسم، SKU، أو امسح الباركود..." value={search} onChange={(e) => setSearch(e.target.value)} className="pr-10 bg-muted/40" />
-            </div>
-          </CardHeader>
-          <CardContent className="flex-1 overflow-hidden">
-            {loading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-32 rounded-lg bg-muted/30 animate-pulse" />)}
-              </div>
-            ) : (
-              <ScrollArea className="h-full">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pb-4">
-                  {filtered.map((p) => (
-                    <button key={p.id} onClick={() => addToCart(p)} className="group text-right p-3 rounded-lg bg-muted/30 border border-border/50 hover:border-primary/60 hover:bg-primary/5 transition-all">
-                      <div className="aspect-square mb-2 rounded-md bg-gradient-to-br from-cyan-500/20 to-purple-600/20 flex items-center justify-center overflow-hidden">
-                        {p.imageUrl ? (
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        ) : (
-                          <Barcode className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                        )}
-                      </div>
-                      <div className="text-xs font-medium line-clamp-2 h-8">{p.name}</div>
-                      <div className="text-[10px] text-muted-foreground font-mono mt-1">{p.sku}</div>
-                      <div className="text-sm font-bold text-primary mt-1">{fmtSAR(p.salePrice)}</div>
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="bg-card border-border flex flex-col">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center justify-between">
-            <span className="flex items-center gap-2"><ShoppingCart className="w-4 h-4 text-emerald-400" />الفاتورة الحالية</span>
-            {cart.length > 0 && <Button variant="ghost" size="sm" onClick={() => setCart([])}>تفريغ</Button>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col">
-          <ScrollArea className="flex-1 -mx-2 px-2">
-            <div className="space-y-2">
-              {cart.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <ShoppingCart className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                  <p className="text-xs">اضغط على منتج لإضافته</p>
-                </div>
-              ) : (
-                cart.map((it) => (
-                  <div key={it.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/30">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium truncate">{it.name}</div>
-                      <div className="text-[10px] text-muted-foreground font-mono">{fmtSAR(it.price)} × {it.qty}</div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => updateQty(it.id, -1)}>−</Button>
-                      <span className="w-6 text-center text-xs font-bold">{it.qty}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => updateQty(it.id, 1)}>+</Button>
-                    </div>
-                    <div className="text-xs font-bold text-emerald-400 w-16 text-left">{fmtSAR(it.price * it.qty)}</div>
-                  </div>
-                ))
-              )}
-            </div>
-          </ScrollArea>
-          {cart.length > 0 && (
-            <div className="space-y-3 pt-3 border-t border-border">
-              <div className="space-y-1 text-xs">
-                <Row label="المجموع الفرعي" value={fmtSAR(subtotal)} />
-                <Row label="ضريبة القيمة المضافة (15%)" value={fmtSAR(vat)} />
-                <div className="h-px bg-border my-2" />
-                <div className="flex items-center justify-between text-base font-bold"><span>الإجمالي</span><span className="text-primary">{fmtSAR(total)}</span></div>
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground">طريقة الدفع</label>
-                <div className="grid grid-cols-4 gap-1 mt-1">
-                  {[{ v: "CASH", icon: Banknote, label: "نقدي" }, { v: "CARD", icon: CreditCard, label: "بطاقة" }, { v: "TRANSFER", icon: Smartphone, label: "تحويل" }, { v: "WALLET", icon: Wallet, label: "محفظة" }].map((m) => {
-                    const Icon = m.icon;
-                    return (
-                      <button key={m.v} onClick={() => setPaymentMethod(m.v)} className={`p-2 rounded-md flex flex-col items-center gap-1 text-[10px] transition-all ${paymentMethod === m.v ? "bg-primary/15 text-primary border border-primary/40" : "bg-muted/30 border border-transparent hover:bg-muted/50"}`}>
-                        <Icon className="w-4 h-4" />{m.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div>
-                <label className="text-[10px] text-muted-foreground">المبلغ المدفوع</label>
-                <Input type="number" placeholder={total.toFixed(2)} value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} className="bg-muted/40" />
-                {paid > 0 && <div className="text-[10px] text-emerald-400 mt-1">الباقي للعميل: {fmtSAR(change)}</div>}
-              </div>
-              <Button onClick={checkout} disabled={processing} className="w-full glow-primary" size="lg">
-                {processing ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : null}
-                {processing ? "جارٍ المعالجة..." : `إصدار الفاتورة • ${fmtSAR(total)}`}
-              </Button>
-              {/* Keyboard shortcuts hint */}
-              <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground flex-wrap">
-                <kbd className="px-1.5 py-0.5 rounded bg-muted/50 border border-border">F1</kbd>نقدي
-                <kbd className="px-1.5 py-0.5 rounded bg-muted/50 border border-border">F2</kbd>بطاقة
-                <kbd className="px-1.5 py-0.5 rounded bg-muted/50 border border-border">F3</kbd>تحويل
-                <kbd className="px-1.5 py-0.5 rounded bg-muted/50 border border-border">F4</kbd>محفظة
-                <kbd className="px-1.5 py-0.5 rounded bg-muted/50 border border-border">F9</kbd>إصدار
-                <kbd className="px-1.5 py-0.5 rounded bg-muted/50 border border-border">ESC</kbd>تفريغ
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {lastReceipt && <ReceiptDialog receipt={lastReceipt} onClose={() => setLastReceipt(null)} />}
-      {showInvoices && <InvoicesListDialog invoices={invoices} onClose={() => setShowInvoices(false)} />}
-    </div>
-  );
-}
-
-function ReceiptDialog({ receipt, onClose }: any) {
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader className="sr-only">
-          <DialogTitle>إيصال الفاتورة {receipt.number}</DialogTitle>
-          <DialogDescription>تفاصيل الفاتورة المُصدَّرة والإجراءات الأوتوماتيكية</DialogDescription>
-        </DialogHeader>
-        <div className="text-center mb-4">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-500/20 flex items-center justify-center">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-          </div>
-          <h3 className="text-lg font-bold">تم إصدار الفاتورة</h3>
-          <p className="text-xs text-muted-foreground font-mono">{receipt.number}</p>
-        </div>
-        <div className="bg-muted/30 rounded-lg p-4 space-y-2 text-xs font-mono">
-          <div className="text-center pb-2 border-b border-border">
-            <div className="font-bold">مؤسسة الحربي التجارية</div>
-            <div className="text-[10px] text-muted-foreground">الرقم الضريبي: 300123456700003</div>
-            <div className="text-[10px] text-muted-foreground">{new Date(receipt.date).toLocaleString("ar-SA")}</div>
-          </div>
-          {receipt.items.map((it: any, i: number) => (
-            <div key={i} className="flex justify-between">
-              <span className="truncate flex-1">{it.name} × {it.qty}</span>
-              <span>{fmtSAR(it.total)}</span>
-            </div>
-          ))}
-          <div className="border-t border-border pt-2 space-y-1">
-            <div className="flex justify-between"><span>المجموع</span><span>{fmtSAR(receipt.subtotal)}</span></div>
-            <div className="flex justify-between"><span>ضريبة 15%</span><span>{fmtSAR(receipt.vat)}</span></div>
-            <div className="flex justify-between font-bold text-sm"><span>الإجمالي</span><span>{fmtSAR(receipt.total)}</span></div>
-            <div className="flex justify-between"><span>المدفوع</span><span>{fmtSAR(receipt.paid)}</span></div>
-            <div className="flex justify-between"><span>الباقي</span><span>{fmtSAR(receipt.change)}</span></div>
-          </div>
-        </div>
-        <div className="mt-4 p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300">
-          <div className="font-semibold mb-1">⚙️ الأتمتة المُنفَّذة:</div>
-          <ul className="space-y-0.5 text-[11px]">
-            <li>✓ قيد محاسبي تلقائي للفاتورة</li>
-            <li>✓ قيد تكلفة البضاعة المباعة (COGS)</li>
-            <li>✓ {receipt.items.length} حركة مخزون (صادر)</li>
-            <li>✓ تحديث أرصدة 4 حسابات محاسبية</li>
-            <li>✓ تسجيل العملية في سجل التدقيق</li>
-          </ul>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => window.print()} className="flex-1">
-            <Printer className="w-4 h-4 ml-2" />
-            طباعة
-          </Button>
-          <Button onClick={onClose} className="flex-1">إغلاق</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function InvoicesListDialog({ invoices, onClose }: any) {
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader><DialogTitle>آخر الفواتير ({invoices.length})</DialogTitle><DialogDescription>استعراض سجل آخر الفواتير المُصدَّرة</DialogDescription></DialogHeader>
-        <ScrollArea className="max-h-[60vh]">
-          <Table>
-            <TableHeader><TableRow>
-              <TableHead>رقم الفاتورة</TableHead><TableHead>العميل</TableHead>
-              <TableHead>التاريخ</TableHead><TableHead>الدفع</TableHead>
-              <TableHead className="text-left">الإجمالي</TableHead>
-            </TableRow></TableHeader>
-            <TableBody>
-              {invoices.map((inv: any) => (
-                <TableRow key={inv.id}>
-                  <TableCell className="font-mono text-xs">{inv.invoiceNumber}</TableCell>
-                  <TableCell className="text-xs">{inv.customer?.name || "عميل نقدي"}</TableCell>
-                  <TableCell className="text-xs">{new Date(inv.invoiceDate).toLocaleDateString("ar-SA")}</TableCell>
-                  <TableCell><Badge variant="outline" className="text-[10px]">{paymentLabel(inv.paymentMethod)}</Badge></TableCell>
-                  <TableCell className="text-left font-bold text-emerald-400">{fmtSAR(inv.grandTotal)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ============================================================
-// CUSTOMERS MODULE - customer management with loyalty + balance
-// ============================================================
-function CustomersModule() {
-  const { user } = useAuth();
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [editing, setEditing] = useState<any | null>(null);
-  const [showForm, setShowForm] = useState(false);
-
-  const canEdit = user && (user.role === "ADMIN" || user.role === "CASHIER" || user.role === "ACCOUNTANT" || user.role === "BRANCH_MANAGER");
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const r = await fetch("/api/customers");
-      const j = await r.json();
-      setCustomers(j.customers || []);
-    } catch {}
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => { if (!cancelled) await load(); })();
-    return () => { cancelled = true; };
-  }, [load]);
-
-  const deleteCustomer = async (id: string, name: string) => {
-    if (!confirm(`حذف العميل "${name}"؟`)) return;
-    const r = await fetch(`/api/customers/${id}`, { method: "DELETE" });
-    if (r.ok) { toast.success("تم حذف العميل"); load(); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  const filtered = customers.filter((c) => !search || c.name.includes(search) || c.phone?.includes(search));
-
-  if (loading) return <SkeletonRow />;
-
-  // Stats
-  const totalCreditLimit = customers.reduce((s, c) => s + (c.creditLimit || 0), 0);
-  const totalBalanceDue = customers.reduce((s, c) => s + (c.balanceDue || 0), 0);
-  const totalLoyaltyPoints = customers.reduce((s, c) => s + (c.loyaltyPoints || 0), 0);
-
-  return (
-    <div className="space-y-4">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">إجمالي العملاء</div><div className="text-2xl font-bold">{customers.length}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">حد الائتمان الكلي</div><div className="text-2xl font-bold text-cyan-400">{fmtSAR(totalCreditLimit)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">مستحقات العملاء</div><div className="text-2xl font-bold text-amber-400">{fmtSAR(totalBalanceDue)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">نقاط الولاء</div><div className="text-2xl font-bold text-purple-400">{totalLoyaltyPoints.toLocaleString("ar-SA")}</div></CardContent></Card>
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="ابحث بالاسم أو الهاتف..." value={search} onChange={(e) => setSearch(e.target.value)} className="pr-10 bg-muted/40" />
-        </div>
-        {canEdit && (
-          <Button onClick={() => { setEditing(null); setShowForm(true); }}>
-            <UserPlus className="w-4 h-4 ml-2" />إضافة عميل
-          </Button>
-        )}
-      </div>
-
-      {/* Customers grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((c) => (
-          <Card key={c.id} className="bg-card border-border hover:border-primary/40 transition-colors">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-bold">
-                    {c.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm">{c.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{c.city || "—"}</div>
-                  </div>
-                </div>
-                {canEdit && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-7 w-7"><Settings className="w-4 h-4" /></Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => { setEditing(c); setShowForm(true); }}>
-                        <Edit className="w-3 h-3 ml-2" /> تعديل
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-rose-400" onClick={() => deleteCustomer(c.id, c.name)}>
-                        <Trash2 className="w-3 h-3 ml-2" /> حذف
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-              <div className="space-y-1.5 text-xs">
-                <div className="flex items-center gap-2 text-muted-foreground"><Phone className="w-3 h-3" /> {c.phone || "—"}</div>
-                <div className="flex items-center gap-2 text-muted-foreground"><Mail className="w-3 h-3" /> {c.email || "—"}</div>
-              </div>
-              <Separator className="my-3" />
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <div className="text-sm font-bold text-cyan-400">{fmtShort(c.creditLimit || 0)}</div>
-                  <div className="text-[9px] text-muted-foreground">حد الائتمان</div>
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-amber-400">{fmtShort(c.balanceDue || 0)}</div>
-                  <div className="text-[9px] text-muted-foreground">مستحق</div>
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-purple-400">{c.loyaltyPoints || 0}</div>
-                  <div className="text-[9px] text-muted-foreground">نقاط ولاء</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {showForm && (
-        <CustomerFormDialog customer={editing} onClose={() => setShowForm(false)} onSaved={() => { setShowForm(false); load(); }} />
-      )}
-    </div>
-  );
-}
-
-function CustomerFormDialog({ customer, onClose, onSaved }: any) {
-  const [form, setForm] = useState({
-    name: customer?.name || "",
-    phone: customer?.phone || "",
-    email: customer?.email || "",
-    taxNumber: customer?.taxNumber || "",
-    address: customer?.address || "",
-    city: customer?.city || "",
-    creditLimit: customer?.creditLimit || 0,
-  });
-  const [saving, setSaving] = useState(false);
-
-  const submit = async () => {
-    if (!form.name) { toast.error("الاسم مطلوب"); return; }
-    setSaving(true);
-    try {
-      const url = customer ? `/api/customers/${customer.id}` : "/api/customers";
-      const method = customer ? "PATCH" : "POST";
-      const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      toast.success(customer ? "تم تحديث العميل" : "تمت إضافة العميل");
-      onSaved();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSaving(false); }
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    await new Promise(r => setTimeout(r, 1000));
+    toast.success(t("تم إرسال رسالتك بنجاح!", "Message sent successfully!"));
+    setForm({ name: "", email: "", message: "" });
+    setSubmitting(false);
   };
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{customer ? "تعديل عميل" : "إضافة عميل جديد"}</DialogTitle>
-          <DialogDescription>{customer ? "تعديل بيانات العميل" : "إضافة عميل جديد لقائمة العملاء"}</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div><Label className="text-xs">الاسم *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><Label className="text-xs">الهاتف</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-muted/40 mt-1" /></div>
-            <div><Label className="text-xs">المدينة</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          </div>
-          <div><Label className="text-xs">البريد الإلكتروني</Label><Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الرقم الضريبي</Label><Input value={form.taxNumber} onChange={(e) => setForm({ ...form, taxNumber: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">العنوان</Label><Textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="bg-muted/40 mt-1" rows={2} /></div>
-          <div><Label className="text-xs">حد الائتمان (ر.س)</Label><Input type="number" value={form.creditLimit} onChange={(e) => setForm({ ...form, creditLimit: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" /></div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
-          <Button onClick={submit} disabled={saving}>
-            {saving ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
-            حفظ
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ============================================================
-// REPORTS MODULE - comprehensive analytics & exportable reports
-// ============================================================
-function ReportsModule() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const r = await fetch("/api/reports");
-        if (!r.ok) return;
-        const j = await r.json();
-        if (!cancelled) setData(j);
-      } catch {}
-      if (!cancelled) setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
-  if (loading || !data) return <SkeletonRow />;
-
-  const exportCSV = (filename: string, rows: any[], headers: string[]) => {
-    const csv = [headers.join(","), ...rows.map((r) => headers.map((h) => `"${r[h] ?? ""}"`).join(","))].join("\n");
-    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${filename}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success(`تم تصدير ${filename}.csv`);
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Profit Analysis */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">إجمالي الإيرادات</div><div className="text-xl font-bold text-emerald-400">{fmtSAR(data.profitAnalysis.totalRevenue)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">تكلفة المبيعات</div><div className="text-xl font-bold text-rose-400">{fmtSAR(data.profitAnalysis.totalCOGS)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">إجمالي الربح</div><div className="text-xl font-bold text-cyan-400">{fmtSAR(data.profitAnalysis.grossProfit)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">هامش الربح %</div><div className="text-xl font-bold text-amber-400">{data.profitAnalysis.grossMargin}%</div></CardContent></Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Top Products */}
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2"><Package className="w-4 h-4 text-cyan-400" />أعلى المنتجات مبيعًا</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => exportCSV("top-products", data?.topProducts || [], ["name", "sku", "qty", "revenue"])}>
-                <Download className="w-3 h-3 ml-1.5" />CSV
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="max-h-72">
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>#</TableHead><TableHead>المنتج</TableHead>
-                  <TableHead className="text-center">كمية</TableHead>
-                  <TableHead className="text-left">إيراد</TableHead>
-                </TableRow></TableHeader>
-                <TableBody>
-                  {(data?.topProducts || []).map((p: any, i: number) => (
-                    <TableRow key={p.sku}>
-                      <TableCell className="font-bold text-cyan-400">{i + 1}</TableCell>
-                      <TableCell><div className="font-medium text-sm">{p.name}</div><div className="text-[10px] text-muted-foreground font-mono">{p.sku}</div></TableCell>
-                      <TableCell className="text-center">{p.qty}</TableCell>
-                      <TableCell className="text-left font-bold text-emerald-400">{fmtSAR(p.revenue)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* Top Customers */}
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2"><UserCheck className="w-4 h-4 text-blue-400" />أعلى العملاء</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => exportCSV("top-customers", data.topCustomers, ["name", "phone", "invoices", "total"])}>
-                <Download className="w-3 h-3 ml-1.5" />CSV
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="max-h-72">
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>#</TableHead><TableHead>العميل</TableHead>
-                  <TableHead className="text-center">فواتير</TableHead>
-                  <TableHead className="text-left">إجمالي</TableHead>
-                </TableRow></TableHeader>
-                <TableBody>
-                  {data.topCustomers.map((c: any, i: number) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-bold text-blue-400">{i + 1}</TableCell>
-                      <TableCell><div className="font-medium text-sm">{c.name}</div><div className="text-[10px] text-muted-foreground font-mono">{c.phone}</div></TableCell>
-                      <TableCell className="text-center">{c.invoices}</TableCell>
-                      <TableCell className="text-left font-bold text-emerald-400">{fmtSAR(c.total)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Sales by Category */}
-      <Card className="bg-card border-border">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2"><Boxes className="w-4 h-4 text-purple-400" />المبيعات حسب الفئة</CardTitle>
-            <Button variant="outline" size="sm" onClick={() => exportCSV("sales-by-category", data.salesByCategory, ["name", "qty", "revenue"])}>
-              <Download className="w-3 h-3 ml-1.5" />CSV
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {data.salesByCategory.map((cat: any, i: number) => {
-              const maxRev = Math.max(...data.salesByCategory.map((c: any) => c.revenue), 1);
-              const pct = (cat.revenue / maxRev) * 100;
-              const colors = ["#00a8e8", "#10b981", "#f59e0b", "#a855f7", "#ef4444", "#6366f1"];
-              return (
-                <div key={cat.name}>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
-                      {cat.name}
-                      <span className="text-muted-foreground">({cat.qty} قطعة)</span>
-                    </span>
-                    <span className="font-bold">{fmtSAR(cat.revenue)}</span>
-                  </div>
-                  <Progress value={pct} className="h-2" style={{ backgroundColor: colors[i % colors.length] + "30" } as any} />
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment Methods */}
-      <Card className="bg-card border-border">
-        <CardHeader><CardTitle className="text-base flex items-center gap-2"><CreditCard className="w-4 h-4 text-amber-400" />طرق الدفع</CardTitle></CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {data.paymentBreakdown.map((p: any) => (
-              <div key={p.paymentMethod} className="text-center p-3 rounded-lg bg-muted/30 border border-border/50">
-                <div className="text-xl font-bold">{p._count}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">{paymentLabel(p.paymentMethod)}</div>
-                <div className="text-xs font-bold text-emerald-400 mt-1">{fmtSAR(p._sum.grandTotal || 0)}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// ============================================================
-// ACCOUNTING MODULE
-// ============================================================
-function AccountingModule() {
-  const [tab, setTab] = useState("trial");
-  const [accounts, setAccounts] = useState<any[]>([]);
-  const [entries, setEntries] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const [ar, jr] = await Promise.all([
-          fetch("/api/accounting/accounts").then((r) => r.json()),
-          fetch("/api/accounting/journal?limit=30").then((r) => r.json()),
-        ]);
-        if (!cancelled) { setAccounts(ar.accounts || []); setEntries(jr.entries || []); }
-      } catch {}
-      if (!cancelled) setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
-  if (loading) return <SkeletonRow />;
-
-  const totalDebit = accounts.reduce((s, a) => s + a.debit, 0);
-  const totalCredit = accounts.reduce((s, a) => s + a.credit, 0);
-  const revenue = accounts.filter((a) => a.type === "REVENUE").reduce((s, a) => s + a.balance, 0);
-  const cogs = accounts.filter((a) => a.type === "COST_OF_SALES").reduce((s, a) => s + a.balance, 0);
-  const expenses = accounts.filter((a) => a.type === "EXPENSE").reduce((s, a) => s + a.balance, 0);
-  const grossProfit = revenue - cogs;
-  const netProfit = grossProfit - expenses;
-
-  return (
-    <div className="space-y-4">
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-muted/40">
-          <TabsTrigger value="trial">ميزان المراجعة</TabsTrigger>
-          <TabsTrigger value="income">قائمة الدخل</TabsTrigger>
-          <TabsTrigger value="balance">الميزانية العمومية</TabsTrigger>
-          <TabsTrigger value="journal">اليومية</TabsTrigger>
-          <TabsTrigger value="chart">دليل الحسابات</TabsTrigger>
-        </TabsList>
-        <TabsContent value="trial">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">ميزان المراجعة — {new Date().toLocaleDateString("ar-SA", { month: "long", year: "numeric" })}</CardTitle></CardHeader>
-            <CardContent>
-              <ScrollArea className="max-h-[60vh]">
-                <Table>
-                  <TableHeader><TableRow>
-                    <TableHead className="w-24">الرمز</TableHead><TableHead>اسم الحساب</TableHead>
-                    <TableHead>النوع</TableHead><TableHead className="text-left">مدين</TableHead>
-                    <TableHead className="text-left">دائن</TableHead><TableHead className="text-left">الرصيد</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {accounts.map((a) => (
-                      <TableRow key={a.code} className={a.balance === 0 ? "opacity-50" : ""}>
-                        <TableCell className="font-mono text-xs">{a.code}</TableCell>
-                        <TableCell className="text-sm">{a.name}</TableCell>
-                        <TableCell><Badge variant="outline" className="text-[10px]">{accountTypeLabel(a.type)}</Badge></TableCell>
-                        <TableCell className="text-left font-mono text-xs">{a.debit > 0 ? fmtSAR(a.debit) : "—"}</TableCell>
-                        <TableCell className="text-left font-mono text-xs">{a.credit > 0 ? fmtSAR(a.credit) : "—"}</TableCell>
-                        <TableCell className={`text-left font-mono text-xs font-bold ${a.balance >= 0 ? "text-emerald-400" : "text-rose-400"}`}>{fmtSAR(a.balance)}</TableCell>
-                      </TableRow>
-                    ))}
-                    <TableRow className="border-t-2 border-primary/30 bg-primary/5">
-                      <TableCell colSpan={3} className="font-bold">الإجمالي</TableCell>
-                      <TableCell className="text-left font-mono font-bold text-primary">{fmtSAR(totalDebit)}</TableCell>
-                      <TableCell className="text-left font-mono font-bold text-primary">{fmtSAR(totalCredit)}</TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="income">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <Card className="bg-card border-border"><CardContent className="p-5"><div className="text-xs text-muted-foreground mb-1">إجمالي الإيرادات</div><div className="text-2xl font-bold text-emerald-400">{fmtSAR(revenue)}</div></CardContent></Card>
-            <Card className="bg-card border-border"><CardContent className="p-5"><div className="text-xs text-muted-foreground mb-1">تكلفة المبيعات</div><div className="text-2xl font-bold text-rose-400">{fmtSAR(cogs)}</div></CardContent></Card>
-            <Card className="bg-card border-border"><CardContent className="p-5"><div className="text-xs text-muted-foreground mb-1">المصروفات العمومية</div><div className="text-2xl font-bold text-amber-400">{fmtSAR(expenses)}</div></CardContent></Card>
-          </div>
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">قائمة الدخل — {new Date().toLocaleDateString("ar-SA", { month: "long", year: "numeric" })}</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              <Row label="إجمالي المبيعات" value={fmtSAR(revenue)} bold />
-              <Row label="(−) تكلفة البضاعة المباعة" value={`(${fmtSAR(cogs)})`} negative />
-              <Separator />
-              <Row label="إجمالي الربح" value={fmtSAR(grossProfit)} bold positive={grossProfit > 0} />
-              <Row label="(−) المصروفات العمومية والإدارية" value={`(${fmtSAR(expenses)})`} negative />
-              <Separator />
-              <Row label="صافي الربح قبل الضريبة" value={fmtSAR(netProfit)} bold positive={netProfit > 0} />
-              <Row label="(−) ضريبة الدخل (20%)" value={`(${fmtSAR(netProfit * 0.2)})`} negative />
-              <Separator />
-              <Row label="صافي الربح بعد الضريبة" value={fmtSAR(netProfit * 0.8)} bold positive={netProfit > 0} large />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="balance">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">الميزانية العمومية — {new Date().toLocaleDateString("ar-SA", { month: "long", year: "numeric" })}</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              {(() => {
-                const assets = accounts.filter((a) => a.type === "ASSET" && !a.isGroup);
-                const liabilities = accounts.filter((a) => a.type === "LIABILITY" && !a.isGroup);
-                const equity = accounts.filter((a) => a.type === "EQUITY" && !a.isGroup);
-                const totalAssets = assets.reduce((s, a) => s + a.balance, 0);
-                const totalLiabilities = liabilities.reduce((s, a) => s + a.balance, 0);
-                const totalEquity = equity.reduce((s, a) => s + a.balance, 0);
-                return (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div className="text-sm font-bold text-cyan-400 flex items-center gap-2"><Wallet className="w-4 h-4" />الأصول</div>
-                      {assets.map((a) => (
-                        <div key={a.code} className="flex items-center justify-between text-xs py-1.5 border-b border-border/50">
-                          <span>{a.name}</span>
-                          <span className="font-mono font-bold">{fmtSAR(a.balance)}</span>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-between text-sm font-bold text-cyan-400 pt-2 border-t-2 border-cyan-400/30">
-                        <span>إجمالي الأصول</span>
-                        <span className="font-mono">{fmtSAR(totalAssets)}</span>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="text-sm font-bold text-rose-400 flex items-center gap-2"><TrendingDown className="w-4 h-4" />الالتزامات</div>
-                      {liabilities.map((a) => (
-                        <div key={a.code} className="flex items-center justify-between text-xs py-1.5 border-b border-border/50">
-                          <span>{a.name}</span>
-                          <span className="font-mono font-bold">{fmtSAR(a.balance)}</span>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-between text-sm font-bold text-rose-400 pt-2 border-t-2 border-rose-400/30">
-                        <span>إجمالي الالتزامات</span>
-                        <span className="font-mono">{fmtSAR(totalLiabilities)}</span>
-                      </div>
-                      <div className="text-sm font-bold text-emerald-400 flex items-center gap-2 pt-2"><Crown className="w-4 h-4" />حقوق الملكية</div>
-                      {equity.map((a) => (
-                        <div key={a.code} className="flex items-center justify-between text-xs py-1.5 border-b border-border/50">
-                          <span>{a.name}</span>
-                          <span className="font-mono font-bold">{fmtSAR(a.balance)}</span>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-between text-sm font-bold text-emerald-400 pt-2 border-t-2 border-emerald-400/30">
-                        <span>إجمالي حقوق الملكية</span>
-                        <span className="font-mono">{fmtSAR(totalEquity)}</span>
-                      </div>
-                      <div className={`flex items-center justify-between text-sm font-bold pt-2 border-t-2 border-primary/30 ${totalAssets === (totalLiabilities + totalEquity) ? "text-emerald-400" : "text-amber-400"}`}>
-                        <span>إجمالي الالتزامات + حقوق الملكية</span>
-                        <span className="font-mono">{fmtSAR(totalLiabilities + totalEquity)}</span>
-                      </div>
-                      {totalAssets === (totalLiabilities + totalEquity) && (
-                        <div className="text-[10px] text-emerald-400 text-center">✓ الميزانية متوازنة</div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="journal">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">دفتر اليومية — آخر {entries.length} قيد</CardTitle></CardHeader>
-            <CardContent>
-              <ScrollArea className="max-h-[65vh]">
-                <div className="space-y-3">
-                  {entries.map((e) => (
-                    <div key={e.id} className="border border-border rounded-lg overflow-hidden">
-                      <div className="flex items-center justify-between p-3 bg-muted/30">
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="text-[10px] font-mono">{e.entryNumber}</Badge>
-                          <span className="text-xs font-medium">{e.description}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                          <Badge variant="secondary" className="text-[10px]">{journalSourceLabel(e.source)}</Badge>
-                          <span>{new Date(e.entryDate).toLocaleDateString("ar-SA")}</span>
-                          <span className="font-bold text-primary">{fmtSAR(e.totalDebit)}</span>
-                        </div>
-                      </div>
-                      <Table>
-                        <TableHeader><TableRow>
-                          <TableHead className="w-20">الرمز</TableHead><TableHead>الحساب</TableHead>
-                          <TableHead>البيان</TableHead><TableHead className="text-left w-32">مدين</TableHead>
-                          <TableHead className="text-left w-32">دائن</TableHead>
-                        </TableRow></TableHeader>
-                        <TableBody>
-                          {e.lines.map((l: any) => (
-                            <TableRow key={l.id}>
-                              <TableCell className="font-mono text-xs">{l.account.code}</TableCell>
-                              <TableCell className="text-xs">{l.account.name}</TableCell>
-                              <TableCell className="text-xs text-muted-foreground">{l.description || "—"}</TableCell>
-                              <TableCell className="text-left font-mono text-xs">{l.debit > 0 ? fmtSAR(l.debit) : "—"}</TableCell>
-                              <TableCell className="text-left font-mono text-xs">{l.credit > 0 ? fmtSAR(l.credit) : "—"}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="chart">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">دليل الحسابات ({accounts.length} حساب)</CardTitle></CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {accounts.map((a) => (
-                  <div key={a.code} className="p-3 rounded-lg bg-muted/30 border border-border/50">
-                    <div className="flex items-center justify-between mb-1">
-                      <Badge variant="outline" className="font-mono text-[10px]">{a.code}</Badge>
-                      <Badge variant="outline" className="text-[10px]">{accountTypeLabel(a.type)}</Badge>
-                    </div>
-                    <div className="text-sm font-medium">{a.name}</div>
-                    <div className={`text-xs font-mono mt-1 ${a.balance >= 0 ? "text-emerald-400" : "text-rose-400"}`}>الرصيد: {fmtSAR(a.balance)}</div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-}
-
-// ============================================================
-// HR MODULE (with full CRUD for employees)
-// ============================================================
-function HRModule() {
-  const { user } = useAuth();
-  const [tab, setTab] = useState("employees");
-  const [employees, setEmployees] = useState<any[]>([]);
-  const [attendance, setAttendance] = useState<any[]>([]);
-  const [leaves, setLeaves] = useState<any[]>([]);
-  const [payroll, setPayroll] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [editingEmployee, setEditingEmployee] = useState<any | null>(null);
-  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
-
-  const canEdit = user && hasPermission(user.role, "hr");
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [emp, att, lv] = await Promise.all([
-        fetch("/api/hr/employees").then((r) => r.json()),
-        fetch("/api/hr/attendance").then((r) => r.json()),
-        fetch("/api/hr/leaves").then((r) => r.json()),
-      ]);
-      setEmployees(emp.employees || []);
-      setAttendance(att.attendance || []);
-      setLeaves(lv.leaves || []);
-      const now = new Date();
-      const pr = await fetch(`/api/hr/payroll?month=${now.getMonth() + 1}&year=${now.getFullYear()}`);
-      if (pr.ok) { const pj = await pr.json(); setPayroll(pj.batch); }
-    } catch {}
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => { if (!cancelled) await load(); })();
-    return () => { cancelled = true; };
-  }, [load]);
-
-  const approveLeave = async (id: string, status: string) => {
-    const r = await fetch("/api/hr/leaves", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status }) });
-    if (r.ok) { toast.success(status === "APPROVED" ? "تمت الموافقة" : "تم الرفض"); load(); }
-  };
-
-  const approvePayroll = async () => {
-    const now = new Date();
-    const r = await fetch(`/api/hr/payroll?month=${now.getMonth() + 1}&year=${now.getFullYear()}`, { method: "POST" });
-    const j = await r.json();
-    if (j.success) { toast.success("تم صرف الرواتب + القيود المحاسبية"); load(); }
-    else toast.error(j.error);
-  };
-
-  const deleteEmployee = async (id: string, name: string) => {
-    if (!confirm(`هل أنت متأكد من حذف الموظف "${name}"؟`)) return;
-    const r = await fetch(`/api/employees/${id}`, { method: "DELETE" });
-    if (r.ok) { toast.success("تم حذف الموظف"); load(); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  const terminateEmployee = async (id: string, name: string) => {
-    const reason = prompt(`سبب إنهاء عقد الموظف "${name}":`, "انتهاء العقد");
-    if (reason === null) return;
-    const r = await fetch(`/api/employees/${id}/terminate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ terminationDate: new Date().toISOString(), reason }),
-    });
-    const j = await r.json();
-    if (r.ok) { toast.success(`تم إنهاء عقد ${name}`); load(); }
-    else { toast.error(j.error); }
-  };
-
-  const reactivateEmployee = async (id: string, name: string) => {
-    if (!confirm(`إعادة تفعيل الموظف "${name}"؟`)) return;
-    const r = await fetch(`/api/employees/${id}/terminate`, { method: "PATCH" });
-    if (r.ok) { toast.success(`تمت إعادة تفعيل ${name}`); load(); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  const resetUserPassword = async (userId: string, userName: string) => {
-    const newPassword = prompt(`كلمة المرور الجديدة للمستخدم "${userName}":`, "");
-    if (!newPassword) return;
-    if (newPassword.length < 6) { toast.error("كلمة المرور يجب أن تكون 6 أحرف على الأقل"); return; }
-    const r = await fetch(`/api/admin/users/${userId}/reset-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ newPassword }),
-    });
-    if (r.ok) { toast.success(`تم إعادة تعيين كلمة مرور ${userName}`); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  if (loading) return <SkeletonRow />;
-
-  return (
-    <div className="space-y-4">
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-muted/40">
-          <TabsTrigger value="employees">الموظفون ({employees.length})</TabsTrigger>
-          <TabsTrigger value="attendance">الحضور والانصراف</TabsTrigger>
-          <TabsTrigger value="payroll">الرواتب</TabsTrigger>
-          <TabsTrigger value="leaves">الإجازات ({leaves.filter((l) => l.status === "PENDING").length})</TabsTrigger>
-        </TabsList>
-        <TabsContent value="employees">
-          <div className="space-y-4">
-            {canEdit && (
-              <div className="flex justify-end">
-                <Button onClick={() => { setEditingEmployee(null); setShowEmployeeForm(true); }}>
-                  <UserPlus className="w-4 h-4 ml-2" />
-                  إضافة موظف
-                </Button>
-              </div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {employees.map((e) => (
-                <Card key={e.id} className="bg-card border-border hover:border-primary/40 transition-colors">
-                  <CardContent className="p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-cyan-600 flex items-center justify-center text-white font-bold">
-                        {(e.name || "?").charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm">{e.name}</div>
-                        <div className="text-[10px] text-muted-foreground font-mono">{e.code}</div>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Badge variant="outline" className="text-[10px]">{e.position}</Badge>
-                          {e.status === "TERMINATED" && (
-                            <Badge variant="outline" className="text-[10px] text-rose-400 border-rose-400/30">منتهي العقد</Badge>
-                          )}
-                        </div>
-                      </div>
-                      {canEdit && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                              <Settings className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => { setEditingEmployee(e); setShowEmployeeForm(true); }}>
-                              <Edit className="w-3 h-3 ml-2" /> تعديل
-                            </DropdownMenuItem>
-                            {e.status !== "TERMINATED" ? (
-                              <DropdownMenuItem className="text-amber-400" onClick={() => terminateEmployee(e.id, e.name)}>
-                                <PowerOff className="w-3 h-3 ml-2" /> إنهاء العقد
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem className="text-emerald-400" onClick={() => reactivateEmployee(e.id, e.name)}>
-                                <RefreshCw className="w-3 h-3 ml-2" /> إعادة التفعيل
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem className="text-rose-400" onClick={() => deleteEmployee(e.id, e.name)}>
-                              <Trash2 className="w-3 h-3 ml-2" /> حذف نهائي
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 mt-4 text-xs">
-                      <div className="flex items-center gap-1.5 text-muted-foreground"><Building2 className="w-3 h-3" /> {e.department || "—"}</div>
-                      <div className="flex items-center gap-1.5 text-muted-foreground"><Phone className="w-3 h-3" /> {e.phone ? e.phone.slice(-9) : "—"}</div>
-                    </div>
-                    <Separator className="my-3" />
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div><div className="text-sm font-bold text-emerald-400">{fmtShort(e.baseSalary + e.allowances)}</div><div className="text-[9px] text-muted-foreground">الإجمالي</div></div>
-                      <div><div className="text-sm font-bold text-cyan-400">{(e.attendance30Days?.PRESENT || 0) + (e.attendance30Days?.LATE || 0)}</div><div className="text-[9px] text-muted-foreground">حضور 30ي</div></div>
-                      <div><div className="text-sm font-bold text-amber-400">{e.pendingLeaves}</div><div className="text-[9px] text-muted-foreground">إجازات معلّقة</div></div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-        <TabsContent value="attendance">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">حضور اليوم وآخر 7 أيام</CardTitle></CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>الموظف</TableHead><TableHead>القسم</TableHead><TableHead>حالة اليوم</TableHead>
-                  <TableHead className="text-center">حضور 7 أيام</TableHead><TableHead className="text-center">غياب 7 أيام</TableHead><TableHead className="text-center">ساعات إضافية</TableHead>
-                </TableRow></TableHeader>
-                <TableBody>
-                  {attendance.map((a) => (
-                    <TableRow key={a.id}>
-                      <TableCell><div className="font-medium text-sm">{a.fullName}</div><div className="text-[10px] text-muted-foreground font-mono">{a.employeeCode}</div></TableCell>
-                      <TableCell className="text-xs">{a.department}</TableCell>
-                      <TableCell><Badge variant="outline" className={a.todayStatus === "PRESENT" ? "text-emerald-400 border-emerald-400/30" : a.todayStatus === "LATE" ? "text-amber-400 border-amber-400/30" : a.todayStatus === "ABSENT" ? "text-rose-400 border-rose-400/30" : ""}>{attendanceLabel(a.todayStatus)}</Badge></TableCell>
-                      <TableCell className="text-center font-bold text-emerald-400">{a.last7.present}</TableCell>
-                      <TableCell className="text-center font-bold text-rose-400">{a.last7.absent}</TableCell>
-                      <TableCell className="text-center font-bold text-amber-400">{a.last7.overtimeHours}h</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="payroll">
-          {payroll && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-card border-border"><CardContent className="p-5"><div className="text-xs text-muted-foreground mb-1">إجمالي الرواتب</div><div className="text-2xl font-bold text-emerald-400">{fmtSAR(payroll.totalGross)}</div></CardContent></Card>
-                <Card className="bg-card border-border"><CardContent className="p-5"><div className="text-xs text-muted-foreground mb-1">إجمالي الاستقطاعات (GOSI)</div><div className="text-2xl font-bold text-rose-400">{fmtSAR(payroll.totalDeductions)}</div></CardContent></Card>
-                <Card className="bg-card border-border"><CardContent className="p-5"><div className="text-xs text-muted-foreground mb-1">الصافي للصرف</div><div className="text-2xl font-bold text-cyan-400">{fmtSAR(payroll.totalNet)}</div></CardContent></Card>
-              </div>
-              <Card className="bg-card border-border">
-                <CardHeader><div className="flex items-center justify-between"><CardTitle className="text-base">دفعة رواتب {payroll.batchNumber} — {payroll.items.length} موظف</CardTitle><Badge variant={payroll.status === "PAID" ? "default" : "secondary"}>{payroll.status === "PAID" ? "تم الصرف" : payroll.status === "APPROVED" ? "معتمدة" : "مسودة"}</Badge></div></CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader><TableRow>
-                      <TableHead>الموظف</TableHead><TableHead>المنصب</TableHead>
-                      <TableHead className="text-left">الأساسي</TableHead><TableHead className="text-left">البدلات</TableHead>
-                      <TableHead className="text-left">الإجمالي</TableHead><TableHead className="text-left">GOSI 10%</TableHead><TableHead className="text-left">الصافي</TableHead>
-                    </TableRow></TableHeader>
-                    <TableBody>
-                      {payroll.items.map((it: any) => (
-                        <TableRow key={it.id}>
-                          <TableCell><div className="font-medium text-sm">{it.employee.fullName}</div><div className="text-[10px] text-muted-foreground font-mono">{it.employee.employeeCode}</div></TableCell>
-                          {/* payroll API returns fullName/employeeCode so this is fine */}
-                          <TableCell className="text-xs">{it.employee.position}</TableCell>
-                          <TableCell className="text-left font-mono text-xs">{fmtSAR(it.baseSalary)}</TableCell>
-                          <TableCell className="text-left font-mono text-xs">{fmtSAR(it.allowances)}</TableCell>
-                          <TableCell className="text-left font-mono text-xs font-bold">{fmtSAR(it.grossPay)}</TableCell>
-                          <TableCell className="text-left font-mono text-xs text-rose-400">-{fmtSAR(it.gosiDeduction)}</TableCell>
-                          <TableCell className="text-left font-mono text-xs font-bold text-emerald-400">{fmtSAR(it.netPay)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  {canEdit && (
-                    <div className="mt-4 flex items-center gap-3">
-                      <Button onClick={approvePayroll} disabled={payroll.status === "PAID"} className="glow-primary">
-                        <CheckCircle2 className="w-4 h-4 ml-2" />
-                        {payroll.status === "PAID" ? "تم الصرف بالفعل" : "اعتماد وصرف الرواتب"}
-                      </Button>
-                      <p className="text-xs text-muted-foreground">⚙️ سيتم توليد قيد محاسبي تلقائيًا</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </TabsContent>
-        <TabsContent value="leaves">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">طلبات الإجازات ({leaves.length})</CardTitle></CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader><TableRow>
-                  <TableHead>الموظف</TableHead><TableHead>النوع</TableHead><TableHead>من</TableHead>
-                  <TableHead>إلى</TableHead><TableHead className="text-center">عدد الأيام</TableHead>
-                  <TableHead>السبب</TableHead><TableHead className="text-center">الحالة</TableHead>
-                  {canEdit && <TableHead className="text-center">الإجراء</TableHead>}
-                </TableRow></TableHeader>
-                <TableBody>
-                  {leaves.map((l) => (
-                    <TableRow key={l.id}>
-                      <TableCell><div className="font-medium text-sm">{l.employee?.fullName || l.employee?.name || "—"}</div><div className="text-[10px] text-muted-foreground">{l.employee?.position}</div></TableCell>
-                      <TableCell><Badge variant="outline" className="text-[10px]">{leaveTypeLabel(l.type)}</Badge></TableCell>
-                      <TableCell className="text-xs">{new Date(l.startDate).toLocaleDateString("ar-SA")}</TableCell>
-                      <TableCell className="text-xs">{new Date(l.endDate).toLocaleDateString("ar-SA")}</TableCell>
-                      <TableCell className="text-center font-bold">{l.daysCount}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{l.reason || "—"}</TableCell>
-                      <TableCell className="text-center"><Badge variant="outline" className={l.status === "APPROVED" ? "text-emerald-400 border-emerald-400/30" : l.status === "REJECTED" ? "text-rose-400 border-rose-400/30" : l.status === "PENDING" ? "text-amber-400 border-amber-400/30" : ""}>{leaveStatusLabel(l.status)}</Badge></TableCell>
-                      {canEdit && (
-                        <TableCell>
-                          {l.status === "PENDING" && (
-                            <div className="flex gap-1 justify-center">
-                              <Button size="sm" onClick={() => approveLeave(l.id, "APPROVED")} className="h-7 text-[10px]">موافقة</Button>
-                              <Button size="sm" variant="outline" onClick={() => approveLeave(l.id, "REJECTED")} className="h-7 text-[10px]">رفض</Button>
-                            </div>
-                          )}
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-      {showEmployeeForm && (
-        <EmployeeFormDialog
-          employee={editingEmployee}
-          onClose={() => setShowEmployeeForm(false)}
-          onSaved={() => { setShowEmployeeForm(false); load(); }}
-        />
-      )}
-    </div>
-  );
-}
-
-function EmployeeFormDialog({ employee, onClose, onSaved }: any) {
-  const [form, setForm] = useState({
-    employeeCode: employee?.employeeCode || employee?.code || "",
-    fullName: employee?.fullName || employee?.name || "",
-    nationalId: employee?.nationalId || "",
-    phone: employee?.phone || "",
-    email: employee?.email || "",
-    position: employee?.position || "",
-    department: employee?.department || "",
-    baseSalary: employee?.baseSalary || 0,
-    allowances: employee?.allowances || 0,
-    hireDate: employee?.hireDate ? new Date(employee.hireDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
-  });
-  const [saving, setSaving] = useState(false);
-
-  const submit = async () => {
-    if (!form.employeeCode || !form.fullName || !form.position) {
-      toast.error("كود الموظف، الاسم، والمنصب مطلوبة");
-      return;
-    }
-    setSaving(true);
-    try {
-      const url = employee ? `/api/employees/${employee.id}` : "/api/employees";
-      const method = employee ? "PATCH" : "POST";
-      const r = await fetch(url, {
-        method, headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      toast.success(employee ? "تم تحديث الموظف" : "تمت إضافة الموظف");
-      onSaved();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>{employee ? "تعديل موظف" : "إضافة موظف جديد"}</DialogTitle><DialogDescription>{employee ? "تعديل بيانات الموظف الحالي" : "إضافة موظف جديد للمنشأة"}</DialogDescription></DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-xs">كود الموظف *</Label>
-            <Input value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">الاسم الكامل *</Label>
-            <Input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">رقم الهوية</Label>
-            <Input value={form.nationalId} onChange={(e) => setForm({ ...form, nationalId: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">الجوال</Label>
-            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div className="col-span-2">
-            <Label className="text-xs">البريد الإلكتروني</Label>
-            <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">المنصب *</Label>
-            <Input value={form.position} onChange={(e) => setForm({ ...form, position: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">القسم</Label>
-            <Input value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">الراتب الأساسي</Label>
-            <Input type="number" value={form.baseSalary} onChange={(e) => setForm({ ...form, baseSalary: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">البدلات</Label>
-            <Input type="number" value={form.allowances} onChange={(e) => setForm({ ...form, allowances: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" />
-          </div>
-          <div className="col-span-2">
-            <Label className="text-xs">تاريخ التعيين</Label>
-            <Input type="date" value={form.hireDate} onChange={(e) => setForm({ ...form, hireDate: e.target.value })} className="bg-muted/40 mt-1" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
-          <Button onClick={submit} disabled={saving}>
-            {saving ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
-            حفظ
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ============================================================
-// ERP MODULE (with full CRUD for products/suppliers)
-// ============================================================
-function ERPModule() {
-  const { user } = useAuth();
-  const [tab, setTab] = useState("inventory");
-  const [data, setData] = useState<any>(null);
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [movements, setMovements] = useState<any[]>([]);
-  const [pos, setPos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingProduct, setEditingProduct] = useState<any | null>(null);
-  const [showProductForm, setShowProductForm] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<any | null>(null);
-  const [showSupplierForm, setShowSupplierForm] = useState(false);
-
-  const canEdit = user && hasPermission(user.role, "erp");
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [inv, sup, po, mov] = await Promise.all([
-        fetch("/api/erp/products").then((r) => r.json()),
-        fetch("/api/suppliers").then((r) => r.json()),
-        fetch("/api/erp/purchase-orders").then((r) => r.json()),
-        fetch("/api/stock-movements").then((r) => r.json()),
-      ]);
-      setData(inv);
-      setSuppliers(sup.suppliers || []);
-      setPos(po.purchaseOrders || []);
-      setMovements(mov.movements || []);
-    } catch {}
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => { if (!cancelled) await load(); })();
-    return () => { cancelled = true; };
-  }, [load]);
-
-  const deleteProduct = async (id: string, name: string) => {
-    if (!confirm(`حذف المنتج "${name}"؟`)) return;
-    const r = await fetch(`/api/products/${id}`, { method: "DELETE" });
-    if (r.ok) { toast.success("تم حذف المنتج"); load(); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  const deleteSupplier = async (id: string, name: string) => {
-    if (!confirm(`حذف المورد "${name}"؟`)) return;
-    const r = await fetch(`/api/suppliers/${id}`, { method: "DELETE" });
-    if (r.ok) { toast.success("تم حذف المورد"); load(); }
-  };
-
-  if (loading) return <SkeletonRow />;
-  if (!data || !data.summary) return <ErrorState onRetry={load} message="تعذّر تحميل بيانات المخزون" />;
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">إجمالي المنتجات</div><div className="text-2xl font-bold">{data.summary.totalProducts}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">قيمة المخزون (تكلفة)</div><div className="text-2xl font-bold text-cyan-400">{fmtSAR(data.summary.totalCostValue)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">قيمة المخزون (بيع)</div><div className="text-2xl font-bold text-emerald-400">{fmtSAR(data.summary.totalRetailValue)}</div></CardContent></Card>
-        <Card className="bg-card border-border"><CardContent className="p-4"><div className="text-xs text-muted-foreground mb-1">منتجات تحت الحد الأدنى</div><div className={`text-2xl font-bold ${(data.summary.lowStockCount || 0) > 0 ? "text-rose-400" : "text-emerald-400"}`}>{data.summary.lowStockCount || 0}</div></CardContent></Card>
-      </div>
-
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-muted/40">
-          <TabsTrigger value="inventory">المخزون ({(data.products || []).length})</TabsTrigger>
-          <TabsTrigger value="suppliers">الموردون ({suppliers.length})</TabsTrigger>
-          <TabsTrigger value="movements">حركات المخزون</TabsTrigger>
-          <TabsTrigger value="purchase">أوامر الشراء ({pos.length})</TabsTrigger>
-        </TabsList>
-        <TabsContent value="inventory">
-          <div className="space-y-3">
-            {canEdit && (
-              <div className="flex justify-end">
-                <Button onClick={() => { setEditingProduct(null); setShowProductForm(true); }}>
-                  <Plus className="w-4 h-4 ml-2" />إضافة منتج
-                </Button>
-              </div>
-            )}
-            <Card className="bg-card border-border">
-              <CardContent className="p-0">
-                <ScrollArea className="max-h-[60vh]">
-                  <Table>
-                    <TableHeader><TableRow>
-                      <TableHead>SKU</TableHead><TableHead>المنتج</TableHead><TableHead>الفئة</TableHead>
-                      <TableHead className="text-left">تكلفة</TableHead><TableHead className="text-left">سعر بيع</TableHead>
-                      <TableHead className="text-center">المخزون</TableHead><TableHead className="text-left">قيمة المخزون</TableHead>
-                      <TableHead className="text-center">الحالة</TableHead>
-                      {canEdit && <TableHead className="text-center">إجراءات</TableHead>}
-                    </TableRow></TableHeader>
-                    <TableBody>
-                      {data.products.map((p: any) => (
-                        <TableRow key={p.id} className={p.isLowStock ? "bg-rose-500/5" : ""}>
-                          <TableCell className="font-mono text-xs">{p.sku}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <div className="w-9 h-9 rounded-md bg-muted/40 overflow-hidden flex items-center justify-center shrink-0">
-                                {p.imageUrl ? (
-                                  <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                                )}
-                              </div>
-                              <div>
-                                <div className="font-medium text-sm">{p.name}</div>
-                                {p.barcode && <div className="text-[10px] text-muted-foreground font-mono">{p.barcode}</div>}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell><Badge variant="outline" className="text-[10px]">{p.category}</Badge></TableCell>
-                          <TableCell className="text-left font-mono text-xs">{fmtSAR(p.costPrice)}</TableCell>
-                          <TableCell className="text-left font-mono text-xs text-emerald-400">{fmtSAR(p.salePrice)}</TableCell>
-                          <TableCell className="text-center font-bold"><span className={p.isLowStock ? "text-rose-400" : ""}>{p.stock}</span><span className="text-[10px] text-muted-foreground"> {p.unit}</span></TableCell>
-                          <TableCell className="text-left font-mono text-xs">{fmtSAR(p.stockValue)}</TableCell>
-                          <TableCell className="text-center">{p.isLowStock ? <Badge variant="outline" className="text-rose-400 border-rose-400/30"><AlertTriangle className="w-3 h-3 ml-1" />منخفض</Badge> : <Badge variant="outline" className="text-emerald-400 border-emerald-400/30">متوفر</Badge>}</TableCell>
-                          {canEdit && (
-                            <TableCell>
-                              <div className="flex gap-1 justify-center">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingProduct(p); setShowProductForm(true); }}><Edit className="w-3.5 h-3.5" /></Button>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-rose-400" onClick={() => deleteProduct(p.id, p.name)}><Trash2 className="w-3.5 h-3.5" /></Button>
-                              </div>
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="suppliers">
-          <div className="space-y-3">
-            {canEdit && (
-              <div className="flex justify-end">
-                <Button onClick={() => { setEditingSupplier(null); setShowSupplierForm(true); }}>
-                  <Plus className="w-4 h-4 ml-2" />إضافة مورد
-                </Button>
-              </div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {suppliers.map((s) => (
-                <Card key={s.id} className="bg-card border-border">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm">{s.name}</div>
-                        <div className="text-[10px] text-muted-foreground flex items-center gap-1 mt-1"><MapPin className="w-3 h-3" /> {s.city || "—"}</div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {canEdit && (
-                          <>
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingSupplier(s); setShowSupplierForm(true); }}><Edit className="w-3.5 h-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-rose-400" onClick={() => deleteSupplier(s.id, s.name)}><Trash2 className="w-3.5 h-3.5" /></Button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5"><Users className="w-3 h-3" /> {s.contactPerson || "—"}</div>
-                      <div className="flex items-center gap-1.5"><Phone className="w-3 h-3" /> {s.phone || "—"}</div>
-                      <div className="flex items-center gap-1.5"><FileText className="w-3 h-3" /> {s.paymentTerms || "—"}</div>
-                    </div>
-                    <Separator className="my-3" />
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">أوامر شراء: {s.poCount || 0}</span>
-                      <span className="font-bold text-rose-400">{fmtSAR(s.balanceDue)}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-        <TabsContent value="movements">
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Activity className="w-4 h-4 text-cyan-400" />
-                حركات المخزون ({movements.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="max-h-[60vh]">
-                <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>التاريخ</TableHead>
-                    <TableHead>النوع</TableHead>
-                    <TableHead>المنتج</TableHead>
-                    <TableHead className="text-center">الكمية</TableHead>
-                    <TableHead>المرجع</TableHead>
-                    <TableHead>الفرع</TableHead>
-                    <TableHead>ملاحظات</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {movements.length === 0 ? (
-                      <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">لا توجد حركات مخزون بعد</TableCell></TableRow>
-                    ) : movements.map((m) => (
-                      <TableRow key={m.id}>
-                        <TableCell className="text-[10px] font-mono">{new Date(m.createdAt).toLocaleString("ar-SA")}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`text-[10px] ${["PURCHASE_IN", "RETURN_IN", "ADJUSTMENT_IN", "TRANSFER_IN"].includes(m.type) ? "text-emerald-400 border-emerald-400/30" : "text-rose-400 border-rose-400/30"}`}>
-                            {stockMoveLabel(m.type)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-medium text-sm">{m.product}</div>
-                          <div className="text-[10px] text-muted-foreground font-mono">{m.sku}</div>
-                        </TableCell>
-                        <TableCell className={`text-center font-bold ${["PURCHASE_IN", "RETURN_IN", "ADJUSTMENT_IN", "TRANSFER_IN"].includes(m.type) ? "text-emerald-400" : "text-rose-400"}`}>
-                          {["PURCHASE_IN", "RETURN_IN", "ADJUSTMENT_IN", "TRANSFER_IN"].includes(m.type) ? "+" : "−"}{m.quantity}
-                        </TableCell>
-                        <TableCell className="text-[10px] font-mono">{m.reference || "—"}</TableCell>
-                        <TableCell className="text-xs">{m.branch}</TableCell>
-                        <TableCell className="text-[10px] text-muted-foreground">{m.notes || "—"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="purchase">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base flex items-center justify-between">
-              <span>أوامر الشراء</span>
-              <Button size="sm"><Plus className="w-4 h-4 ml-1.5" />أمر شراء جديد</Button>
-            </CardTitle></CardHeader>
-            <CardContent>
-              {pos.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <FileText className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm">لا توجد أوامر شراء بعد</p>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {showProductForm && (
-        <ProductFormDialog
-          product={editingProduct}
-          onClose={() => setShowProductForm(false)}
-          onSaved={() => { setShowProductForm(false); load(); }}
-        />
-      )}
-      {showSupplierForm && (
-        <SupplierFormDialog
-          supplier={editingSupplier}
-          onClose={() => setShowSupplierForm(false)}
-          onSaved={() => { setShowSupplierForm(false); load(); }}
-        />
-      )}
-    </div>
-  );
-}
-
-function ProductFormDialog({ product, onClose, onSaved }: any) {
-  const [form, setForm] = useState({
-    sku: product?.sku || "",
-    barcode: product?.barcode || "",
-    name: product?.name || "",
-    nameEn: product?.nameEn || "",
-    description: product?.description || "",
-    unit: product?.unit || "قطعة",
-    costPrice: product?.costPrice || 0,
-    salePrice: product?.salePrice || 0,
-    vatRate: product?.vatRate ?? 15,
-    reorderLevel: product?.reorderLevel ?? 10,
-    imageUrl: product?.imageUrl || "",
-  });
-  const [saving, setSaving] = useState(false);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("حجم الصورة يجب أن يكون أقل من 2 ميجابايت");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      setForm({ ...form, imageUrl: reader.result as string });
-      toast.success("تم رفع الصورة");
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const removeImage = () => {
-    setForm({ ...form, imageUrl: "" });
-    toast.info("تم حذف الصورة");
-  };
-
-  const submit = async () => {
-    if (!form.sku || !form.name || form.salePrice === undefined) {
-      toast.error("SKU، الاسم، وسعر البيع مطلوبة");
-      return;
-    }
-    setSaving(true);
-    try {
-      const url = product ? `/api/products/${product.id}` : "/api/products";
-      const method = product ? "PATCH" : "POST";
-      const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      toast.success(product ? "تم تحديث المنتج" : "تمت إضافة المنتج");
-      onSaved();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>{product ? "تعديل منتج" : "إضافة منتج جديد"}</DialogTitle><DialogDescription>{product ? "تعديل بيانات المنتج الحالي" : "إضافة منتج جديد للمخزون"}</DialogDescription></DialogHeader>
-        {/* Image upload */}
-        <div className="flex items-center gap-3">
-          <div className="w-20 h-20 rounded-lg bg-muted/40 border border-border overflow-hidden flex items-center justify-center shrink-0">
-            {form.imageUrl ? (
-              <img src={form.imageUrl} alt="معاينة" className="w-full h-full object-cover" />
-            ) : (
-              <Barcode className="w-6 h-6 text-muted-foreground" />
-            )}
-          </div>
-          <div className="flex-1 space-y-2">
-            <label className="cursor-pointer">
-              <span className="inline-flex items-center justify-center gap-2 w-full px-3 py-2 rounded-md bg-primary/15 text-primary text-xs font-medium hover:bg-primary/25 transition-colors">
-                <Upload className="w-3.5 h-3.5" />
-                {form.imageUrl ? "تغيير الصورة" : "رفع صورة"}
-              </span>
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            </label>
-            {form.imageUrl && (
-              <Button variant="outline" size="sm" onClick={removeImage} className="w-full h-7 text-xs">
-                <X className="w-3 h-3 ml-1" />
-                حذف الصورة
-              </Button>
-            )}
-            <p className="text-[10px] text-muted-foreground">PNG/JPG/WEBP — حد أقصى 2MB</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div><Label className="text-xs">SKU *</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الباركود</Label><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div className="col-span-2"><Label className="text-xs">الاسم *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الوحدة</Label><Input value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الحد الأدنى للإعادة</Label><Input type="number" value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: parseInt(e.target.value) || 0 })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">سعر التكلفة</Label><Input type="number" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">سعر البيع *</Label><Input type="number" value={form.salePrice} onChange={(e) => setForm({ ...form, salePrice: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">نسبة الضريبة %</Label><Input type="number" value={form.vatRate} onChange={(e) => setForm({ ...form, vatRate: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" /></div>
-          <div className="col-span-2"><Label className="text-xs">الوصف</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="bg-muted/40 mt-1" rows={2} /></div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
-          <Button onClick={submit} disabled={saving}>
-            {saving ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
-            حفظ
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function SupplierFormDialog({ supplier, onClose, onSaved }: any) {
-  const [form, setForm] = useState({
-    name: supplier?.name || "",
-    contactPerson: supplier?.contactPerson || "",
-    phone: supplier?.phone || "",
-    email: supplier?.email || "",
-    taxNumber: supplier?.taxNumber || "",
-    address: supplier?.address || "",
-    city: supplier?.city || "",
-    paymentTerms: supplier?.paymentTerms || "",
-  });
-  const [saving, setSaving] = useState(false);
-
-  const submit = async () => {
-    if (!form.name) { toast.error("اسم المورد مطلوب"); return; }
-    setSaving(true);
-    try {
-      const url = supplier ? `/api/suppliers/${supplier.id}` : "/api/suppliers";
-      const method = supplier ? "PATCH" : "POST";
-      const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      toast.success(supplier ? "تم تحديث المورد" : "تمت إضافة المورد");
-      onSaved();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>{supplier ? "تعديل مورد" : "إضافة مورد جديد"}</DialogTitle><DialogDescription>{supplier ? "تعديل بيانات المورد الحالي" : "إضافة مورد جديد لقائمة الموردين"}</DialogDescription></DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2"><Label className="text-xs">اسم المورد *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">مسؤول التواصل</Label><Input value={form.contactPerson} onChange={(e) => setForm({ ...form, contactPerson: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الهاتف</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">البريد الإلكتروني</Label><Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الرقم الضريبي</Label><Input value={form.taxNumber} onChange={(e) => setForm({ ...form, taxNumber: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">المدينة</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">شروط الدفع</Label><Input value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} className="bg-muted/40 mt-1" placeholder="نقدي / آجل 30 يوم" /></div>
-          <div className="col-span-2"><Label className="text-xs">العنوان</Label><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="bg-muted/40 mt-1" /></div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
-          <Button onClick={submit} disabled={saving}>
-            {saving ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
-            حفظ
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ============================================================
-// ADMIN MODULE - User Management + Audit Log + Settings
-// ============================================================
-function AdminModule() {
-  const [tab, setTab] = useState("users");
-  const [users, setUsers] = useState<any[]>([]);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
-  const [org, setOrg] = useState<any>(null);
-  const [branches, setBranches] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingUser, setEditingUser] = useState<any | null>(null);
-  const [showUserForm, setShowUserForm] = useState(false);
-  const [showSettingsForm, setShowSettingsForm] = useState(false);
-  const [sessionHistory, setSessionHistory] = useState<{ userId: string; userName: string; data: any } | null>(null);
-
-  const viewUserSessions = async (userId: string, userName: string) => {
-    const r = await fetch(`/api/admin/users/${userId}/sessions`);
-    const j = await r.json();
-    setSessionHistory({ userId, userName, data: j });
-  };
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [u, a, s] = await Promise.all([
-        fetch("/api/admin/users").then((r) => r.json()),
-        fetch("/api/admin/audit?limit=100").then((r) => r.json()),
-        fetch("/api/admin/settings").then((r) => r.json()),
-      ]);
-      setUsers(u.users || []);
-      setAuditLogs(a.logs || []);
-      setOrg(s.organization);
-      setBranches(s.organization?.branches || []);
-    } catch {}
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => { if (!cancelled) await load(); })();
-    return () => { cancelled = true; };
-  }, [load]);
-
-  const toggleActive = async (id: string, isActive: boolean, name: string) => {
-    const r = await fetch(`/api/admin/users/${id}`, {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !isActive }),
-    });
-    if (r.ok) { toast.success(isActive ? `تم إيقاف ${name}` : `تم تفعيل ${name}`); load(); }
-  };
-
-  const changeRole = async (id: string, role: string) => {
-    const r = await fetch(`/api/admin/users/${id}`, {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role }),
-    });
-    if (r.ok) { toast.success("تم تحديث الدور"); load(); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  const deleteUser = async (id: string, name: string) => {
-    if (!confirm(`حذف المستخدم "${name}"؟ سيتم إيقاف الحساب وحذف الجلسات.`)) return;
-    const r = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
-    if (r.ok) { toast.success("تم حذف المستخدم"); load(); }
-    else { const j = await r.json(); toast.error(j.error); }
-  };
-
-  if (loading) return <SkeletonRow />;
-
-  return (
-    <div className="space-y-4">
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-muted/40">
-          <TabsTrigger value="users"><ShieldCheck className="w-3 h-3 ml-1.5" />المستخدمون ({users.length})</TabsTrigger>
-          <TabsTrigger value="audit"><History className="w-3 h-3 ml-1.5" />سجل التدقيق ({auditLogs.length})</TabsTrigger>
-          <TabsTrigger value="settings"><Settings className="w-3 h-3 ml-1.5" />الإعدادات</TabsTrigger>
-          <TabsTrigger value="branches"><Building2 className="w-3 h-3 ml-1.5" />الفروع</TabsTrigger>
-        </TabsList>
-
-        {/* USERS TAB */}
-        <TabsContent value="users">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-semibold">إدارة المستخدمين والصلاحيات</h3>
-                <p className="text-xs text-muted-foreground">تحكم كامل في حسابات المستخدمين وأدوارهم وحالتهم</p>
-              </div>
-              <Button onClick={() => { setEditingUser(null); setShowUserForm(true); }}>
-                <UserPlus className="w-4 h-4 ml-2" />
-                إضافة مستخدم
-              </Button>
-            </div>
-            <Card className="bg-card border-border">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>المستخدم</TableHead><TableHead>الدور</TableHead>
-                    <TableHead>الفرع</TableHead>
-                    <TableHead>آخر دخول</TableHead>
-                    <TableHead>آخر خروج</TableHead>
-                    <TableHead className="text-center">الحالة</TableHead>
-                    <TableHead className="text-center">إجراءات</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {users.map((u) => (
-                      <TableRow key={u.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${u.avatarColor === "cyan" ? "from-cyan-500 to-blue-700" : u.avatarColor === "emerald" ? "from-emerald-500 to-teal-700" : u.avatarColor === "amber" ? "from-amber-500 to-orange-700" : u.avatarColor === "purple" ? "from-purple-500 to-fuchsia-700" : u.avatarColor === "rose" ? "from-rose-500 to-pink-700" : "from-blue-500 to-indigo-700"} flex items-center justify-center text-white text-xs font-bold`}>
-                              {u.name.charAt(0)}
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium">{u.name}</div>
-                              <div className="text-[10px] text-muted-foreground font-mono">{u.email}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Select value={u.role} onValueChange={(v) => changeRole(u.id, v)}>
-                            <SelectTrigger className="h-7 text-xs w-36"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              {Object.entries(ROLE_LABELS).map(([k, v]) => (
-                                <SelectItem key={k} value={k}>{v}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="text-xs">{u.branchName || "—"}</TableCell>
-                        <TableCell className="text-[10px] font-mono">
-                          {u.lastLogin ? (
-                            <div>
-                              <div>{new Date(u.lastLogin).toLocaleDateString("ar-SA")}</div>
-                              <div className="text-muted-foreground">{new Date(u.lastLogin).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}</div>
-                            </div>
-                          ) : "—"}
-                        </TableCell>
-                        <TableCell className="text-[10px] font-mono">
-                          {u.lastLogout ? (
-                            <div>
-                              <div>{new Date(u.lastLogout).toLocaleDateString("ar-SA")}</div>
-                              <div className="text-muted-foreground">{new Date(u.lastLogout).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}</div>
-                            </div>
-                          ) : "—"}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Switch checked={u.isActive} onCheckedChange={() => toggleActive(u.id, u.isActive, u.name)} />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1 justify-center">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" title="تعديل" onClick={() => { setEditingUser(u); setShowUserForm(true); }}><Edit className="w-3.5 h-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-amber-400" title="إعادة تعيين كلمة المرور" onClick={() => resetUserPassword(u.id, u.name)}><Key className="w-3.5 h-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-cyan-400" title="سجل الجلسات" onClick={() => viewUserSessions(u.id, u.name)}><History className="w-3.5 h-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-rose-400" title="حذف" onClick={() => deleteUser(u.id, u.name)}><Trash2 className="w-3.5 h-3.5" /></Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-
-            {/* Roles legend */}
-            <Card className="bg-card border-border">
-              <CardHeader><CardTitle className="text-sm">دليل الأدوار والصلاحيات</CardTitle></CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                {[
-                  { role: "ADMIN", label: "مدير النظام", perms: "صلاحيات كاملة على كل النظام" },
-                  { role: "ACCOUNTANT", label: "محاسب", perms: "لوحة التحكم + الكاشير + المحاسبة + عرض HR + عرض ERP" },
-                  { role: "HR_MANAGER", label: "مدير موارد بشرية", perms: "لوحة التحكم + HR (تعديل) + عرض ERP" },
-                  { role: "CASHIER", label: "كاشير", perms: "لوحة التحكم + نقطة البيع + عرض المخزون" },
-                  { role: "INVENTORY_MANAGER", label: "أمين مخزن", perms: "لوحة التحكم + ERP (تعديل) + التقارير" },
-                  { role: "BRANCH_MANAGER", label: "مدير فرع", perms: "لوحة التحكم + الكاشير + عرض HR + عرض ERP" },
-                ].map((r) => (
-                  <div key={r.role} className="p-3 rounded-lg bg-muted/30 border border-border/50">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Crown className={`w-3 h-3 ${r.role === "ADMIN" ? "text-amber-400" : "text-muted-foreground"}`} />
-                      <span className="font-semibold">{r.label}</span>
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">{r.perms}</div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* AUDIT TAB */}
-        <TabsContent value="audit">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><History className="w-4 h-4 text-cyan-400" />سجل التدقيق — آخر {auditLogs.length} عملية</CardTitle></CardHeader>
-            <CardContent>
-              <ScrollArea className="max-h-[65vh]">
-                <Table>
-                  <TableHeader><TableRow>
-                    <TableHead>الوقت</TableHead><TableHead>النوع</TableHead>
-                    <TableHead>المستخدم</TableHead><TableHead>الكيان</TableHead>
-                    <TableHead>الوصف</TableHead><TableHead>IP</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {auditLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell className="text-[10px] text-muted-foreground font-mono">{new Date(log.createdAt).toLocaleString("ar-SA")}</TableCell>
-                        <TableCell><Badge variant="outline" className={`text-[10px] ${log.action === "DELETE" ? "text-rose-400 border-rose-400/30" : log.action === "CREATE" ? "text-emerald-400 border-emerald-400/30" : log.action === "UPDATE" ? "text-amber-400 border-amber-400/30" : log.action === "LOGIN" ? "text-cyan-400 border-cyan-400/30" : log.action === "LOGOUT" ? "text-muted-foreground" : ""}`}>{auditActionLabel(log.action)}</Badge></TableCell>
-                        <TableCell className="text-xs">{log.user?.name || "—"}</TableCell>
-                        <TableCell><Badge variant="secondary" className="text-[10px]">{log.entity}</Badge></TableCell>
-                        <TableCell className="text-xs">{log.description}</TableCell>
-                        <TableCell className="text-[10px] text-muted-foreground font-mono">{log.ipAddress || "—"}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* SETTINGS TAB */}
-        <TabsContent value="settings">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">إعدادات المنشأة</CardTitle></CardHeader>
-            <CardContent>
-              {org && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div><Label className="text-xs">اسم المنشأة</Label><div className="font-medium mt-1">{org.name}</div></div>
-                  <div><Label className="text-xs">الاسم القانوني</Label><div className="font-medium mt-1">{org.legalName || "—"}</div></div>
-                  <div><Label className="text-xs">الرقم الضريبي</Label><div className="font-mono mt-1">{org.taxNumber || "—"}</div></div>
-                  <div><Label className="text-xs">العملة</Label><div className="mt-1">{org.currency}</div></div>
-                  <div><Label className="text-xs">نسبة الضريبة (%)</Label><div className="mt-1">{org.vatRate}%</div></div>
-                  <div><Label className="text-xs">الهاتف</Label><div className="mt-1">{org.phone || "—"}</div></div>
-                  <div><Label className="text-xs">البريد</Label><div className="mt-1">{org.email || "—"}</div></div>
-                  <div><Label className="text-xs">المدينة</Label><div className="mt-1">{org.city || "—"}</div></div>
-                  <div className="md:col-span-2"><Label className="text-xs">العنوان</Label><div className="mt-1">{org.address || "—"}</div></div>
-                </div>
-              )}
-              <div className="mt-4">
-                <Button onClick={() => setShowSettingsForm(true)}><Edit className="w-4 h-4 ml-2" />تعديل الإعدادات</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* BRANCHES TAB */}
-        <TabsContent value="branches">
-          <Card className="bg-card border-border">
-            <CardHeader><CardTitle className="text-base">فروع المنشأة ({branches.length})</CardTitle></CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {branches.map((b) => (
-                  <div key={b.id} className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Building2 className="w-4 h-4 text-cyan-400" />
-                      <span className="font-semibold text-sm">{b.name}</span>
-                      <Badge variant="outline" className="text-[10px] font-mono mr-auto">{b.code}</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground space-y-1">
-                      <div className="flex items-center gap-1.5"><MapPin className="w-3 h-3" /> {b.city || "—"}</div>
-                      <div className="flex items-center gap-1.5"><Phone className="w-3 h-3" /> {b.phone || "—"}</div>
-                      <div className="flex items-center gap-1.5"><Activity className="w-3 h-3" /> {b.isActive ? "نشط" : "متوقف"}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {showUserForm && (
-        <UserFormDialog
-          user={editingUser}
-          branches={branches}
-          onClose={() => setShowUserForm(false)}
-          onSaved={() => { setShowUserForm(false); load(); }}
-        />
-      )}
-      {showSettingsForm && org && (
-        <SettingsFormDialog
-          org={org}
-          onClose={() => setShowSettingsForm(false)}
-          onSaved={() => { setShowSettingsForm(false); load(); }}
-        />
-      )}
-      {sessionHistory && (
-        <SessionHistoryDialog
-          data={sessionHistory.data}
-          userName={sessionHistory.userName}
-          onClose={() => setSessionHistory(null)}
-        />
-      )}
-    </div>
-  );
-}
-
-function SessionHistoryDialog({ data, userName, onClose }: any) {
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>سجل جلسات — {userName}</DialogTitle>
-          <DialogDescription>عرض آخر دخول/خروج والجلسات النشطة</DialogDescription>
-        </DialogHeader>
-        {data && (
-          <div className="space-y-4">
-            {/* Summary */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
-                <div className="text-[10px] text-muted-foreground">آخر دخول</div>
-                <div className="text-xs font-bold text-emerald-400">
-                  {data.user.lastLogin ? new Date(data.user.lastLogin).toLocaleString("ar-SA") : "لم يسجّل بعد"}
-                </div>
-              </div>
-              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30">
-                <div className="text-[10px] text-muted-foreground">آخر خروج</div>
-                <div className="text-xs font-bold text-rose-400">
-                  {data.user.lastLogout ? new Date(data.user.lastLogout).toLocaleString("ar-SA") : "—"}
-                </div>
-              </div>
-            </div>
-            {/* Active sessions */}
-            <div>
-              <h4 className="text-xs font-semibold mb-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-cyan" />
-                جلسات نشطة ({data.activeSessions?.length || 0})
-              </h4>
-              {data.activeSessions?.length > 0 ? (
-                <div className="space-y-1.5">
-                  {data.activeSessions.map((s: any) => (
-                    <div key={s.id} className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-[10px]">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-3 h-3 text-muted-foreground" />
-                        <span className="font-mono">{s.ipAddress || "—"}</span>
-                      </div>
-                      <span className="text-muted-foreground">منذ {new Date(s.createdAt).toLocaleString("ar-SA")}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-[11px] text-muted-foreground">لا توجد جلسات نشطة</p>
-              )}
-            </div>
-            {/* Login history */}
-            <div>
-              <h4 className="text-xs font-semibold mb-2 flex items-center gap-2">
-                <History className="w-3 h-3 text-cyan-400" />
-                سجل الدخول/الخروج ({data.loginHistory?.length || 0})
-              </h4>
-              <ScrollArea className="max-h-60">
-                <div className="space-y-1">
-                  {data.loginHistory?.map((log: any) => (
-                    <div key={log.id} className="flex items-center justify-between p-2 rounded-md bg-muted/20 text-[10px]">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={`text-[9px] ${log.action === "LOGIN" ? "text-emerald-400 border-emerald-400/30" : "text-rose-400 border-rose-400/30"}`}>
-                          {log.action === "LOGIN" ? "دخول" : "خروج"}
-                        </Badge>
-                        <span className="font-mono text-muted-foreground">{log.ipAddress || "—"}</span>
-                      </div>
-                      <span className="font-mono">{new Date(log.createdAt).toLocaleString("ar-SA")}</span>
-                    </div>
-                  ))}
-                  {(!data.loginHistory || data.loginHistory.length === 0) && (
-                    <p className="text-[11px] text-muted-foreground text-center py-4">لا يوجد سجل</p>
-                  )}
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
-        )}
-        <DialogFooter>
-          <Button onClick={onClose} className="w-full">إغلاق</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function UserFormDialog({ user, branches, onClose, onSaved }: any) {
-  const [form, setForm] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    password: "",
-    role: user?.role || "CASHIER",
-    branchId: user?.branchId || "",
-    isActive: user?.isActive ?? true,
-  });
-  const [saving, setSaving] = useState(false);
-
-  const submit = async () => {
-    if (!form.name || !form.email || (!user && !form.password)) {
-      toast.error("الاسم، البريد، وكلمة المرور مطلوبة");
-      return;
-    }
-    setSaving(true);
-    try {
-      const url = user ? `/api/admin/users/${user.id}` : "/api/admin/users";
-      const method = user ? "PATCH" : "POST";
-      const payload: any = { ...form };
-      if (user && !form.password) delete payload.password;
-      const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error);
-      toast.success(user ? "تم تحديث المستخدم" : "تمت إضافة المستخدم");
-      onSaved();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>{user ? "تعديل مستخدم" : "إضافة مستخدم جديد"}</DialogTitle><DialogDescription>{user ? "تعديل بيانات وصلاحيات المستخدم" : "إنشاء حساب مستخدم جديد مع تحديد الدور"}</DialogDescription></DialogHeader>
-        <div className="space-y-3">
-          <div><Label className="text-xs">الاسم الكامل *</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">البريد الإلكتروني *</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div>
-            <Label className="text-xs">{user ? "كلمة مرور جديدة (اتركها فارغة للإبقاء)" : "كلمة المرور *"}</Label>
-            <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="bg-muted/40 mt-1" placeholder="••••••" />
-          </div>
-          <div>
-            <Label className="text-xs">الدور</Label>
-            <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
-              <SelectTrigger className="bg-muted/40 mt-1"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {Object.entries(ROLE_LABELS).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-xs">الفرع</Label>
-            <Select value={form.branchId} onValueChange={(v) => setForm({ ...form, branchId: v === "none" ? "" : v })}>
-              <SelectTrigger className="bg-muted/40 mt-1"><SelectValue placeholder="بدون فرع" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">بدون فرع</SelectItem>
-                {branches.map((b: any) => (
-                  <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between p-2 rounded-md bg-muted/30">
-            <Label className="text-xs">الحساب نشط</Label>
-            <Switch checked={form.isActive} onCheckedChange={(v) => setForm({ ...form, isActive: v })} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
-          <Button onClick={submit} disabled={saving}>
-            {saving ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
-            حفظ
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function SettingsFormDialog({ org, onClose, onSaved }: any) {
-  const [form, setForm] = useState({
-    name: org.name || "",
-    legalName: org.legalName || "",
-    taxNumber: org.taxNumber || "",
-    vatRate: org.vatRate ?? 15,
-    phone: org.phone || "",
-    email: org.email || "",
-    city: org.city || "",
-    address: org.address || "",
-  });
-  const [saving, setSaving] = useState(false);
-
-  const submit = async () => {
-    setSaving(true);
-    try {
-      const r = await fetch("/api/admin/settings", {
-        method: "PATCH", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!r.ok) { const j = await r.json(); throw new Error(j.error); }
-      toast.success("تم تحديث الإعدادات");
-      onSaved();
-    } catch (e: any) { toast.error(e.message); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader><DialogTitle>تعديل إعدادات المنشأة</DialogTitle><DialogDescription>تحديث بيانات المنشأة الأساسية والمالية</DialogDescription></DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
-          <div><Label className="text-xs">اسم المنشأة</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الاسم القانوني</Label><Input value={form.legalName} onChange={(e) => setForm({ ...form, legalName: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الرقم الضريبي</Label><Input value={form.taxNumber} onChange={(e) => setForm({ ...form, taxNumber: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">نسبة الضريبة (%)</Label><Input type="number" value={form.vatRate} onChange={(e) => setForm({ ...form, vatRate: parseFloat(e.target.value) || 0 })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">الهاتف</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">البريد الإلكتروني</Label><Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div><Label className="text-xs">المدينة</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="bg-muted/40 mt-1" /></div>
-          <div className="col-span-2"><Label className="text-xs">العنوان</Label><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="bg-muted/40 mt-1" /></div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>إلغاء</Button>
-          <Button onClick={submit} disabled={saving}>
-            {saving ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
-            حفظ
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ============================================================
-// SHARED HELPERS
-// ============================================================
-function Row({ label, value, bold, negative, positive, large }: any) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className={`text-sm ${bold ? "font-bold" : "text-muted-foreground"}`}>{label}</span>
-      <span className={`font-mono ${large ? "text-xl" : "text-sm"} ${bold ? "font-bold" : ""} ${negative ? "text-rose-400" : positive ? "text-emerald-400" : ""}`}>{value}</span>
-    </div>
-  );
-}
-
-function fmtSAR(n: number): string {
-  return new Intl.NumberFormat("ar-SA", { style: "currency", currency: "SAR", maximumFractionDigits: 0 }).format(n || 0);
-}
-
-function fmtShort(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-  return String(Math.round(n));
-}
-
-function paymentLabel(m: string): string {
-  const map: any = { CASH: "نقدي", CARD: "بطاقة", TRANSFER: "تحويل", WALLET: "محفظة", CREDIT: "آجل", MIXED: "مختلط" };
-  return map[m] || m;
-}
-
-function accountTypeLabel(t: string): string {
-  const map: any = { ASSET: "أصول", LIABILITY: "التزامات", EQUITY: "حقوق ملكية", REVENUE: "إيرادات", EXPENSE: "مصروفات", COST_OF_SALES: "تكلفة مبيعات" };
-  return map[t] || t;
-}
-
-function journalSourceLabel(s: string): string {
-  const map: any = { MANUAL: "يدوي", SALES_INVOICE: "فاتورة مبيعات", PURCHASE_ORDER: "أمر شراء", PAYMENT_RECEIVED: "تحصيل", PAYMENT_MADE: "صرف", PAYROLL: "رواتب", ADJUSTMENT: "تسوية", OPENING_BALANCE: "رصيد افتتاحي" };
-  return map[s] || s;
-}
-
-function attendanceLabel(s: string): string {
-  const map: any = { PRESENT: "حاضر", ABSENT: "غائب", LATE: "متأخر", HALF_DAY: "نصف يوم", WEEKEND: "عطلة", HOLIDAY: "إجازة" };
-  return map[s] || s;
-}
-
-function leaveTypeLabel(t: string): string {
-  const map: any = { ANNUAL: "سنوية", SICK: "مرضية", EMERGENCY: "طارئة", UNPAID: "بدون راتب", MATERNITY: "وضع", HAJJ: "حج" };
-  return map[t] || t;
-}
-
-function leaveStatusLabel(s: string): string {
-  const map: any = { PENDING: "قيد الانتظار", APPROVED: "موافق عليها", REJECTED: "مرفوضة", CANCELLED: "ملغاة" };
-  return map[s] || s;
-}
-
-function auditActionLabel(a: string): string {
-  const map: any = { CREATE: "إنشاء", UPDATE: "تحديث", DELETE: "حذف", LOGIN: "دخول", LOGOUT: "خروج", APPROVE: "اعتماد", REJECT: "رفض" };
-  return map[a] || a;
-}
-
-function stockMoveLabel(s: string): string {
-  const map: any = {
-    PURCHASE_IN: "وارد (شراء)", SALE_OUT: "صادر (بيع)", RETURN_IN: "مرتجع عميل",
-    RETURN_OUT: "مرتجع مزود", ADJUSTMENT_IN: "تسوية (+)", ADJUSTMENT_OUT: "تسوية (−)",
-    TRANSFER_IN: "تحويل وارد", TRANSFER_OUT: "تحويل صادر",
-  };
-  return map[s] || s;
-}
-
-function Trophy(props: any) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" />
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-    </svg>
+    <form onSubmit={submit} className="space-y-3">
+      <div><Label className="text-xs">{t("الاسم", "Name")}</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} required className="bg-white" placeholder={t("الاسم", "Name")} /></div>
+      <div><Label className="text-xs">{t("البريد", "Email")}</Label><Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} required className="bg-white" placeholder="email@example.com" dir="ltr" /></div>
+      <div><Label className="text-xs">{t("الرسالة", "Message")}</Label><Textarea value={form.message} onChange={e => setForm({...form, message: e.target.value})} required className="bg-white" rows={3} placeholder={t("اكتب رسالتك هنا...", "Write your message here...")} /></div>
+      <Button type="submit" disabled={submitting} className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-full">
+        {submitting ? t("جارٍ الإرسال...", "Sending...") : <><Send className="w-4 h-4 ml-2" /> {t("إرسال", "Send")}</>}
+      </Button>
+    </form>
   );
 }
