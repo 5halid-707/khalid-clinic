@@ -1,0 +1,465 @@
+     1→"use client";
+     2→
+     3→import { useState, useEffect, useRef } from "react";
+     4→import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+     5→import {
+     6→  Phone, Mail, MapPin, Clock, Menu, X, Globe, ChevronDown,
+     7→  Calendar, MessageCircle, Send, Star, CheckCircle2, ArrowUp,
+     8→  Sparkles, Activity, Bone, Heart, Stethoscope, Award, Users,
+     9→  Smile, TrendingUp, ShieldCheck, Play,
+    10→} from "lucide-react";
+    11→import { Button } from "@/components/ui/button";
+    12→import { Input } from "@/components/ui/input";
+    13→import { Textarea } from "@/components/ui/textarea";
+    14→import { Label } from "@/components/ui/label";
+    15→import { toast } from "sonner";
+    16→
+    17→const SITE_URL = "https://khalid-cyber-security.vercel.app/";
+    18→const GOLD = "#e0b449";
+    19→const DARK = "#1a0f0a";
+    20→
+    21→// Scroll reveal helper
+    22→function Reveal({ children, delay = 0, y = 40, className = "" }: { children: React.ReactNode; delay?: number; y?: number; className?: string }) {
+    23→  return (
+    24→    <motion.div
+    25→      initial={{ opacity: 0, y }}
+    26→      whileInView={{ opacity: 1, y: 0 }}
+    27→      viewport={{ once: true, margin: "-50px" }}
+    28→      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+    29→      className={className}
+    30→    >
+    31→      {children}
+    32→    </motion.div>
+    33→  );
+    34→}
+    35→
+    36→export default function Home() {
+    37→  const [lang, setLang] = useState<"ar" | "en">("ar");
+    38→  const [menuOpen, setMenuOpen] = useState(false);
+    39→  const [showScroll, setShowScroll] = useState(false);
+    40→  const [slide, setSlide] = useState(0);
+    41→  const [showWA, setShowWA] = useState(false);
+    42→  const [scrolled, setScrolled] = useState(false);
+    43→  const containerRef = useRef<HTMLElement>(null);
+    44→  const { scrollYProgress } = useScroll();
+    45→  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -100]);
+    46→  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+    47→
+    48→  const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
+    49→  const isRTL = lang === "ar";
+    50→
+    51→  useEffect(() => {
+    52→    const onScroll = () => {
+    53→      setShowScroll(window.scrollY > 500);
+    54→      setScrolled(window.scrollY > 80);
+    55→    };
+    56→    window.addEventListener("scroll", onScroll);
+    57→    return () => window.removeEventListener("scroll", onScroll);
+    58→  }, []);
+    59→
+    60→  useEffect(() => {
+    61→    const timer = setInterval(() => setSlide(s => (s + 1) % 3), 6000);
+    62→    return () => clearInterval(timer);
+    63→  }, []);
+    64→
+    65→  const slides = [
+    66→    { img: "/clinic/hero1.jpg", title: t("متخصصون في التجميل بخبرة طبية", "Specialized in Aesthetic Medicine"), sub: t("رعاية صحية متكاملة بأحدث التقنيات", "Comprehensive care with latest technology") },
+    67→    { img: "/clinic/hero2.jpg", title: t("نحن نهتم بصحتك وجمالك", "We Care About Your Health & Beauty"), sub: t("فريق طبي متخصص بأحدث الأجهزة", "Specialized medical team with modern equipment") },
+    68→    { img: "/clinic/hero3.jpg", title: t("أحدث التقنيات الطبية بين يديك", "Latest Medical Technologies at Your Service"), sub: t("خبرة تتجاوز 15 عاماً", "Over 15 years of experience") },
+    69→  ];
+    70→
+    71→  const services = [
+    72→    { img: "/clinic/derma.jpg", icon: Sparkles, title: t("الجلدية والتجميل", "Dermatology & Aesthetics"), desc: t("علاجات البشرة، البوتوكس، الفيلر، الليزر، التقشير البارد", "Skin treatments, Botox, Fillers, Laser, Cold Peeling") },
+    73→    { img: "/clinic/nutrition.jpg", icon: TrendingUp, title: t("التغذية العلاجية", "Clinical Nutrition"), desc: t("برامج تغذية مخصصة لكل حالة صحية", "Customized nutrition programs") },
+    74→    { img: "/clinic/physio.jpg", icon: Bone, title: t("العلاج الطبيعي", "Physiotherapy"), desc: t("إعادة تأهيل وعلاج آلام المفاصل والعمود الفقري", "Rehabilitation & joint/spine pain treatment") },
+    75→    { img: "/clinic/body.jpg", icon: Heart, title: t("تنسيق القوام", "Body Contouring"), desc: t("تقنيات حديثة لنحت الجسم وإزالة الدهون", "Modern body sculpting techniques") },
+    76→    { img: "/clinic/hijama.jpg", icon: Stethoscope, title: t("الحجامة", "Hijama"), desc: t("حجامة علاجية بطريقة آمنة ومتخصصة", "Therapeutic cupping, safe & specialized") },
+    77→    { img: "/clinic/dental.jpg", icon: Smile, title: t("الأسنان", "Dental"), desc: t("تبييض، تقويم، زراعة، تجميل الأسنان", "Whitening, braces, implants, cosmetics") },
+    78→  ];
+    79→
+    80→  const whyChoose = [
+    81→    { icon: CheckCircle2, text: t("استشارات طبية شاملة", "Comprehensive medical consultations") },
+    82→    { icon: Users, text: t("أطباء متخصصون وذوو خبرة", "Specialized and experienced doctors") },
+    83→    { icon: Sparkles, text: t("أجهزة ليزر دقيقة", "Precise laser devices") },
+    84→    { icon: ShieldCheck, text: t("متابعة دورية ومستمرة", "Regular and continuous follow-up") },
+    85→    { icon: TrendingUp, text: t("أحدث التقنيات الطبية", "Latest medical technologies") },
+    86→    { icon: Activity, text: t("فحوصات مخبرية دقيقة", "Accurate laboratory tests") },
+    87→    { icon: Calendar, text: t("مواعيد مرنة ومناسبة", "Flexible and convenient appointments") },
+    88→    { icon: Award, text: t("سجلات طبية إلكترونية", "Electronic medical records") },
+    89→    { icon: Heart, text: t("بيئة مريحة وداعمة", "Comfortable and supportive environment") },
+    90→    { icon: ShieldCheck, text: t("خصوصية وأمان المعلومات", "Privacy and data security") },
+    91→  ];
+    92→
+    93→  const counters = [
+    94→    { value: "100%", label: t("كفاءة طبية", "Medical Efficiency") },
+    95→    { value: "15+", label: t("سنوات خبرة", "Years Experience") },
+    96→    { value: "7460+", label: t("عميل سعيد", "Happy Clients") },
+    97→    { value: "25+", label: t("طبيب متخصص", "Specialist Doctors") },
+    98→  ];
+    99→
+   100→  const doctors = [
+   101→    { img: "/clinic/doctor1.jpg", name: t("د. خالد الحربي", "Dr. Khalid Alharbi"), role: t("مدير عام", "General Director") },
+   102→    { img: "/clinic/doctor2.jpg", name: t("د. أحمد العتيبي", "Dr. Ahmed Alotaibi"), role: t("استشاري قلب", "Cardiologist") },
+   103→    { img: "/clinic/doctor3.jpg", name: t("د. سارة الدوسري", "Dr. Sarah Aldosari"), role: t("جلدية وتجميل", "Dermatologist") },
+   104→    { img: "/clinic/doctor4.jpg", name: t("د. محمد القحطاني", "Dr. Mohammed Alqahtani"), role: t("علاج طبيعي", "Physiotherapist") },
+   105→  ];
+   106→
+   107→  const testimonials = [
+   108→    { name: t("محمد العمري", "Mohammed Alomari"), role: t("عميل", "Client"), text: t("خدمة ممتازة وفريق طبي محترف. النتائج فاقت توقعاتي بمراحل.", "Excellent service. Results exceeded my expectations."), rating: 5, img: "from-blue-400 to-cyan-600" },
+   109→    { name: t("سارة الدوسري", "Sarah Aldosari"), role: t("عميلة", "Client"), text: t("أفضل عيادة جربتها. النظافة والاحترافية والنتائج رائعة.", "Best clinic I've tried. Amazing results."), rating: 5, img: "from-rose-400 to-pink-600" },
+   110→    { name: t("نورة العنزي", "Noura Alanazi"), role: t("عميلة", "Client"), text: t("طاقم راقي وأجهزة حديثة. أنصح الجميع بالزيارة.", "Classy staff and modern equipment."), rating: 5, img: "from-amber-400 to-orange-600" },
+   111→  ];
+   112→
+   113→  const blogs = [
+   114→    { img: "/clinic/blog1.jpg", title: t("حقن البوتكس للوجه | الآثار الجانبية", "Botox | Side Effects"), date: t("28 أبريل 2026", "28 April 2026") },
+   115→    { img: "/clinic/blog2.jpg", title: t("أفضل جلسات تنظيف البشرة | فوائدها", "Best Facial Cleansing | Benefits"), date: t("28 أبريل 2026", "28 April 2026") },
+   116→    { img: "/clinic/blog3.jpg", title: t("إزالة الشعر بالليزر | نصائح مهمة", "Laser Hair Removal | Tips"), date: t("28 أبريل 2026", "28 April 2026") },
+   117→  ];
+   118→
+   119→  const navItems = [
+   120→    { h: "#home", l: t("الرئيسية", "Home") },
+   121→    { h: "#about", l: t("من نحن", "About") },
+   122→    { h: "#services", l: t("خدماتنا", "Services") },
+   123→    { h: "#why", l: t("لماذا نحن", "Why Us") },
+   124→    { h: "#doctors", l: t("الأطباء", "Doctors") },
+   125→    { h: "#booking", l: t("احجز موعد", "Booking") },
+   126→    { h: "#blog", l: t("المقالات", "Blog") },
+   127→    { h: "#contact", l: t("اتصل بنا", "Contact") },
+   128→  ];
+   129→
+   130→  return (
+   131→    <div ref={containerRef} dir={isRTL ? "rtl" : "ltr"} className="min-h-screen bg-white overflow-x-hidden" style={{ fontFamily: isRTL ? "'Cairo', sans-serif" : "'Poppins', sans-serif" }}>
+   132→      {/* Top Bar */}
+   133→      <div style={{ background: DARK }} className="text-white text-xs py-2.5 px-4 hidden md:block">
+   134→        <div className="max-w-7xl mx-auto flex items-center justify-between">
+   135→          <div className="flex items-center gap-5">
+   136→            <a href="tel:+966575015019" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"><Phone className="w-3.5 h-3.5" /><span dir="ltr">+966 57 501 5019</span></a>
+   137→            <a href="mailto:khalid-alharbi@zohomail.sa" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"><Mail className="w-3.5 h-3.5" /> khalid-alharbi@zohomail.sa</a>
+   138→            <span className="flex items-center gap-1.5 text-white/60"><Clock className="w-3.5 h-3.5" /> {t("السبت - الخميس: 9ص - 9م", "Sat - Thu: 9AM - 9PM")}</span>
+   139→          </div>
+   140→          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"><Globe className="w-3.5 h-3.5" /> {lang === "ar" ? "English" : "العربية"}</button>
+   141→        </div>
+   142→      </div>
+   143→
+   144→      {/* Header */}
+   145→      <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-xl py-2" : "bg-white/95 backdrop-blur py-3"}`}>
+   146→        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+   147→          <a href="#home" className="flex items-center gap-3">
+   148→            <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }} className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" style={{ background: `linear-gradient(135deg, ${GOLD}, #c99a2e)` }}>
+   149→              <Stethoscope className="w-6 h-6 text-white" />
+   150→            </motion.div>
+   151→            <div>
+   152→              <h1 className="text-xl font-bold" style={{ color: DARK }}>{t("عيادة خالد", "Khalid Clinic")}</h1>
+   153→              <p className="text-[10px] text-gray-500">{t("رعاية طبية وتجميلية بأيدي خبراء", "Medical & Aesthetic Care")}</p>
+   154→            </div>
+   155→          </a>
+   156→          <nav className="hidden lg:flex items-center gap-1">
+   157→            {navItems.map(item => (
+   158→              <a key={item.h} href={item.h} className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all">{item.l}</a>
+   159→            ))}
+   160→          </nav>
+   161→          <div className="flex items-center gap-2">
+   162→            <a href="#booking"><Button className="rounded-full px-5 text-sm shadow-md hover:shadow-lg transition-shadow" style={{ background: GOLD, color: DARK }}>{t("احجز الآن", "Book Now")}</Button></a>
+   163→            <button className="lg:hidden p-2" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}</button>
+   164→          </div>
+   165→        </div>
+   166→        <AnimatePresence>{menuOpen && (<motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="lg:hidden overflow-hidden bg-white border-t">{navItems.map(item => <a key={item.h} href={item.h} onClick={() => setMenuOpen(false)} className="block px-6 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-600 hover:bg-amber-50">{item.l}</a>)}<button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="block px-6 py-2.5 text-sm font-medium text-amber-600">{lang === "ar" ? "English" : "العربية"}</button></motion.div>)}</AnimatePresence>
+   167→      </header>
+   168→
+   169→      {/* Hero Slider */}
+   170→      <section id="home" className="relative h-[90vh] min-h-[600px] overflow-hidden">
+   171→        <AnimatePresence mode="wait">
+   172→          <motion.div key={slide} initial={{ opacity: 0, scale: 1.1 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2, ease: "easeInOut" }} className="absolute inset-0">
+   173→            <img src={slides[slide].img} alt="" className="w-full h-full object-cover" />
+   174→            <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${DARK}cc, ${DARK}99, ${DARK}cc)` }} />
+   175→          </motion.div>
+   176→        </AnimatePresence>
+   177→        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 flex items-center justify-center z-10">
+   178→          <div className="text-center text-white max-w-4xl px-4">
+   179→            <AnimatePresence mode="wait">
+   180→              <motion.div key={slide} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.8, delay: 0.3 }}>
+   181→                <motion.span initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.5, duration: 0.6 }} className="block w-20 h-0.5 mx-auto mb-6 origin-center" style={{ background: GOLD }} />
+   182→                <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 leading-tight">{slides[slide].title}</h2>
+   183→                <p className="text-lg md:text-xl text-white/70 mb-8 max-w-2xl mx-auto">{slides[slide].sub}</p>
+   184→                <div className="flex flex-wrap gap-4 justify-center">
+   185→                  <a href="#booking"><motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-8 py-3.5 rounded-full font-bold text-base shadow-xl transition-shadow" style={{ background: GOLD, color: DARK }}>{t("احجز موعدك", "Book Appointment")}</motion.button></a>
+   186→                  <a href="#services"><motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="px-8 py-3.5 rounded-full font-bold text-base border-2 border-white/30 backdrop-blur hover:bg-white/10 transition-colors">{t("اكتشف خدماتنا", "Our Services")}</motion.button></a>
+   187→                </div>
+   188→              </motion.div>
+   189→            </AnimatePresence>
+   190→          </div>
+   191→        </motion.div>
+   192→        {/* Slide indicators */}
+   193→        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+   194→          {slides.map((_, i) => <button key={i} onClick={() => setSlide(i)} className={`h-2.5 rounded-full transition-all duration-300 ${i === slide ? "w-10" : "w-2.5 bg-white/30"}`} style={i === slide ? { background: GOLD } : {}} />)}
+   195→        </div>
+   196→        {/* Scroll indicator */}
+   197→        <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="absolute bottom-8 right-8 z-20 hidden md:block">
+   198→          <ChevronDown className="w-6 h-6 text-white/50" />
+   199→        </motion.div>
+   200→      </section>
+   201→
+   202→      {/* Counters Bar */}
+   203→      <section style={{ background: GOLD }} className="py-8 px-4">
+   204→        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+   205→          {counters.map((c, i) => (
+   206→            <Reveal key={i} delay={i * 0.1} className="text-center">
+   207→              <div className="text-4xl md:text-5xl font-extrabold" style={{ color: DARK }}>{c.value}</div>
+   208→              <div className="text-sm mt-1 font-medium" style={{ color: DARK, opacity: 0.7 }}>{c.label}</div>
+   209→            </Reveal>
+   210→          ))}
+   211→        </div>
+   212→      </section>
+   213→
+   214→      {/* Services */}
+   215→      <section id="services" className="py-24 px-4">
+   216→        <div className="max-w-7xl mx-auto">
+   217→          <Reveal className="text-center mb-14">
+   218→            <span className="text-sm font-semibold" style={{ color: GOLD }}>{t("خدماتنا", "Our Services")}</span>
+   219→            <h2 className="text-3xl md:text-4xl font-bold mt-2" style={{ color: DARK }}>{t("خدمات طبية متكاملة", "Comprehensive Medical Services")}</h2>
+   220→            <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="w-20 h-1 mx-auto mt-4 rounded-full origin-center" style={{ background: GOLD }} />
+   221→          </Reveal>
+   222→          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+   223→            {services.map((s, i) => (
+   224→              <Reveal key={i} delay={i * 0.08}>
+   225→                <motion.div whileHover={{ y: -8 }} className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow border border-gray-100">
+   226→                  <div className="relative h-56 overflow-hidden">
+   227→                    <img src={s.img} alt={s.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+   228→                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+   229→                    <div className="absolute bottom-4 right-4 w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur" style={{ background: `${GOLD}e6` }}>
+   230→                      <s.icon className="w-6 h-6 text-white" />
+   231→                    </div>
+   232→                  </div>
+   233→                  <div className="p-6">
+   234→                    <h3 className="font-bold text-lg mb-2" style={{ color: DARK }}>{s.title}</h3>
+   235→                    <p className="text-sm text-gray-500 leading-relaxed mb-4">{s.desc}</p>
+   236→                    <a href="#booking" className="text-sm font-semibold flex items-center gap-1.5 transition-all hover:gap-3" style={{ color: GOLD }}>{t("اعرف المزيد", "Learn More")} →</a>
+   237→                  </div>
+   238→                </motion.div>
+   239→              </Reveal>
+   240→            ))}
+   241→          </div>
+   242→        </div>
+   243→      </section>
+   244→
+   245→      {/* About + Why Choose */}
+   246→      <section id="why" className="py-24 px-4" style={{ background: `linear-gradient(135deg, ${DARK}, #2a1810)` }}>
+   247→        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+   248→          <Reveal>
+   249→            <div className="relative">
+   250→              <img src="/clinic/about.jpg" alt="About" className="w-full rounded-3xl shadow-2xl" />
+   251→              <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-6 hidden md:block">
+   252→                <div className="flex items-center gap-3">
+   253→                  <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: GOLD }}>
+   254→                    <Award className="w-7 h-7" style={{ color: DARK }} />
+   255→                  </div>
+   256→                  <div>
+   257→                    <div className="text-2xl font-extrabold" style={{ color: DARK }}>15+</div>
+   258→                    <div className="text-xs text-gray-500">{t("سنوات خبرة", "Years Experience")}</div>
+   259→                  </div>
+   260→                </div>
+   261→              </div>
+   262→            </div>
+   263→          </Reveal>
+   264→          <Reveal delay={0.2}>
+   265→            <span className="text-sm font-semibold" style={{ color: GOLD }}>{t("لماذا تختار", "Why Choose")}</span>
+   266→            <h2 className="text-3xl md:text-4xl font-bold text-white mt-2 mb-6">{t("لماذا تختار عيادة خالد؟", "Why Choose Khalid Clinic?")}</h2>
+   267→            <div className="grid sm:grid-cols-2 gap-4">
+   268→              {whyChoose.map((w, i) => (
+   269→                <Reveal key={i} delay={i * 0.05}>
+   270→                  <div className="flex items-center gap-3 group">
+   271→                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform" style={{ background: `${GOLD}20` }}>
+   272→                      <w.icon className="w-5 h-5" style={{ color: GOLD }} />
+   273→                    </div>
+   274→                    <span className="text-sm text-white/80">{w.text}</span>
+   275→                  </div>
+   276→                </Reveal>
+   277→              ))}
+   278→            </div>
+   279→            <a href="#booking" className="inline-block mt-8"><motion.button whileHover={{ scale: 1.05 }} className="px-8 py-3 rounded-full font-bold shadow-lg" style={{ background: GOLD, color: DARK }}>{t("احجز استشارتك", "Book Consultation")}</motion.button></a>
+   280→          </Reveal>
+   281→        </div>
+   282→      </section>
+   283→
+   284→      {/* Doctors */}
+   285→      <section id="doctors" className="py-24 px-4">
+   286→        <div className="max-w-7xl mx-auto">
+   287→          <Reveal className="text-center mb-14">
+   288→            <span className="text-sm font-semibold" style={{ color: GOLD }}>{t("فريقنا", "Our Team")}</span>
+   289→            <h2 className="text-3xl md:text-4xl font-bold mt-2" style={{ color: DARK }}>{t("أطباء من ذوي الخبرة", "Experienced Doctors")}</h2>
+   290→            <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} className="w-20 h-1 mx-auto mt-4 rounded-full origin-center" style={{ background: GOLD }} />
+   291→          </Reveal>
+   292→          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+   293→            {doctors.map((doc, i) => (
+   294→              <Reveal key={i} delay={i * 0.1}>
+   295→                <motion.div whileHover={{ y: -10 }} className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
+   296→                  <div className="relative h-80 overflow-hidden">
+   297→                    <img src={doc.img} alt={doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+   298→                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+   299→                    <div className="absolute bottom-4 inset-x-4 text-center">
+   300→                      <h3 className="text-white font-bold text-lg">{doc.name}</h3>
+   301→                      <p className="text-sm" style={{ color: GOLD }}>{doc.role}</p>
+   302→                      <div className="flex justify-center gap-1 mt-1">{[1,2,3,4,5].map(s => <Star key={s} className="w-3 h-3 fill-amber-400 text-amber-400" />)}</div>
+   303→                    </div>
+   304→                  </div>
+   305→                </motion.div>
+   306→              </Reveal>
+   307→            ))}
+   308→          </div>
+   309→        </div>
+   310→      </section>
+   311→
+   312→      {/* CTA Banner */}
+   313→      <section className="relative py-20 px-4 overflow-hidden">
+   314→        <img src="/clinic/cta.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+   315→        <div className="absolute inset-0" style={{ background: `${DARK}dd` }} />
+   316→        <div className="relative max-w-4xl mx-auto text-center text-white">
+   317→          <Reveal>
+   318→            <h2 className="text-3xl md:text-5xl font-bold mb-4">{t("تحتاج مساعدة؟ نحن هنا لك", "Need Help? We're Here")}</h2>
+   319→            <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">{t("تواصل معنا اليوم واحصل على استشارة طبية مجانية", "Contact us today for a free medical consultation")}</p>
+   320→            <div className="flex flex-wrap gap-4 justify-center">
+   321→              <a href="tel:+966575015019"><motion.button whileHover={{ scale: 1.05 }} className="px-8 py-3.5 rounded-full font-bold shadow-xl flex items-center gap-2" style={{ background: GOLD, color: DARK }}><Phone className="w-5 h-5" /> <span dir="ltr">+966 57 501 5019</span></motion.button></a>
+   322→              <a href="#booking"><motion.button whileHover={{ scale: 1.05 }} className="px-8 py-3.5 rounded-full font-bold border-2 border-white/30 backdrop-blur hover:bg-white/10">{t("احجز موعد", "Book Now")}</motion.button></a>
+   323→            </div>
+   324→          </Reveal>
+   325→        </div>
+   326→      </section>
+   327→
+   328→      {/* Testimonials */}
+   329→      <section className="py-24 px-4 bg-gray-50">
+   330→        <div className="max-w-7xl mx-auto">
+   331→          <Reveal className="text-center mb-14">
+   332→            <span className="text-sm font-semibold" style={{ color: GOLD }}>{t("آراء عملائنا", "Testimonials")}</span>
+   333→            <h2 className="text-3xl md:text-4xl font-bold mt-2" style={{ color: DARK }}>{t("ماذا قال عملاؤنا", "What Clients Said")}</h2>
+   334→            <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} className="w-20 h-1 mx-auto mt-4 rounded-full origin-center" style={{ background: GOLD }} />
+   335→          </Reveal>
+   336→          <div className="grid md:grid-cols-3 gap-6">
+   337→            {testimonials.map((rev, i) => (
+   338→              <Reveal key={i} delay={i * 0.1}>
+   339→                <motion.div whileHover={{ y: -5 }} className="bg-white rounded-3xl shadow-lg p-8 border border-gray-100 h-full">
+   340→                  <div className="flex gap-0.5 mb-4">{Array.from({ length: rev.rating }).map((_, s) => <Star key={s} className="w-5 h-5 fill-amber-400 text-amber-400" />)}</div>
+   341→                  <p className="text-gray-600 mb-6 leading-relaxed text-sm">"{rev.text}"</p>
+   342→                  <div className="flex items-center gap-3">
+   343→                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${rev.img} flex items-center justify-center text-white font-bold`}>{rev.name.charAt(0)}</div>
+   344→                    <div><div className="font-bold" style={{ color: DARK }}>{rev.name}</div><div className="text-xs text-gray-400">{rev.role}</div></div>
+   345→                  </div>
+   346→                </motion.div>
+   347→              </Reveal>
+   348→            ))}
+   349→          </div>
+   350→        </div>
+   351→      </section>
+   352→
+   353→      {/* Blog */}
+   354→      <section id="blog" className="py-24 px-4">
+   355→        <div className="max-w-7xl mx-auto">
+   356→          <Reveal className="text-center mb-14">
+   357→            <span className="text-sm font-semibold" style={{ color: GOLD }}>{t("المقالات", "Blog")}</span>
+   358→            <h2 className="text-3xl md:text-4xl font-bold mt-2" style={{ color: DARK }}>{t("أحدث المقالات", "Latest Articles")}</h2>
+   359→            <motion.div initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} className="w-20 h-1 mx-auto mt-4 rounded-full origin-center" style={{ background: GOLD }} />
+   360→          </Reveal>
+   361→          <div className="grid md:grid-cols-3 gap-6">
+   362→            {blogs.map((b, i) => (
+   363→              <Reveal key={i} delay={i * 0.1}>
+   364→                <motion.div whileHover={{ y: -8 }} className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow cursor-pointer">
+   365→                  <div className="relative h-52 overflow-hidden">
+   366→                    <img src={b.img} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+   367→                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-full px-3 py-1 text-xs font-medium" style={{ color: DARK }}>📅 {b.date}</div>
+   368→                  </div>
+   369→                  <div className="p-6">
+   370→                    <h3 className="font-bold text-base mb-3 group-hover:text-amber-600 transition-colors" style={{ color: DARK }}>{b.title}</h3>
+   371→                    <a href="#" className="text-sm font-semibold flex items-center gap-1 transition-all hover:gap-3" style={{ color: GOLD }}>{t("اقرأ المزيد", "Read More")} →</a>
+   372→                  </div>
+   373→                </motion.div>
+   374→              </Reveal>
+   375→            ))}
+   376→          </div>
+   377→        </div>
+   378→      </section>
+   379→
+   380→      {/* Booking */}
+   381→      <section id="booking" className="py-24 px-4" style={{ background: `linear-gradient(135deg, ${DARK}, #2a1810)` }}>
+   382→        <div className="max-w-2xl mx-auto">
+   383→          <Reveal className="text-center mb-10">
+   384→            <span className="text-sm font-semibold" style={{ color: GOLD }}>{t("احجز موعد", "Book Appointment")}</span>
+   385→            <h2 className="text-3xl md:text-4xl font-bold text-white mt-2">{t("احجز موعدك الآن", "Book Your Appointment")}</h2>
+   386→            <p className="text-white/60 text-sm mt-2">{t("املأ النموذج وسنتواصل معك لتأكيد الموعد", "Fill the form and we'll contact you to confirm")}</p>
+   387→          </Reveal>
+   388→          <Reveal delay={0.2}>
+   389→            <BookingForm lang={lang} />
+   390→          </Reveal>
+   391→        </div>
+   392→      </section>
+   393→
+   394→      {/* Footer */}
+   395→      <footer id="contact" style={{ background: DARK }} className="text-white pt-16 pb-8 px-4">
+   396→        <div className="max-w-7xl mx-auto">
+   397→          <div className="grid md:grid-cols-4 gap-8 mb-8">
+   398→            <Reveal>
+   399→              <div className="flex items-center gap-3 mb-4">
+   400→                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: GOLD }}><Stethoscope className="w-5 h-5 text-white" /></div>
+   401→                <span className="font-bold text-lg">{t("عيادة خالد", "Khalid Clinic")}</span>
+   402→              </div>
+   403→              <p className="text-sm text-white/60 leading-relaxed mb-4">{t("وجهتك الأولى للرعاية الصحية المتكاملة والاحترافية.", "Your first destination for comprehensive healthcare.")}</p>
+   404→              <div className="flex gap-2">
+   405→                <a href="https://github.com/5halid-707" target="_blank" className="w-9 h-9 rounded-full bg-white/10 hover:bg-amber-400 flex items-center justify-center transition-colors text-xs">GitHub</a>
+   406→                <a href="https://www.linkedin.com/in/khalid-alharbi-8953a4b3" target="_blank" className="w-9 h-9 rounded-full bg-white/10 hover:bg-amber-400 flex items-center justify-center transition-colors text-xs">LinkedIn</a>
+   407→                <a href="https://wa.me/966575015019" target="_blank" className="w-9 h-9 rounded-full bg-green-500 hover:bg-green-400 flex items-center justify-center transition-colors text-xs">WA</a>
+   408→              </div>
+   409→            </Reveal>
+   410→            <Reveal delay={0.1}>
+   411→              <h4 className="font-bold mb-3" style={{ color: GOLD }}>{t("خدماتنا", "Services")}</h4>
+   412→              <ul className="space-y-2 text-sm text-white/60">{services.map((s, i) => <li key={i}><a href="#services" className="hover:text-amber-400 transition-colors">{s.title}</a></li>)}</ul>
+   413→            </Reveal>
+   414→            <Reveal delay={0.2}>
+   415→              <h4 className="font-bold mb-3" style={{ color: GOLD }}>{t("روابط سريعة", "Quick Links")}</h4>
+   416→              <ul className="space-y-2 text-sm text-white/60">{navItems.map(item => <li key={item.h}><a href={item.h} className="hover:text-amber-400 transition-colors">{item.l}</a></li>)}</ul>
+   417→            </Reveal>
+   418→            <Reveal delay={0.3}>
+   419→              <h4 className="font-bold mb-3" style={{ color: GOLD }}>{t("تواصل معنا", "Contact")}</h4>
+   420→              <div className="space-y-3 text-sm text-white/60">
+   421→                <a href="tel:+966575015019" className="flex items-center gap-2 hover:text-amber-400"><Phone className="w-4 h-4" /> <span dir="ltr">+966 57 501 5019</span></a>
+   422→                <a href="mailto:khalid-alharbi@zohomail.sa" className="flex items-center gap-2 hover:text-amber-400"><Mail className="w-4 h-4" /> khalid-alharbi@zohomail.sa</a>
+   423→                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {t("المملكة العربية السعودية", "Saudi Arabia")}</p>
+   424→                <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> {t("السبت - الخميس: 9ص - 9م", "Sat - Thu: 9AM - 9PM")}</p>
+   425→              </div>
+   426→            </Reveal>
+   427→          </div>
+   428→          <div className="border-t border-white/10 pt-6 text-center text-xs text-white/40">
+   429→            <p>© 2026 {t("عيادة خالد", "Khalid Clinic")}. {t("جميع الحقوق محفوظة", "All rights reserved")}.{" | "}
+   430→              <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="font-bold hover:text-amber-400 transition-colors" style={{ color: GOLD }}>{t("تصميم خالد الحربي", "Designed by Khalid Alharbi")}</a>
+   431→            </p>
+   432→          </div>
+   433→        </div>
+   434→      </footer>
+   435→
+   436→      {/* Floating buttons */}
+   437→      {showScroll && <motion.button initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="fixed bottom-6 left-6 z-50 w-11 h-11 rounded-full shadow-lg flex items-center justify-center" style={{ background: GOLD, color: DARK }}><ArrowUp className="w-5 h-5" /></motion.button>}
+   438→
+   439→      <button onClick={() => setShowWA(!showWA)} className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-colors">
+   440→        <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+   441→      </button>
+   442→      <AnimatePresence>{showWA && (<motion.div initial={{ opacity: 0, y: 20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.9 }} className="fixed bottom-24 right-6 z-50 w-72 bg-white rounded-2xl shadow-2xl overflow-hidden"><div className="bg-green-500 text-white p-4"><h4 className="font-bold text-sm">{t("مرحبا 👋", "Hello 👋")}</h4><p className="text-xs text-white/80">{t("كيف يمكننا مساعدتك؟", "How can we help?")}</p></div><div className="p-4"><a href="https://wa.me/966575015019" target="_blank" className="block w-full bg-green-500 text-white text-center py-2.5 rounded-full text-sm font-bold hover:bg-green-600">{t("تحدث معنا", "Chat with us")}</a></div></motion.div>)}</AnimatePresence>
+   443→    </div>
+   444→  );
+   445→}
+   446→
+   447→function BookingForm({ lang }: { lang: "ar" | "en" }) {
+   448→  const t = (ar: string, en: string) => (lang === "ar" ? ar : en);
+   449→  const [form, setForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
+   450→  const [submitting, setSubmitting] = useState(false);
+   451→  const submit = async (e: React.FormEvent) => { e.preventDefault(); setSubmitting(true); await new Promise(r => setTimeout(r, 1500)); toast.success(t("تم إرسال طلبك! سنتواصل معك قريباً.", "Request sent! We'll contact you.")); setForm({ name: "", email: "", phone: "", service: "", message: "" }); setSubmitting(false); };
+   452→  return (
+   453→    <form onSubmit={submit} className="bg-white rounded-3xl shadow-2xl p-8">
+   454→      <div className="grid sm:grid-cols-2 gap-4">
+   455→        <div><Label className="text-xs">{t("الاسم الكامل", "Full Name")}</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className="mt-1" placeholder={t("الاسم", "Name")} /></div>
+   456→        <div><Label className="text-xs">{t("البريد", "Email")}</Label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="mt-1" placeholder="email@example.com" dir="ltr" /></div>
+   457→        <div><Label className="text-xs">{t("الهاتف", "Phone")}</Label><Input type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required className="mt-1" placeholder="05xxxxxxxx" dir="ltr" /></div>
+   458→        <div><Label className="text-xs">{t("الخدمة", "Service")}</Label><select value={form.service} onChange={e => setForm({ ...form, service: e.target.value })} required className="w-full mt-1 border rounded-md px-3 py-2 text-sm"><option value="">{t("اختر الخدمة", "Select")}</option><option value="derma">{t("الجلدية والتجميل", "Dermatology")}</option><option value="nutrition">{t("التغذية", "Nutrition")}</option><option value="physio">{t("العلاج الطبيعي", "Physiotherapy")}</option><option value="body">{t("تنسيق القوام", "Body Contouring")}</option><option value="hijama">{t("الحجامة", "Hijama")}</option><option value="dental">{t("الأسنان", "Dental")}</option></select></div>
+   459→      </div>
+   460→      <div className="mt-4"><Label className="text-xs">{t("رسالة", "Message")}</Label><Textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} className="mt-1" rows={3} placeholder={t("اكتب رسالتك...", "Write message...")} /></div>
+   461→      <motion.button type="submit" disabled={submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full mt-5 py-3 rounded-full font-bold shadow-lg transition-shadow" style={{ background: GOLD, color: DARK }}>{submitting ? t("جارٍ الإرسال...", "Sending...") : t("إرسال", "Send")}</motion.button>
+   462→    </form>
+   463→  );
+   464→}
+   465→
