@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, X, Phone, Mail, MapPin, Clock, Stethoscope, Thermometer,
-  Eye, Heart, Baby, Activity, Brain, Bone, Pill, Syringe, Tooth,
-  Microscope, Flask, ShieldPlus, Ear, Droplet, Cells, Footprints,
+  Eye, Heart, Baby, Activity, Brain, Bone, Pill, Syringe, Smile,
+  Microscope, Beaker, ShieldPlus, Ear, Droplet, Footprints,
   User, Star, ChevronLeft, ChevronRight, Globe, Facebook, Twitter,
   Instagram, Linkedin, Youtube, Send, ArrowUp, ShieldCheck, Award,
-  Users, Smile, CheckCircle2, Quote, Play, Calendar, MessageCircle,
+  Users, CheckCircle2, Quote, Play, Calendar, MessageCircle,
   TrendingUp, Scissors, FileText, Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export default function Home() {
 
   const services = [
     { icon: Brain, title: t("جراحة الأعصاب", "Neuro Surgery"), desc: t("نقدم أحدث تقنيات جراحة المخ والأعصاب بفريق متخصص", "We offer the latest neurosurgery techniques with specialized team") },
-    { icon: Tooth, title: t("جراحة الأسنان", "Dental Surgery"), desc: t("علاجات أسنان متكاملة بأسعار مناسبة وأحدث التقنيات", "Comprehensive dental treatments at affordable prices") },
+    { icon: Smile, title: t("جراحة الأسنان", "Dental Surgery"), desc: t("علاجات أسنان متكاملة بأسعار مناسبة وأحدث التقنيات", "Comprehensive dental treatments at affordable prices") },
     { icon: Eye, title: t("جراحة العيون", "Cataract Surgery"), desc: t("جراحة الساد والمياه البيضاء بأحدث الأجهزة", "Cataract surgery with latest equipment") },
     { icon: Heart, title: t("جراحة القلب", "Heart Surgery"), desc: t("جراحات القلب المفتوح والقسطرة بأيدي خبراء", "Open heart surgery and catheterization by experts") },
   ];
@@ -58,12 +58,12 @@ export default function Home() {
     { icon: Brain, name: t("الأعصاب", "Neurology") },
     { icon: Bone, name: t("العظام", "Orthopaedics") },
     { icon: Eye, name: t("العيون", "Eyecare") },
-    { icon: Flask, name: t("الغدد", "Endocrinology") },
+    { icon: Beaker, name: t("الغدد", "Endocrinology") },
     { icon: ShieldPlus, name: t("المناعة", "Immunology") },
     { icon: Ear, name: t("الأنف والأذن", "Otolaryngology") },
     { icon: Droplet, name: t("أمراض الدم", "Hematology") },
     { icon: Activity, name: t("القلب", "Cardiology") },
-    { icon: Tooth, name: t("الأسنان", "Dental Care") },
+    { icon: Smile, name: t("الأسنان", "Dental Care") },
     { icon: Footprints, name: t("القدم", "Podiatry") },
   ];
 
@@ -84,7 +84,7 @@ export default function Home() {
   const doctors = [
     { name: t("د. خالد الحربي", "Dr. Khalid Alharbi"), role: t("مدير عام", "General Doctor"), icon: Stethoscope },
     { name: t("د. أحمد العتيبي", "Dr. Ahmed Alotaibi"), role: t("استشاري قلب", "Cardiology"), icon: Heart },
-    { name: t("د. سارة الدوسري", "Dr. Sarah Aldosari"), role: t("أسنان", "Dentist"), icon: Tooth },
+    { name: t("د. سارة الدوسري", "Dr. Sarah Aldosari"), role: t("أسنان", "Dentist"), icon: Smile },
     { name: t("د. محمد القحطاني", "Dr. Mohammed Alqahtani"), role: t("نساء وولادة", "Gynecology"), icon: Baby },
   ];
 
