@@ -10,6 +10,8 @@ import {
   Microscope, Baby, Eye, Brain, Syringe, Ambulance,
   ArrowRight, ArrowLeft, Quote, ChevronLeft, ChevronRight,
   Search, Zap, Lock, Hospital, Plus, Minus,
+  Tag, Newspaper, Instagram, Facebook, Twitter, Youtube,
+  ChevronUp, MessageSquare, XCircle, ArrowRight as ArrowRightIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,6 +150,70 @@ const T = {
         { q: "هل يوجد كشف طوارئ؟", a: "نعم، نقدم خدمة الطوارئ 24/7. اتصل على الرقم الموحد في حالات الطوارئ." },
       ],
     },
+    offers: {
+      tag: "أحدث العروض",
+      title: "عروض وباقات حصرية",
+      desc: "باقات طبية متكاملة بأسعار خاصة لفترة محدودة",
+      badge: "عرض خاص",
+      book: "احصل على العرض",
+      items: [
+        { t: "باقة العناية بالقلب الشاملة", d: "فحص شامل + تخطيط قلب + استشارة", p: "899 ر.س", oldP: "1500 ر.س", img: "offer1" },
+        { t: "تبييض الأسنان بالليزر", d: "جلسة تبييض كاملة + تنظيف", p: "599 ر.س", oldP: "900 ر.س", img: "offer2" },
+        { t: "باقة الفحص الشامل للعائلة", d: "فحص شامل لـ 4 أفراد من العائلة", p: "1299 ر.س", oldP: "2000 ر.س", img: "offer3" },
+        { t: "استشارة جلدية + جلسة علاج", d: "استشارة + جلسة تنظيف بشرة عميقة", p: "449 ر.س", oldP: "700 ر.س", img: "offer4" },
+        { t: "فحص العيون + استشارة الليزك", d: "فحص شامل + تقييم لعملية الليزك", p: "349 ر.س", oldP: "550 ر.س", img: "offer5" },
+        { t: "باقة ما بعد العمليات", d: "متابعة + علاج طبيعي 5 جلسات", p: "1099 ر.س", oldP: "1800 ر.س", img: "offer6" },
+      ],
+    },
+    whyus: {
+      tag: "لماذا تختارنا",
+      title: "لماذا تختار عيادة خالد الطبية؟",
+      desc: "نقدم تجربة طبية متكاملة تضع راحتك وشفاءك في المقام الأول",
+      items: [
+        "استشارات طبية متخصصة مع نخبة من الأطباء",
+        "أطباء استشاريون حاصلون على شهادات عالمية",
+        "أحدث الأجهزة الطبية والتشخيصية",
+        "متابعة مستمرة للحالة بعد العلاج",
+        "تقنيات تشخيص دقيقة وعالية الجودة",
+        "تحاليل ومختبرات بنتائج سريعة وموثوقة",
+        "مواعيد مرنة تناسب جدولك",
+        "ملفات طبية إلكترونية آمنة",
+        "بيئة مريحة وودودة لجميع المرضى",
+        "خصوصية تامة وسرية تامة للمعلومات",
+      ],
+    },
+    results: {
+      tag: "نتائج حقيقية",
+      title: "انظر ماذا قال عملاؤنا",
+      desc: "آراء حقيقية من مرضى عالجتهم عيادتنا",
+    },
+    blog: {
+      tag: "أحدث المقالات",
+      title: "مقالات طبية مفيدة",
+      desc: "نصائح ومعلومات طبية من نخبة أطبائنا",
+      readMore: "اقرأ المزيد",
+      items: [
+        { t: "10 نصائح للحفاظ على صحة القلب", d: "اكتشف أهم العادات اليومية التي تحافظ على صحة قلبك وتقي من أمراض القلب والشرايين.", date: "15 أغسطس 2025", cat: "أمراض القلب", img: "blog1" },
+        { t: "أهمية الفحص الدوري للأسنان", d: "لماذا يجب عليك زيارة طبيب الأسنان كل 6 أشهر؟ وكيف تحافظ على صحة أسنانك؟", date: "10 أغسطس 2025", cat: "الأسنان", img: "blog2" },
+        { t: "تغذية صحية للأطفال في الصيف", d: "دليل شامل لتغذية أطفالك خلال فصل الصيف للحفاظ على صحتهم ونشاطهم.", date: "5 أغسطس 2025", cat: "الأطفال", img: "blog3" },
+        { t: "كيف تحمي عينيك من الشاشات؟", d: "نصائح عملية لحماية عينيك من إجهاد الشاشات في عصر التكنولوجيا.", date: "1 أغسطس 2025", cat: "العيون", img: "blog4" },
+      ],
+    },
+    social: { follow: "تابعنا على", },
+    contactPopup: {
+      title: "أرسل رسالة سريعة",
+      desc: "نحن هنا للإجابة على استفساراتك",
+      name: "الاسم", namePh: "اسمك",
+      phone: "الجوال", phonePh: "05xxxxxxxx",
+      message: "الرسالة", messagePh: "اكتب رسالتك هنا...",
+      send: "إرسال", sent: "تم إرسال رسالتك بنجاح!",
+    },
+    legal: {
+      company: "عيادة خالد الطبية المحدودة",
+      companyEn: "Khalid Medical Clinic Ltd.",
+      reg: "س.ت: 1010xxxxxx",
+      vat: "ض.ق: 3000xxxxxx",
+    },
   },
   en: {
     dir: "ltr",
@@ -263,6 +329,70 @@ const T = {
         { q: "Is there emergency service?", a: "Yes, we provide 24/7 emergency service. Call our hotline for emergencies." },
       ],
     },
+    offers: {
+      tag: "Latest Offers",
+      title: "Exclusive Packages",
+      desc: "Comprehensive medical packages at special prices for a limited time",
+      badge: "Special Offer",
+      book: "Get Offer",
+      items: [
+        { t: "Complete Cardiac Care Package", d: "Full checkup + ECG + consultation", p: "899 SAR", oldP: "1500 SAR", img: "offer1" },
+        { t: "Laser Teeth Whitening", d: "Full whitening session + cleaning", p: "599 SAR", oldP: "900 SAR", img: "offer2" },
+        { t: "Family Checkup Package", d: "Comprehensive checkup for 4 family members", p: "1299 SAR", oldP: "2000 SAR", img: "offer3" },
+        { t: "Dermatology Consultation + Treatment", d: "Consultation + deep facial session", p: "449 SAR", oldP: "700 SAR", img: "offer4" },
+        { t: "Eye Exam + LASIK Consultation", d: "Comprehensive exam + LASIK evaluation", p: "349 SAR", oldP: "550 SAR", img: "offer5" },
+        { t: "Post-Op Recovery Package", d: "Follow-up + 5 physiotherapy sessions", p: "1099 SAR", oldP: "1800 SAR", img: "offer6" },
+      ],
+    },
+    whyus: {
+      tag: "Why Choose Us",
+      title: "Why Choose Khalid Medical Clinic?",
+      desc: "We provide an integrated medical experience that puts your comfort and recovery first",
+      items: [
+        "Specialized medical consultations with elite doctors",
+        "Consultant doctors with international degrees",
+        "Latest medical and diagnostic equipment",
+        "Continuous follow-up after treatment",
+        "Accurate high-quality diagnostic technology",
+        "Fast and reliable lab tests",
+        "Flexible appointments to fit your schedule",
+        "Secure electronic medical records",
+        "Comfortable and friendly environment for all patients",
+        "Complete privacy and confidentiality",
+      ],
+    },
+    results: {
+      tag: "Real Results",
+      title: "See What Our Clients Said",
+      desc: "Real reviews from patients treated at our clinic",
+    },
+    blog: {
+      tag: "Latest Articles",
+      title: "Useful Medical Articles",
+      desc: "Medical tips and information from our elite doctors",
+      readMore: "Read More",
+      items: [
+        { t: "10 Tips to Maintain Heart Health", d: "Discover the daily habits that protect your heart and prevent cardiovascular disease.", date: "Aug 15, 2025", cat: "Cardiology", img: "blog1" },
+        { t: "Importance of Regular Dental Checkups", d: "Why should you visit the dentist every 6 months? How to maintain your dental health?", date: "Aug 10, 2025", cat: "Dental", img: "blog2" },
+        { t: "Healthy Summer Nutrition for Kids", d: "Comprehensive guide to feeding your children during summer.", date: "Aug 5, 2025", cat: "Pediatrics", img: "blog3" },
+        { t: "How to Protect Your Eyes from Screens", d: "Practical tips to protect your eyes from screen strain in the tech era.", date: "Aug 1, 2025", cat: "Ophthalmology", img: "blog4" },
+      ],
+    },
+    social: { follow: "Follow Us" },
+    contactPopup: {
+      title: "Send a Quick Message",
+      desc: "We're here to answer your questions",
+      name: "Name", namePh: "Your name",
+      phone: "Phone", phonePh: "05xxxxxxxx",
+      message: "Message", messagePh: "Write your message here...",
+      send: "Send", sent: "Message sent successfully!",
+    },
+    legal: {
+      company: "Khalid Medical Clinic Ltd.",
+      companyEn: "Khalid Medical Clinic Ltd.",
+      reg: "CR: 1010xxxxxx",
+      vat: "VAT: 3000xxxxxx",
+    },
   },
 };
 
@@ -286,6 +416,20 @@ const IMG = {
   doc2: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=85",
   doc3: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=800&q=85",
   doc4: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=800&q=85",
+  // Offers (portrait 4:5)
+  offer1: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=85",
+  offer2: "https://images.unsplash.com/photo-1616396019462-8280cf4b9b41?w=900&q=85",
+  offer3: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&q=85",
+  offer4: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=85",
+  offer5: "https://images.unsplash.com/photo-1570554886111-e80fcca6a029?w=900&q=85",
+  offer6: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=900&q=85",
+  // Blog
+  blog1: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=85",
+  blog2: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=85",
+  blog3: "https://images.unsplash.com/photo-1505944270255-72b8c68c6a70?w=800&q=85",
+  blog4: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=800&q=85",
+  // Why-us side image
+  whyus: "https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?w=1000&q=85",
 };
 
 // ============ Animated Counter ============
@@ -380,6 +524,11 @@ export default function Home() {
   const [bookingStep, setBookingStep] = useState(0);
   const [booking, setBooking] = useState({ service: "", doctor: "", date: "", time: "", name: "", phone: "", email: "", notes: "" });
   const [bookingDone, setBookingDone] = useState(false);
+  const [offerSlide, setOfferSlide] = useState(0);
+  const [showContactPopup, setShowContactPopup] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: "", phone: "", message: "" });
+  const [contactSent, setContactSent] = useState(false);
+  const [resultsSlide, setResultsSlide] = useState(0);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const t = T[lang];
@@ -423,7 +572,9 @@ export default function Home() {
     { id: "home", label: t.nav.home },
     { id: "about", label: t.nav.about },
     { id: "services", label: t.nav.services },
+    { id: "offers", label: t.offers.tag },
     { id: "doctors", label: t.nav.doctors },
+    { id: "blog", label: t.blog.tag },
     { id: "booking", label: t.nav.booking },
     { id: "contact", label: t.nav.contact },
   ];
@@ -912,6 +1063,100 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== Offers Carousel (Rosa-style) ===== */}
+      <section id="offers" className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute top-20 right-0 w-80 h-80 bg-[#d4a574]/8 blur-3xl rounded-full" />
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <Reveal className="text-center max-w-2xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 bg-[#d4a574]/15 text-[#b88a4f] px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Tag className="w-4 h-4" /> {t.offers.tag}
+            </div>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#0a0e1a] mb-4 ${isAR ? "font-cairo" : "font-display"}`}>{t.offers.title}</h2>
+            <p className="text-[#0a0e1a]/60 text-lg">{t.offers.desc}</p>
+          </Reveal>
+
+          {/* Carousel */}
+          <div className="relative">
+            <div className="overflow-hidden rounded-3xl">
+              <motion.div
+                className="flex"
+                animate={{ x: `calc(-${offerSlide} * (100% / 3))` }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {t.offers.items.map((offer, i) => {
+                  const img = (IMG as any)[offer.img];
+                  return (
+                    <div key={i} className="w-full md:w-1/3 flex-shrink-0 px-2">
+                      <motion.div
+                        whileHover={{ y: -8 }}
+                        className="group bg-[#fafaf7] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow h-full"
+                      >
+                        <div className="relative h-64 overflow-hidden">
+                          <motion.img
+                            src={img}
+                            alt={offer.t}
+                            className="w-full h-full object-cover"
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.6 }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/80 via-transparent to-transparent" />
+                          <div className="absolute top-4 right-4 bg-[#d4a574] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                            <Tag className="w-3 h-3" /> {t.offers.badge}
+                          </div>
+                          <div className="absolute bottom-4 left-4 right-4">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-2xl font-bold text-white">{offer.p}</span>
+                              <span className="text-sm text-white/60 line-through">{offer.oldP}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-5">
+                          <h3 className="text-lg font-bold text-[#0a0e1a] mb-2">{offer.t}</h3>
+                          <p className="text-[#0a0e1a]/60 text-sm mb-4">{offer.d}</p>
+                          <button
+                            onClick={() => scrollTo("booking")}
+                            className="w-full bg-gradient-to-r from-[#0a4d68] to-[#088395] text-white py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#0a4d68]/30 transition flex items-center justify-center gap-1.5"
+                          >
+                            <Calendar className="w-4 h-4" /> {t.offers.book}
+                          </button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </div>
+
+            {/* Arrows */}
+            <button
+              onClick={() => setOfferSlide(Math.max(0, offerSlide - 1))}
+              disabled={offerSlide === 0}
+              className="absolute top-1/2 -translate-y-1/2 -right-2 md:-right-4 z-10 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center text-[#0a4d68] hover:bg-[#0a4d68] hover:text-white transition disabled:opacity-30"
+            >
+              {isAR ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </button>
+            <button
+              onClick={() => setOfferSlide(Math.min(t.offers.items.length - 3, offerSlide + 1))}
+              disabled={offerSlide >= t.offers.items.length - 3}
+              className="absolute top-1/2 -translate-y-1/2 -left-2 md:-left-4 z-10 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center text-[#0a4d68] hover:bg-[#0a4d68] hover:text-white transition disabled:opacity-30"
+            >
+              {isAR ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            </button>
+
+            {/* Dots */}
+            <div className="flex justify-center gap-2 mt-6">
+              {Array.from({ length: Math.max(1, t.offers.items.length - 2) }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setOfferSlide(i)}
+                  className={`h-2 rounded-full transition-all ${offerSlide === i ? "w-8 bg-[#d4a574]" : "w-2 bg-[#0a0e1a]/15"}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ===== About ===== */}
       <section id="about" className="py-24 bg-[#fafaf7] relative overflow-hidden">
         <div className="absolute top-40 right-0 w-72 h-72 rounded-full bg-[#d4a574]/8 blur-3xl" />
@@ -980,6 +1225,65 @@ export default function Home() {
                   </StaggerItem>
                 ))}
               </StaggerGroup>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Why Choose Us (Rosa-style 10-point checklist) ===== */}
+      <section id="why-us" className="py-24 bg-[#fafaf7] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#d4a574]/8 blur-3xl rounded-full" />
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <Reveal>
+              <div className="inline-flex items-center gap-2 bg-[#0a4d68]/8 text-[#0a4d68] px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <Heart className="w-4 h-4" /> {t.whyus.tag}
+              </div>
+              <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#0a0e1a] mb-4 ${isAR ? "font-cairo" : "font-display"}`}>{t.whyus.title}</h2>
+              <p className="text-[#0a0e1a]/60 text-lg mb-8">{t.whyus.desc}</p>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                {t.whyus.items.map((item, i) => (
+                  <Reveal key={i} delay={0.04 * i} y={16}>
+                    <motion.div
+                      whileHover={{ x: isAR ? -4 : 4 }}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md transition"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0a4d68] to-[#088395] flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-sm text-[#0a0e1a] font-medium">{item}</span>
+                    </motion.div>
+                  </Reveal>
+                ))}
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.2}>
+              <div className="relative">
+                <div className="absolute -top-6 -right-6 w-32 h-32 border-2 border-[#d4a574]/30 rounded-3xl" />
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#0a4d68]/15 to-transparent rounded-3xl" />
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                  <img src={IMG.whyus} alt="Why Choose Us" className="w-full h-[520px] object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a]/50 to-transparent" />
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-2xl flex items-center gap-3"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#d4a574] to-[#b88a4f] flex items-center justify-center">
+                    <Heart className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-[#0a0e1a]">100%</div>
+                    <div className="text-sm text-[#0a0e1a]/60">{isAR ? "رضا المرضى" : "Satisfaction"}</div>
+                  </div>
+                </motion.div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -1316,6 +1620,137 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== Results Gallery (review screenshots, Rosa-style) ===== */}
+      <section id="results" className="py-24 bg-[#fafaf7] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#0a4d68]/5 to-transparent" />
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <Reveal className="text-center max-w-2xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 bg-[#d4a574]/15 text-[#b88a4f] px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Star className="w-4 h-4" /> {t.results.tag}
+            </div>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#0a0e1a] mb-4 ${isAR ? "font-cairo" : "font-display"}`}>{t.results.title}</h2>
+            <p className="text-[#0a0e1a]/60 text-lg">{t.results.desc}</p>
+          </Reveal>
+
+          <Reveal delay={0.2}>
+            <div className="relative">
+              <div className="overflow-hidden rounded-3xl">
+                <motion.div
+                  className="flex"
+                  animate={{ x: `calc(-${resultsSlide} * 100%)` }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {t.testimonials.items.map((tt, i) => (
+                    <div key={i} className="w-full flex-shrink-0 px-2">
+                      <motion.div
+                        whileHover={{ scale: 1.01 }}
+                        className="bg-white rounded-3xl p-8 md:p-12 shadow-xl mx-auto max-w-3xl"
+                      >
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                            <MessageCircle className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-bold text-[#0a0e1a]">{tt.name}</span>
+                              <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            </div>
+                            <div className="text-xs text-[#0a0e1a]/60">{isAR ? "عميل موثّق" : "Verified Patient"}</div>
+                          </div>
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star key={s} className="w-4 h-4 fill-[#d4a574] text-[#d4a574]" />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-lg text-[#0a0e1a]/80 leading-relaxed mb-4">{tt.text}</p>
+                        <div className="text-xs text-[#0a0e1a]/40">{tt.role} • {isAR ? "عبر واتساب" : "via WhatsApp"}</div>
+                      </motion.div>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+
+              <button
+                onClick={() => setResultsSlide(Math.max(0, resultsSlide - 1))}
+                disabled={resultsSlide === 0}
+                className="absolute top-1/2 -translate-y-1/2 -right-2 md:-right-4 z-10 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center text-[#0a4d68] hover:bg-[#0a4d68] hover:text-white transition disabled:opacity-30"
+              >
+                {isAR ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={() => setResultsSlide(Math.min(t.testimonials.items.length - 1, resultsSlide + 1))}
+                disabled={resultsSlide >= t.testimonials.items.length - 1}
+                className="absolute top-1/2 -translate-y-1/2 -left-2 md:-left-4 z-10 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center text-[#0a4d68] hover:bg-[#0a4d68] hover:text-white transition disabled:opacity-30"
+              >
+                {isAR ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+              </button>
+
+              <div className="flex justify-center gap-2 mt-6">
+                {t.testimonials.items.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setResultsSlide(i)}
+                    className={`h-2 rounded-full transition-all ${resultsSlide === i ? "w-8 bg-[#d4a574]" : "w-2 bg-[#0a0e1a]/15"}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ===== Blog / Articles (SEO content, Rosa-style) ===== */}
+      <section id="blog" className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute top-20 left-0 w-80 h-80 bg-[#0a4d68]/5 blur-3xl rounded-full" />
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <Reveal className="text-center max-w-2xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 bg-[#0a4d68]/8 text-[#0a4d68] px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Newspaper className="w-4 h-4" /> {t.blog.tag}
+            </div>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#0a0e1a] mb-4 ${isAR ? "font-cairo" : "font-display"}`}>{t.blog.title}</h2>
+            <p className="text-[#0a0e1a]/60 text-lg">{t.blog.desc}</p>
+          </Reveal>
+
+          <StaggerGroup className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" stagger={0.08}>
+            {t.blog.items.map((article, i) => {
+              const img = (IMG as any)[article.img];
+              return (
+                <StaggerItem key={i}>
+                  <motion.article
+                    whileHover={{ y: -8 }}
+                    className="group bg-[#fafaf7] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow cursor-pointer h-full"
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <motion.img
+                        src={img}
+                        alt={article.t}
+                        className="w-full h-full object-cover"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.6 }}
+                      />
+                      <div className="absolute top-3 right-3 bg-[#0a4d68] text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                        {article.cat}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <div className="text-xs text-[#0a0e1a]/50 mb-2 flex items-center gap-1.5">
+                        <Calendar className="w-3 h-3" /> {article.date}
+                      </div>
+                      <h3 className="font-bold text-[#0a0e1a] mb-2 line-clamp-2">{article.t}</h3>
+                      <p className="text-sm text-[#0a0e1a]/60 mb-4 line-clamp-2">{article.d}</p>
+                      <button className="text-[#0a4d68] text-sm font-semibold flex items-center gap-1 group-hover:gap-3 transition-all">
+                        {t.blog.readMore} {isAR ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </motion.article>
+                </StaggerItem>
+              );
+            })}
+          </StaggerGroup>
+        </div>
+      </section>
+
       {/* ===== FAQ ===== */}
       <section className="py-24 bg-[#fafaf7]">
         <div className="max-w-3xl mx-auto px-4">
@@ -1425,9 +1860,34 @@ export default function Home() {
                   <div className="text-xs text-[#d4a574] tracking-[0.2em] uppercase font-semibold">{isAR ? "رعاية صحية" : "Healthcare"}</div>
                 </div>
               </div>
-              <p className="text-white/60 text-sm leading-relaxed">
+              <p className="text-white/60 text-sm leading-relaxed mb-5">
                 {isAR ? "رعاية صحية متكاملة بأحدث التقنيات وفريق طبي متخصص منذ 1998" : "Comprehensive healthcare with modern technology and specialized medical team since 1998"}
               </p>
+              {/* Social links */}
+              <div>
+                <div className="text-xs text-white/50 mb-3 font-semibold">{t.social.follow}</div>
+                <div className="flex items-center gap-2">
+                  {[
+                    { icon: Instagram, url: "https://instagram.com/khalid-alharbi", color: "#E1306C" },
+                    { icon: Facebook, url: "https://facebook.com/khalid-alharbi", color: "#1877F2" },
+                    { icon: Twitter, url: "https://twitter.com/khalid-alharbi", color: "#1DA1F2" },
+                    { icon: Youtube, url: "https://youtube.com/@khalid-alharbi", color: "#FF0000" },
+                  ].map((s, i) => (
+                    <a
+                      key={i}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition group"
+                      style={{ ["--hover-color" as any]: s.color }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = s.color)}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "")}
+                    >
+                      <s.icon className="w-4 h-4" />
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div>
@@ -1438,6 +1898,12 @@ export default function Home() {
                     {l.label}
                   </button>
                 ))}
+                <button onClick={() => scrollTo("blog")} className="block text-white/60 hover:text-[#d4a574] text-sm transition text-right">
+                  {t.blog.tag}
+                </button>
+                <button onClick={() => scrollTo("offers")} className="block text-white/60 hover:text-[#d4a574] text-sm transition text-right">
+                  {t.offers.tag}
+                </button>
               </div>
             </div>
 
@@ -1468,11 +1934,130 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-6 text-center text-white/40 text-sm">
-            © {new Date().getFullYear()} {isAR ? "عيادة خالد الطبية" : "Khalid Medical Clinic"} — {t.footer.rights}
+          {/* Legal info (Rosa-style) */}
+          <div className="border-t border-white/10 pt-6 pb-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-white/50 mb-3">
+              <span className="font-semibold text-white/70">{t.legal.company}</span>
+              <span className="text-white/30">•</span>
+              <span dir="ltr">{t.legal.companyEn}</span>
+              <span className="text-white/30">•</span>
+              <span>{t.legal.reg}</span>
+              <span className="text-white/30">•</span>
+              <span>{t.legal.vat}</span>
+            </div>
+            <div className="text-center text-white/40 text-sm">
+              © {new Date().getFullYear()} {isAR ? "عيادة خالد الطبية" : "Khalid Medical Clinic"} — {t.footer.rights}
+            </div>
           </div>
         </div>
       </footer>
+
+      {/* ===== Contact Popup Modal (Rosa-style) ===== */}
+      <AnimatePresence>
+        {showContactPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowContactPopup(false)}
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full relative"
+            >
+              <button
+                onClick={() => setShowContactPopup(false)}
+                className="absolute top-4 left-4 w-9 h-9 rounded-full bg-[#fafaf7] hover:bg-[#0a0e1a] hover:text-white text-[#0a0e1a] flex items-center justify-center transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {contactSent ? (
+                <div className="text-center py-8">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring" }}
+                    className="w-16 h-16 mx-auto rounded-full bg-green-500 flex items-center justify-center mb-4"
+                  >
+                    <CheckCircle2 className="w-9 h-9 text-white" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold text-[#0a0e1a] mb-2">{t.contactPopup.sent}</h3>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0a4d68] to-[#088395] flex items-center justify-center">
+                      <MessageSquare className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-[#0a0e1a]">{t.contactPopup.title}</h3>
+                      <p className="text-sm text-[#0a0e1a]/60">{t.contactPopup.desc}</p>
+                    </div>
+                  </div>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setContactSent(true);
+                      setTimeout(() => {
+                        setShowContactPopup(false);
+                        setContactSent(false);
+                        setContactForm({ name: "", phone: "", message: "" });
+                      }, 2500);
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <Label className="text-[#0a0e1a] font-semibold text-sm mb-2 block">{t.contactPopup.name}</Label>
+                      <Input
+                        required
+                        value={contactForm.name}
+                        onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                        placeholder={t.contactPopup.namePh}
+                        className="bg-[#fafaf7] border-2 border-[#0a0e1a]/10 focus:border-[#0a4d68] rounded-xl py-3 h-12 text-[#0a0e1a] placeholder:text-[#0a0e1a]/40 focus-visible:ring-0"
+                        style={{ color: "#0a0e1a", caretColor: "#0a4d68" }}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[#0a0e1a] font-semibold text-sm mb-2 block">{t.contactPopup.phone}</Label>
+                      <Input
+                        required
+                        type="tel"
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                        placeholder={t.contactPopup.phonePh}
+                        className="bg-[#fafaf7] border-2 border-[#0a0e1a]/10 focus:border-[#0a4d68] rounded-xl py-3 h-12 text-[#0a0e1a] placeholder:text-[#0a0e1a]/40 focus-visible:ring-0"
+                        style={{ color: "#0a0e1a", caretColor: "#0a4d68" }}
+                        dir="ltr"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[#0a0e1a] font-semibold text-sm mb-2 block">{t.contactPopup.message}</Label>
+                      <Textarea
+                        required
+                        value={contactForm.message}
+                        onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                        placeholder={t.contactPopup.messagePh}
+                        rows={3}
+                        className="bg-[#fafaf7] border-2 border-[#0a0e1a]/10 focus:border-[#0a4d68] rounded-xl py-3 text-[#0a0e1a] placeholder:text-[#0a0e1a]/40 focus-visible:ring-0 resize-none"
+                        style={{ color: "#0a0e1a", caretColor: "#0a4d68" }}
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-[#0a4d68] hover:bg-[#088395] text-white py-3 h-12 rounded-xl font-semibold">
+                      <Send className="w-4 h-4 ml-2" /> {t.contactPopup.send}
+                    </Button>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ===== Floating buttons ===== */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
@@ -1532,6 +2117,19 @@ export default function Home() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Contact popup button (left side, Rosa-style envelope) */}
+      <button
+        onClick={() => setShowContactPopup(true)}
+        className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#0a4d68] to-[#088395] text-white shadow-2xl flex items-center justify-center hover:scale-110 transition group"
+        aria-label={t.contactPopup.title}
+      >
+        <MessageSquare className="w-7 h-7" />
+        <span className="absolute inset-0 rounded-full bg-[#0a4d68] animate-ping opacity-20" />
+        <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#d4a574] text-white text-[10px] font-bold flex items-center justify-center">
+          !
+        </span>
+      </button>
     </div>
   );
 }
