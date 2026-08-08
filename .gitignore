@@ -7,3 +7,4 @@ db/*.db
 /download/
 /fonts/
 /tests/
+.vercel
