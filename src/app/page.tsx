@@ -252,8 +252,8 @@ const T = {
 const IMG = {
   hero: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85",
   hero2: "https://images.unsplash.com/photo-1616396019462-8280cf4b9b41?w=1920&q=85",
-  // Hero model (split layout)
-  heroModel: "https://images.unsplash.com/photo-1616396019462-8280cf4b9b41?w=1200&q=90",
+  // Hero model (split layout) — beautiful woman with clear skin
+  heroModel: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1200&q=90",
   about: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1400&q=85",
   about2: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&q=85",
   laser: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=85",
@@ -262,10 +262,10 @@ const IMG = {
   body: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&q=85",
   surgery: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=900&q=85",
   hair: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=900&q=85",
-  doc1: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=800&q=85",
-  doc2: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=85",
-  doc3: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=800&q=85",
-  doc4: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=85",
+  doc1: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=85",
+  doc2: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=85",
+  doc3: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&q=85",
+  doc4: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=85",
   cta: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85",
   // Booking section background — beautiful Gulf woman
   bookingBg: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=1600&q=85",
