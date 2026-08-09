@@ -252,6 +252,8 @@ const T = {
 const IMG = {
   hero: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85",
   hero2: "https://images.unsplash.com/photo-1616396019462-8280cf4b9b41?w=1920&q=85",
+  // Hero model (split layout)
+  heroModel: "https://images.unsplash.com/photo-1616396019462-8280cf4b9b41?w=1200&q=90",
   about: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1400&q=85",
   about2: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&q=85",
   laser: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=85",
@@ -265,6 +267,8 @@ const IMG = {
   doc3: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=800&q=85",
   doc4: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=85",
   cta: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85",
+  // Booking section background — beautiful Gulf woman
+  bookingBg: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=1600&q=85",
 };
 
 // ============ Animated Counter ============
@@ -559,53 +563,39 @@ export default function Home() {
         </AnimatePresence>
       </motion.nav>
 
-      {/* ===== Hero ===== */}
-      <section id="home" ref={heroRef} className="relative min-h-[92vh] overflow-hidden bg-[#1a1410]">
-        <motion.div className="absolute inset-0" style={{ y: heroY, scale: heroScale }}>
-          {[IMG.hero, IMG.hero2].map((src, i) => (
-            <motion.div
-              key={i}
-              className="absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: heroSlide === i ? 1 : 0 }}
-              transition={{ duration: 1.8, ease: "easeInOut" }}
-            >
-              <img src={src} alt="Clinic" className="w-full h-full object-cover" />
-            </motion.div>
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1a1410]/90 via-[#1a1410]/60 to-[#1a1410]/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410] via-transparent to-[#1a1410]/40" />
-        </motion.div>
-
-        {/* Floating decorative blobs */}
-        <div className="absolute top-32 right-20 w-72 h-72 rounded-full bg-[#b8965a]/15 blur-3xl animate-float" />
-        <div className="absolute bottom-32 left-20 w-96 h-96 bg-[#c9a0a0]/10 blur-3xl animate-blob" />
+      {/* ===== Hero — Split layout (text + model image) ===== */}
+      <section id="home" ref={heroRef} className="relative min-h-[92vh] overflow-hidden bg-[#f8f4ee]">
+        {/* Soft decorative background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#f8f4ee] via-[#f1ebe0] to-[#e8dcc8]" />
+        <div className="absolute top-20 right-20 w-96 h-96 rounded-full bg-[#b8965a]/10 blur-3xl animate-float" />
+        <div className="absolute bottom-32 left-32 w-80 h-80 rounded-full bg-[#c9a0a0]/12 blur-3xl animate-blob" />
 
         {/* Floating particles */}
-        {[...Array(6)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1.5 h-1.5 rounded-full bg-[#d4b888]/40"
+            className="absolute w-1.5 h-1.5 rounded-full bg-[#b8965a]/40"
             style={{
-              left: `${15 + i * 13}%`,
-              top: `${25 + (i % 3) * 25}%`,
+              left: `${15 + i * 15}%`,
+              top: `${20 + (i % 3) * 25}%`,
               animation: `float ${5 + i}s ease-in-out infinite`,
-              animationDelay: `${i * 0.7}s`,
+              animationDelay: `${i * 0.6}s`,
             }}
           />
         ))}
 
-        <motion.div style={{ opacity: heroOpacity }} className="relative max-w-7xl mx-auto px-4 min-h-[92vh] flex items-center py-20">
-          <div className={`max-w-2xl ${isAR ? "text-right" : "text-left"}`}>
+        <motion.div style={{ opacity: heroOpacity }} className="relative max-w-7xl mx-auto px-4 min-h-[92vh] grid lg:grid-cols-2 gap-8 items-center py-20">
+          {/* Right column (text) — visually right in RTL = text side */}
+          <div className={`order-1 ${isAR ? "text-right lg:order-1" : "text-left lg:order-1"}`}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="inline-flex items-center gap-2 glass border border-[#d4b888]/30 text-[#d4b888] px-5 py-2.5 rounded-full text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-md border border-[#b8965a]/30 text-[#8a6d3b] px-5 py-2.5 rounded-full text-sm font-medium mb-6 shadow-sm"
             >
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-[#d4b888] opacity-75 animate-ping" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d4b888]" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[#b8965a] opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#b8965a]" />
               </span>
               <Sparkles className="w-4 h-4" /> {t.hero.tag}
             </motion.div>
@@ -614,7 +604,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className={`text-5xl md:text-7xl lg:text-[5.5rem] font-bold text-white leading-[1.05] mb-6 ${isAR ? "font-tajawal" : "font-display"}`}
+              className={`text-5xl md:text-6xl lg:text-7xl font-bold text-[#1a1410] leading-[1.1] mb-6 ${isAR ? "font-tajawal" : "font-display"}`}
             >
               {t.hero.title1}
               <br />
@@ -625,7 +615,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-lg md:text-xl text-white/75 mb-10 leading-relaxed max-w-2xl"
+              className="text-lg md:text-xl text-[#3d342a]/80 mb-10 leading-relaxed max-w-xl"
             >
               {t.hero.desc}
             </motion.p>
@@ -634,13 +624,13 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-wrap gap-4 mb-14"
+              className="flex flex-wrap gap-4 mb-12"
             >
               <motion.button
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => scrollTo("booking")}
-                className="btn-gold text-white px-8 py-4 rounded-full font-semibold text-lg shadow-2xl shadow-[#b8965a]/40 flex items-center gap-2"
+                className="btn-gold text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-2xl shadow-[#b8965a]/30 flex items-center gap-2"
               >
                 <Calendar className="w-5 h-5" /> {t.hero.cta1}
                 {isAR ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
@@ -649,7 +639,7 @@ export default function Home() {
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => scrollTo("services")}
-                className="glass border border-white/20 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition flex items-center gap-2"
+                className="bg-white border-2 border-[#b8965a]/30 text-[#1a1410] px-8 py-4 rounded-2xl font-semibold text-lg hover:border-[#b8965a] hover:bg-[#f8f4ee] transition flex items-center gap-2"
               >
                 <Play className="w-5 h-5" /> {t.hero.cta2}
               </motion.button>
@@ -660,30 +650,94 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-white/10"
+              className="grid grid-cols-2 md:grid-cols-4 gap-5 pt-6 border-t border-[#b8965a]/20"
             >
               {t.hero.stats.map((s, i) => (
                 <div key={i}>
-                  <div className="text-3xl md:text-4xl font-bold shimmer-text mb-1">
+                  <div className="text-2xl md:text-3xl font-bold shimmer-text mb-1">
                     <Counter value={s.v} />
                   </div>
-                  <div className="text-white/60 text-sm">{s.l}</div>
+                  <div className="text-[#7a6f63] text-xs md:text-sm">{s.l}</div>
                 </div>
               ))}
             </motion.div>
           </div>
+
+          {/* Left column (model image) — visually left in RTL = image side */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, x: isAR ? 30 : -30 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="order-2 relative flex justify-center lg:justify-end"
+          >
+            <div className="relative w-full max-w-md lg:max-w-lg">
+              {/* Decorative frame */}
+              <div className="absolute -top-5 -right-5 w-32 h-32 border border-[#b8965a]/40 rounded-3xl" />
+              <div className="absolute -bottom-5 -left-5 w-40 h-40 bg-gradient-to-br from-[#b8965a]/15 to-[#c9a0a0]/10 rounded-3xl" />
+
+              {/* Main image */}
+              <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5]">
+                <motion.img
+                  src={IMG.heroModel}
+                  alt="Beauty Model"
+                  className="w-full h-full object-cover"
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/30 via-transparent to-transparent" />
+              </div>
+
+              {/* Floating badge card — top */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="absolute -top-6 -left-6 bg-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-[180px] animate-float"
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center">
+                  <Star className="w-6 h-6 text-white fill-white" />
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-[#1a1410]">4.9/5</div>
+                  <div className="text-xs text-[#7a6f63]">{isAR ? "+2000 تقييم" : "+2000 Reviews"}</div>
+                </div>
+              </motion.div>
+
+              {/* Floating badge card — bottom */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-2xl flex items-center gap-3"
+                style={{ animation: "float 6s ease-in-out infinite", animationDelay: "1s" }}
+              >
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#c9a0a0] to-[#b8965a] flex items-center justify-center">
+                  <Crown className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[#1a1410]">{isAR ? "خبرة معتمدة" : "Certified"}</div>
+                  <div className="text-xs text-[#7a6f63]">{isAR ? "+15 سنة" : "+15 Years"}</div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
         </motion.div>
 
-        {/* Slide indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {[0, 1].map((i) => (
-            <button
-              key={i}
-              onClick={() => setHeroSlide(i)}
-              className={`h-1.5 rounded-full transition-all ${heroSlide === i ? "w-12 bg-[#d4b888]" : "w-5 bg-white/30"}`}
+        {/* Decorative scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 z-20"
+        >
+          <div className="w-6 h-10 rounded-full border-2 border-[#b8965a]/40 flex items-start justify-center p-1.5">
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1.5 h-1.5 rounded-full bg-[#b8965a]"
             />
-          ))}
-        </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* ===== Marquee strip ===== */}
@@ -989,18 +1043,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== Booking ===== */}
-      <section id="booking" className="py-24 bg-[#1a1410] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-[#b8965a]/15 blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-[#c9a0a0]/10 blur-3xl animate-blob" />
+      {/* ===== Booking — with Gulf woman background ===== */}
+      <section id="booking" className="py-24 relative overflow-hidden">
+        {/* Background image — beautiful Gulf woman */}
+        <div className="absolute inset-0">
+          <img src={IMG.bookingBg} alt="" aria-hidden className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-[#1a1410]/85" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1a1410] via-[#1a1410]/80 to-[#1a1410]/60" />
+        </div>
+
+        {/* Floating decorative blobs */}
+        <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-[#b8965a]/20 blur-3xl animate-float" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-[#c9a0a0]/15 blur-3xl animate-blob" />
 
         <div className="relative max-w-5xl mx-auto px-4">
           <Reveal className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 glass border border-[#d4b888]/25 text-[#d4b888] px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div className="inline-flex items-center gap-2 glass border border-[#d4b888]/30 text-[#d4b888] px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Calendar className="w-4 h-4" /> {t.booking.tag}
             </div>
             <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.booking.title}</h2>
-            <p className="text-white/70 text-lg">{t.booking.desc}</p>
+            <p className="text-white/75 text-lg">{t.booking.desc}</p>
           </Reveal>
 
           <Reveal delay={0.2}>
