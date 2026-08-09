@@ -252,10 +252,10 @@ const T = {
 const IMG = {
   hero: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1920&q=85",
   hero2: "https://images.unsplash.com/photo-1616396019462-8280cf4b9b41?w=1920&q=85",
-  // Hero model (split layout) — beautiful woman with clear skin
-  heroModel: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=1200&q=90",
-  about: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1400&q=85",
-  about2: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=900&q=85",
+  // Hero model (split layout) — premium beauty model with clear glowing skin
+  heroModel: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1400&q=90",
+  about: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=1400&q=85",
+  about2: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=85",
   laser: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=85",
   filler: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=85",
   skincare: "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=900&q=85",
@@ -477,53 +477,56 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ===== Navbar ===== */}
+      {/* ===== Navbar — Premium: logo far right, links centered with thin font, gold button left ===== */}
       <motion.nav
         initial={false}
         animate={{
           backgroundColor: scrolled ? "rgba(248,244,238,0.95)" : "rgba(248,244,238,1)",
           boxShadow: scrolled ? "0 10px 40px -10px rgba(184,150,90,0.15)" : "0 0 0 rgba(0,0,0,0)",
-          paddingTop: scrolled ? 14 : 22,
-          paddingBottom: scrolled ? 14 : 22,
+          paddingTop: scrolled ? 16 : 24,
+          paddingBottom: scrolled ? 16 : 24,
         }}
         transition={{ duration: 0.4 }}
-        className="sticky top-0 z-50 backdrop-blur-xl"
+        className="sticky top-0 z-50 backdrop-blur-xl border-b border-[#b8965a]/10"
       >
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-3 items-center">
+          {/* Logo — far right in RTL */}
           <motion.button
             whileHover={{ scale: 1.02 }}
             onClick={() => scrollTo("home")}
-            className="flex items-center gap-3 group"
+            className={`flex items-center gap-3 group ${isAR ? "justify-start" : "justify-start"}`}
           >
-            <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center shadow-lg">
-              <Flower2 className="w-6 h-6 text-white" />
+            <div className="relative w-11 h-11 rounded-full bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center shadow-md">
+              <Flower2 className="w-5 h-5 text-white" />
               <div className="absolute inset-0 rounded-full border border-[#d4b888]/40" />
             </div>
             <div className="text-right">
-              <div className={`font-bold text-[#1a1410] leading-tight tracking-wider ${isAR ? "text-xl" : "text-base font-display"}`}>{isAR ? "روزا" : "ROSA"}</div>
-              <div className="text-[10px] text-[#b8965a] tracking-[0.25em] uppercase font-semibold">{t.brand.sub}</div>
+              <div className={`font-bold text-[#1a1410] leading-tight tracking-[0.15em] ${isAR ? "text-lg" : "text-base font-display"}`}>{isAR ? "روزا" : "ROSA"}</div>
+              <div className="text-[9px] text-[#b8965a] tracking-[0.3em] uppercase font-medium">{isAR ? "للتجميل والبشرة" : "AESTHETIC CLINIC"}</div>
             </div>
           </motion.button>
 
-          <div className="hidden lg:flex items-center gap-1">
+          {/* Nav links — centered with refined spacing */}
+          <div className="hidden lg:flex items-center justify-center gap-8">
             {navLinks.map((l) => (
               <button
                 key={l.id}
                 onClick={() => scrollTo(l.id)}
-                className="relative px-4 py-2 text-[#1a1410] hover:text-[#b8965a] font-medium text-sm transition group"
+                className="relative text-[#1a1410]/80 hover:text-[#b8965a] font-light text-sm tracking-wide transition group py-1"
               >
                 {l.label}
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-px bg-[#b8965a] group-hover:w-2/3 transition-all duration-300" />
+                <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-0 h-px bg-[#b8965a] group-hover:w-full transition-all duration-400" />
               </button>
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* CTA button — far left in RTL */}
+          <div className={`flex items-center ${isAR ? "justify-end" : "justify-end"}`}>
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => scrollTo("booking")}
-              className="btn-gold hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg shadow-[#b8965a]/20"
+              className="btn-gold hidden md:flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-semibold tracking-wide shadow-md shadow-[#b8965a]/15"
             >
               <Calendar className="w-4 h-4" /> {t.utility.appt}
             </motion.button>
@@ -541,19 +544,19 @@ export default function Home() {
               exit={{ opacity: 0, height: 0 }}
               className="lg:hidden bg-white border-t border-[#b8965a]/15 overflow-hidden"
             >
-              <div className="px-4 py-3 flex flex-col gap-1">
+              <div className="px-6 py-4 flex flex-col gap-1">
                 {navLinks.map((l) => (
                   <button
                     key={l.id}
                     onClick={() => scrollTo(l.id)}
-                    className="text-right py-3 px-4 rounded-lg hover:bg-[#f8f4ee] text-[#1a1410] hover:text-[#b8965a] font-medium transition"
+                    className="text-right py-3 px-4 rounded-2xl hover:bg-[#f8f4ee] text-[#1a1410] hover:text-[#b8965a] font-medium transition"
                   >
                     {l.label}
                   </button>
                 ))}
                 <button
                   onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-                  className="text-right py-3 px-4 rounded-lg hover:bg-[#f8f4ee] text-[#1a1410] font-medium flex items-center gap-2"
+                  className="text-right py-3 px-4 rounded-2xl hover:bg-[#f8f4ee] text-[#1a1410] font-medium flex items-center gap-2"
                 >
                   <Globe className="w-4 h-4" /> {lang === "ar" ? "English" : "العربية"}
                 </button>
@@ -765,7 +768,7 @@ export default function Home() {
       </div>
 
       {/* ===== About ===== */}
-      <section id="about" className="py-24 bg-[#f8f4ee] relative overflow-hidden">
+      <section id="about" className="py-32 lg:py-40 bg-[#f8f4ee] relative overflow-hidden">
         <div className="absolute top-40 right-0 w-72 h-72 rounded-full bg-[#b8965a]/8 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#c9a0a0]/8 blur-3xl" />
         <div className="relative max-w-7xl mx-auto px-4">
@@ -839,7 +842,7 @@ export default function Home() {
       </section>
 
       {/* ===== Services ===== */}
-      <section id="services" className="py-24 bg-white relative overflow-hidden">
+      <section id="services" className="py-32 lg:py-40 bg-white relative overflow-hidden">
         <div className="absolute top-20 right-0 w-80 h-80 bg-[#b8965a]/5 blur-3xl rounded-full" />
         <div className="max-w-7xl mx-auto px-4 relative">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
@@ -859,7 +862,7 @@ export default function Home() {
                 <StaggerItem key={s.t}>
                   <motion.div
                     whileHover={{ y: -8 }}
-                    className="group bg-[#f8f4ee] rounded-3xl overflow-hidden shadow-md hover:shadow-2xl card-luxury cursor-pointer h-full"
+                    className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl card-luxury cursor-pointer h-full border border-[#b8965a]/8"
                   >
                     <div className="relative h-56 overflow-hidden">
                       <motion.img
@@ -893,7 +896,7 @@ export default function Home() {
       </section>
 
       {/* ===== CTA Banner ===== */}
-      <section className="relative py-24 overflow-hidden bg-[#1a1410]">
+      <section className="relative py-32 lg:py-40 overflow-hidden bg-[#1a1410]">
         <motion.div
           initial={{ scale: 1.1 }}
           whileInView={{ scale: 1 }}
@@ -932,7 +935,7 @@ export default function Home() {
       </section>
 
       {/* ===== Doctors ===== */}
-      <section id="doctors" className="py-24 bg-[#f8f4ee] relative overflow-hidden">
+      <section id="doctors" className="py-32 lg:py-40 bg-[#f8f4ee] relative overflow-hidden">
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#b8965a]/5 blur-3xl rounded-full" />
         <div className="max-w-7xl mx-auto px-4 relative">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
@@ -949,7 +952,7 @@ export default function Home() {
               const img = (IMG as any)[d.img];
               return (
                 <StaggerItem key={d.name}>
-                  <motion.div whileHover={{ y: -8 }} className="group bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl card-luxury cursor-pointer h-full">
+                  <motion.div whileHover={{ y: -8 }} className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl card-luxury cursor-pointer h-full border border-[#b8965a]/8">
                     <div className="relative h-80 overflow-hidden">
                       <img src={img} alt={d.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/90 via-[#1a1410]/20 to-transparent" />
@@ -986,7 +989,7 @@ export default function Home() {
       </section>
 
       {/* ===== Reviews ===== */}
-      <section id="reviews" className="py-24 bg-white relative overflow-hidden">
+      <section id="reviews" className="py-32 lg:py-40 bg-white relative overflow-hidden">
         <div className="absolute top-20 left-20 w-64 h-64 bg-[#c9a0a0]/10 blur-3xl rounded-full" />
         <div className="max-w-4xl mx-auto px-4 relative">
           <Reveal className="text-center mb-12">
@@ -1044,7 +1047,7 @@ export default function Home() {
       </section>
 
       {/* ===== Booking — with Gulf woman background ===== */}
-      <section id="booking" className="py-24 relative overflow-hidden">
+      <section id="booking" className="py-32 lg:py-40 relative overflow-hidden">
         {/* Background image — beautiful Gulf woman */}
         <div className="absolute inset-0">
           <img src={IMG.bookingBg} alt="" aria-hidden className="w-full h-full object-cover" />
@@ -1201,7 +1204,7 @@ export default function Home() {
       </section>
 
       {/* ===== Contact ===== */}
-      <section id="contact" className="py-24 bg-[#f8f4ee] relative overflow-hidden">
+      <section id="contact" className="py-32 lg:py-40 bg-[#f8f4ee] relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-4">
