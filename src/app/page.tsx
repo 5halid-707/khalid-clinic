@@ -18,20 +18,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-// Medical-Luxury palette
+// Medical-Luxury palette (per spec)
 const C = {
-  cream: "#f8f4ee",      // warm cream background
-  creamSoft: "#f1ebe0",  // soft cream
-  beige: "#e8dcc8",      // light beige
-  white: "#ffffff",
-  ink: "#1a1410",        // charcoal-brown text
-  inkSoft: "#3d342a",
-  inkMute: "#7a6f63",
-  gold: "#b8965a",       // luxury gold
-  goldSoft: "#d4b888",
-  goldDeep: "#8a6d3b",
-  rose: "#c9a0a0",       // rose gold hint
-  roseSoft: "#e0c5c5",
+  white: "#FFFFFF",        // pure white
+  cream: "#F8F5F0",        // soft warm cream/beige (per spec)
+  creamSoft: "#F1ECE4",    // lighter cream
+  beige: "#E8DECE",        // light beige
+  ink: "#212121",          // deep charcoal text (per spec)
+  inkSoft: "#333333",      // charcoal
+  inkMute: "#7A7A7A",      // muted gray
+  gold: "#B8965A",         // soft matte gold
+  goldSoft: "#D4B888",     // light gold
+  goldDeep: "#8A6D3B",     // deep bronze
+  rose: "#C9A0A0",         // rose gold hint
 };
 
 // ============ Translations ============
@@ -396,13 +395,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f4ee] overflow-x-hidden" dir={t.dir}>
+    <div className="min-h-screen bg-[#F8F5F0] overflow-x-hidden" dir={t.dir}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@200;300;400;500;600;700&display=swap');
         * { -webkit-font-smoothing: antialiased; }
-        body { font-family: ${isAR ? "'Tajawal', sans-serif" : "'Inter', sans-serif"}; background: ${C.cream}; color: ${C.ink}; }
-        .font-display { font-family: ${isAR ? "'Tajawal', sans-serif" : "'Cormorant Garamond', serif"}; }
+        body { font-family: ${isAR ? "'Tajawal', sans-serif" : "'Inter', sans-serif"}; background: ${C.cream}; color: ${C.ink}; font-weight: 300; }
+        .font-display { font-family: ${isAR ? "'Tajawal', sans-serif" : "'Cormorant Garamond', serif"}; font-weight: 700; }
         .font-tajawal { font-family: 'Tajawal', sans-serif; }
+        .font-serif-en { font-family: 'Cormorant Garamond', serif; }
+        .body-thin { font-weight: 300; }
 
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
         @keyframes blob { 0%,100%{border-radius:60% 40% 30% 70% / 60% 30% 70% 40%} 50%{border-radius:30% 60% 70% 40% / 50% 60% 30% 60%} }
@@ -415,7 +416,8 @@ export default function Home() {
         .animate-marquee { animation: marquee 40s linear infinite; }
 
         .glass { background: rgba(255,255,255,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .glass-cream { background: rgba(248,244,238,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .glass-cream { background: rgba(248,245,240,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .glass-dark { background: rgba(33,33,33,0.55); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 
         .text-gradient-gold {
           background: linear-gradient(135deg, ${C.gold}, ${C.goldSoft}, ${C.gold});
@@ -448,6 +450,16 @@ export default function Home() {
           background: linear-gradient(135deg, ${C.goldSoft}, ${C.gold});
           box-shadow: 0 15px 30px -8px rgba(184,150,90,0.4);
         }
+        .btn-ghost {
+          background: transparent;
+          color: ${C.ink};
+          border: 1px solid ${C.gold};
+          transition: all 0.3s;
+        }
+        .btn-ghost:hover {
+          background: ${C.gold};
+          color: white;
+        }
 
         .divider-gold {
           background: linear-gradient(90deg, transparent, ${C.gold}, transparent);
@@ -455,10 +467,16 @@ export default function Home() {
 
         select option { color: ${C.ink} !important; background: ${C.cream} !important; }
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+
+        /* Smooth scrolling */
+        html { scroll-behavior: smooth; }
+
+        /* Image fade-in */
+        img { transition: opacity 0.4s ease; }
       `}</style>
 
       {/* ===== Utility Bar ===== */}
-      <div className="bg-[#1a1410] text-[#f8f4ee]/80 text-xs py-2.5 px-4 hidden md:block border-b border-[#b8965a]/15">
+      <div className="bg-[#212121] text-[#F8F5F0]/80 text-xs py-2.5 px-4 hidden md:block border-b border-[#b8965a]/15">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-5">
             <a href="tel:+966575015019" className="flex items-center gap-1.5 hover:text-[#d4b888] transition">
@@ -477,17 +495,21 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ===== Navbar — Premium: logo far right, links centered with thin font, gold button left ===== */}
+      {/* ===== Navbar — Transparent with backdrop-blur (per spec) ===== */}
       <motion.nav
         initial={false}
         animate={{
-          backgroundColor: scrolled ? "rgba(248,244,238,0.95)" : "rgba(248,244,238,1)",
-          boxShadow: scrolled ? "0 10px 40px -10px rgba(184,150,90,0.15)" : "0 0 0 rgba(0,0,0,0)",
-          paddingTop: scrolled ? 16 : 24,
-          paddingBottom: scrolled ? 16 : 24,
+          backgroundColor: scrolled ? "rgba(248,245,240,0.85)" : "rgba(248,245,240,0)",
+          boxShadow: scrolled ? "0 8px 32px -8px rgba(184,150,90,0.12)" : "0 0 0 rgba(0,0,0,0)",
+          paddingTop: scrolled ? 14 : 22,
+          paddingBottom: scrolled ? 14 : 22,
         }}
         transition={{ duration: 0.4 }}
-        className="sticky top-0 z-50 backdrop-blur-xl border-b border-[#b8965a]/10"
+        className="sticky top-0 z-50"
+        style={{
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+        }}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-3 items-center">
           {/* Logo — far right in RTL */}
@@ -501,7 +523,7 @@ export default function Home() {
               <div className="absolute inset-0 rounded-full border border-[#d4b888]/40" />
             </div>
             <div className="text-right">
-              <div className={`font-bold text-[#1a1410] leading-tight tracking-[0.15em] ${isAR ? "text-lg" : "text-base font-display"}`}>{isAR ? "روزا" : "ROSA"}</div>
+              <div className={`font-bold text-[#212121] leading-tight tracking-[0.15em] ${isAR ? "text-lg" : "text-base font-display"}`}>{isAR ? "روزا" : "ROSA"}</div>
               <div className="text-[9px] text-[#b8965a] tracking-[0.3em] uppercase font-medium">{isAR ? "للتجميل والبشرة" : "AESTHETIC CLINIC"}</div>
             </div>
           </motion.button>
@@ -512,7 +534,7 @@ export default function Home() {
               <button
                 key={l.id}
                 onClick={() => scrollTo(l.id)}
-                className="relative text-[#1a1410]/80 hover:text-[#b8965a] font-light text-sm tracking-wide transition group py-1"
+                className="relative text-[#212121]/80 hover:text-[#b8965a] font-light text-sm tracking-wide transition group py-1"
               >
                 {l.label}
                 <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-0 h-px bg-[#b8965a] group-hover:w-full transition-all duration-400" />
@@ -530,7 +552,7 @@ export default function Home() {
             >
               <Calendar className="w-4 h-4" /> {t.utility.appt}
             </motion.button>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 text-[#1a1410]">
+            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 text-[#212121]">
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
@@ -549,14 +571,14 @@ export default function Home() {
                   <button
                     key={l.id}
                     onClick={() => scrollTo(l.id)}
-                    className="text-right py-3 px-4 rounded-2xl hover:bg-[#f8f4ee] text-[#1a1410] hover:text-[#b8965a] font-medium transition"
+                    className="text-right py-3 px-4 rounded-2xl hover:bg-[#F8F5F0] text-[#212121] hover:text-[#b8965a] font-medium transition"
                   >
                     {l.label}
                   </button>
                 ))}
                 <button
                   onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-                  className="text-right py-3 px-4 rounded-2xl hover:bg-[#f8f4ee] text-[#1a1410] font-medium flex items-center gap-2"
+                  className="text-right py-3 px-4 rounded-2xl hover:bg-[#F8F5F0] text-[#212121] font-medium flex items-center gap-2"
                 >
                   <Globe className="w-4 h-4" /> {lang === "ar" ? "English" : "العربية"}
                 </button>
@@ -567,9 +589,9 @@ export default function Home() {
       </motion.nav>
 
       {/* ===== Hero — Split layout (text + model image) ===== */}
-      <section id="home" ref={heroRef} className="relative min-h-[92vh] overflow-hidden bg-[#f8f4ee]">
+      <section id="home" ref={heroRef} className="relative min-h-[92vh] overflow-hidden bg-[#F8F5F0]">
         {/* Soft decorative background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#f8f4ee] via-[#f1ebe0] to-[#e8dcc8]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F8F5F0] via-[#f1ebe0] to-[#e8dcc8]" />
         <div className="absolute top-20 right-20 w-96 h-96 rounded-full bg-[#b8965a]/10 blur-3xl animate-float" />
         <div className="absolute bottom-32 left-32 w-80 h-80 rounded-full bg-[#c9a0a0]/12 blur-3xl animate-blob" />
 
@@ -587,7 +609,7 @@ export default function Home() {
           />
         ))}
 
-        <motion.div style={{ opacity: heroOpacity }} className="relative max-w-7xl mx-auto px-4 min-h-[92vh] grid lg:grid-cols-2 gap-8 items-center py-20">
+        <motion.div style={{ opacity: heroOpacity }} className="relative max-w-7xl mx-auto px-6 lg:px-8 min-h-[92vh] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-20">
           {/* Right column (text) — visually right in RTL = text side */}
           <div className={`order-1 ${isAR ? "text-right lg:order-1" : "text-left lg:order-1"}`}>
             <motion.div
@@ -607,7 +629,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className={`text-5xl md:text-6xl lg:text-7xl font-bold text-[#1a1410] leading-[1.1] mb-6 ${isAR ? "font-tajawal" : "font-display"}`}
+              className={`text-5xl md:text-6xl lg:text-7xl font-bold text-[#212121] leading-[1.1] mb-6 ${isAR ? "font-tajawal" : "font-display"}`}
             >
               {t.hero.title1}
               <br />
@@ -618,7 +640,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-lg md:text-xl text-[#3d342a]/80 mb-10 leading-relaxed max-w-xl"
+              className="text-lg md:text-xl text-[#333333]/75 mb-10 leading-[1.8] font-light max-w-xl"
             >
               {t.hero.desc}
             </motion.p>
@@ -642,7 +664,7 @@ export default function Home() {
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => scrollTo("services")}
-                className="bg-white border-2 border-[#b8965a]/30 text-[#1a1410] px-8 py-4 rounded-2xl font-semibold text-lg hover:border-[#b8965a] hover:bg-[#f8f4ee] transition flex items-center gap-2"
+                className="btn-ghost px-8 py-4 rounded-2xl font-medium text-lg flex items-center gap-2"
               >
                 <Play className="w-5 h-5" /> {t.hero.cta2}
               </motion.button>
@@ -687,7 +709,7 @@ export default function Home() {
                   animate={{ scale: [1, 1.04, 1] }}
                   transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/30 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/30 via-transparent to-transparent" />
               </div>
 
               {/* Floating badge card — top */}
@@ -701,7 +723,7 @@ export default function Home() {
                   <Star className="w-6 h-6 text-white fill-white" />
                 </div>
                 <div>
-                  <div className="text-lg font-bold text-[#1a1410]">4.9/5</div>
+                  <div className="text-lg font-bold text-[#212121]">4.9/5</div>
                   <div className="text-xs text-[#7a6f63]">{isAR ? "+2000 تقييم" : "+2000 Reviews"}</div>
                 </div>
               </motion.div>
@@ -718,7 +740,7 @@ export default function Home() {
                   <Crown className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-[#1a1410]">{isAR ? "خبرة معتمدة" : "Certified"}</div>
+                  <div className="text-sm font-bold text-[#212121]">{isAR ? "خبرة معتمدة" : "Certified"}</div>
                   <div className="text-xs text-[#7a6f63]">{isAR ? "+15 سنة" : "+15 Years"}</div>
                 </div>
               </motion.div>
@@ -744,7 +766,7 @@ export default function Home() {
       </section>
 
       {/* ===== Marquee strip ===== */}
-      <div className="bg-[#1a1410] border-y border-[#b8965a]/15 py-4 overflow-hidden">
+      <div className="bg-[#212121] border-y border-[#b8965a]/15 py-4 overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(2)].map((_, idx) => (
             <div key={idx} className="flex items-center gap-12 px-6">
@@ -768,7 +790,7 @@ export default function Home() {
       </div>
 
       {/* ===== About ===== */}
-      <section id="about" className="py-32 lg:py-40 bg-[#f8f4ee] relative overflow-hidden">
+      <section id="about" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
         <div className="absolute top-40 right-0 w-72 h-72 rounded-full bg-[#b8965a]/8 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#c9a0a0]/8 blur-3xl" />
         <div className="relative max-w-7xl mx-auto px-4">
@@ -778,8 +800,8 @@ export default function Home() {
                 <div className="absolute -top-6 -right-6 w-32 h-32 border border-[#b8965a]/30 rounded-3xl" />
                 <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#b8965a]/15 to-transparent rounded-3xl" />
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                  <img src={IMG.about} alt="About" className="w-full h-[560px] object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/40 to-transparent" />
+                  <img loading="lazy" src={IMG.about} alt="About" className="w-full h-[560px] object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/40 to-transparent" />
                 </div>
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -792,8 +814,8 @@ export default function Home() {
                     <Crown className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-[#1a1410]">+15</div>
-                    <div className="text-sm text-[#1a1410]/60">{isAR ? "سنة من التميز" : "Years of Excellence"}</div>
+                    <div className="text-2xl font-bold text-[#212121]">+15</div>
+                    <div className="text-sm text-[#212121]/60">{isAR ? "سنة من التميز" : "Years of Excellence"}</div>
                   </div>
                 </motion.div>
                 <motion.div
@@ -803,7 +825,7 @@ export default function Home() {
                   transition={{ delay: 0.5 }}
                   className="absolute -top-6 -left-6 w-36 h-36 rounded-3xl overflow-hidden shadow-2xl border-4 border-white hidden lg:block"
                 >
-                  <img src={IMG.about2} alt="Detail" className="w-full h-full object-cover" />
+                  <img loading="lazy" src={IMG.about2} alt="Detail" className="w-full h-full object-cover" />
                 </motion.div>
               </div>
             </Reveal>
@@ -812,11 +834,11 @@ export default function Home() {
               <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-5">
                 <Sparkles className="w-4 h-4" /> {t.about.tag}
               </div>
-              <h2 className={`text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-[#1a1410] leading-tight mb-6 ${isAR ? "font-tajawal" : "font-display"}`}>
+              <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] leading-[1.15] mb-8 ${isAR ? "font-tajawal" : "font-display"}`}>
                 {t.about.title}
               </h2>
-              <p className="text-[#3d342a] text-lg leading-relaxed mb-4">{t.about.p1}</p>
-              <p className="text-[#3d342a] text-lg leading-relaxed mb-8">{t.about.p2}</p>
+              <p className="text-[#333333]/80 text-lg leading-[1.9] font-light mb-4">{t.about.p1}</p>
+              <p className="text-[#333333]/80 text-lg leading-[1.9] font-light mb-8">{t.about.p2}</p>
 
               <StaggerGroup className="grid sm:grid-cols-2 gap-4" stagger={0.08}>
                 {t.about.features.map((f, i) => (
@@ -829,7 +851,7 @@ export default function Home() {
                         <f.icon className="w-5 h-5 text-[#8a6d3b] group-hover:text-white transition" />
                       </div>
                       <div>
-                        <div className="font-bold text-[#1a1410] mb-1">{f.t}</div>
+                        <div className="font-bold text-[#212121] mb-1">{f.t}</div>
                         <div className="text-sm text-[#7a6f63]">{f.d}</div>
                       </div>
                     </motion.div>
@@ -849,7 +871,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Gem className="w-4 h-4" /> {t.services.tag}
             </div>
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a1410] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.services.title}</h2>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.services.title}</h2>
             <div className="w-20 h-px divider-gold mx-auto mb-4" />
             <p className="text-[#7a6f63] text-lg">{t.services.desc}</p>
           </Reveal>
@@ -872,7 +894,7 @@ export default function Home() {
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.6 }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/85 via-[#1a1410]/25 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/85 via-[#212121]/25 to-transparent" />
                       <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:bg-gradient-to-br group-hover:from-[#b8965a] group-hover:to-[#8a6d3b] transition-all duration-300">
                         <Icon className="w-6 h-6 text-[#8a6d3b] group-hover:text-white transition" />
                       </div>
@@ -896,7 +918,7 @@ export default function Home() {
       </section>
 
       {/* ===== CTA Banner ===== */}
-      <section className="relative py-32 lg:py-40 overflow-hidden bg-[#1a1410]">
+      <section className="relative py-32 lg:py-40 overflow-hidden bg-[#212121]">
         <motion.div
           initial={{ scale: 1.1 }}
           whileInView={{ scale: 1 }}
@@ -904,9 +926,9 @@ export default function Home() {
           transition={{ duration: 10 }}
           className="absolute inset-0"
         >
-          <img src={IMG.cta} alt="CTA" className="w-full h-full object-cover opacity-25" />
+          <img loading="lazy" src={IMG.cta} alt="CTA" className="w-full h-full object-cover opacity-25" />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1a1410] via-[#1a1410]/80 to-[#1a1410]/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#212121] via-[#212121]/80 to-[#212121]/60" />
         <Reveal className="relative max-w-4xl mx-auto px-4 text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
@@ -935,14 +957,14 @@ export default function Home() {
       </section>
 
       {/* ===== Doctors ===== */}
-      <section id="doctors" className="py-32 lg:py-40 bg-[#f8f4ee] relative overflow-hidden">
+      <section id="doctors" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#b8965a]/5 blur-3xl rounded-full" />
         <div className="max-w-7xl mx-auto px-4 relative">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Users className="w-4 h-4" /> {t.doctors.tag}
             </div>
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a1410] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.doctors.title}</h2>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.doctors.title}</h2>
             <div className="w-20 h-px divider-gold mx-auto mb-4" />
             <p className="text-[#7a6f63] text-lg">{t.doctors.desc}</p>
           </Reveal>
@@ -954,22 +976,22 @@ export default function Home() {
                 <StaggerItem key={d.name}>
                   <motion.div whileHover={{ y: -8 }} className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl card-luxury cursor-pointer h-full border border-[#b8965a]/8">
                     <div className="relative h-80 overflow-hidden">
-                      <img src={img} alt={d.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1410]/90 via-[#1a1410]/20 to-transparent" />
+                      <img loading="lazy" src={img} alt={d.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/90 via-[#212121]/20 to-transparent" />
                       <div className="absolute bottom-3 left-3 right-3">
                         <div className="bg-gradient-to-r from-[#b8965a] to-[#8a6d3b] text-white text-xs font-medium px-3 py-1.5 rounded-full inline-block shadow-lg">{d.exp}</div>
                       </div>
-                      <div className="absolute inset-0 bg-[#1a1410]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-[#212121]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                         <motion.button
                           onClick={() => scrollTo("booking")}
-                          className="bg-white text-[#1a1410] px-6 py-3 rounded-full font-semibold shadow-xl transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 flex items-center gap-2"
+                          className="bg-white text-[#212121] px-6 py-3 rounded-full font-semibold shadow-xl transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 flex items-center gap-2"
                         >
                           <Calendar className="w-4 h-4" /> {t.doctors.bookWith}
                         </motion.button>
                       </div>
                     </div>
                     <div className="p-5 text-center">
-                      <h3 className="text-lg font-bold text-[#1a1410] mb-1">{d.name}</h3>
+                      <h3 className="text-lg font-bold text-[#212121] mb-1">{d.name}</h3>
                       <p className="text-[#b8965a] text-sm font-medium mb-2">{d.spec}</p>
                       <p className="text-[#7a6f63] text-xs flex items-center justify-center gap-1.5">
                         <Award className="w-3 h-3" /> {d.edu}
@@ -996,12 +1018,12 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Star className="w-4 h-4" /> {t.reviews.tag}
             </div>
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a1410] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.reviews.title}</h2>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.reviews.title}</h2>
             <div className="w-20 h-px divider-gold mx-auto" />
           </Reveal>
 
           <Reveal delay={0.2}>
-            <div className="relative bg-[#f8f4ee] rounded-3xl p-8 md:p-12 shadow-lg">
+            <div className="relative bg-[#F8F5F0] rounded-3xl p-8 md:p-12 shadow-lg">
               <Quote className="absolute top-6 left-6 w-16 h-16 text-[#b8965a]/15" />
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1017,7 +1039,7 @@ export default function Home() {
                       <Star key={s} className="w-5 h-5 fill-[#b8965a] text-[#b8965a]" />
                     ))}
                   </div>
-                  <p className="text-xl md:text-2xl text-[#1a1410] leading-relaxed mb-8 font-medium">
+                  <p className="text-xl md:text-2xl text-[#212121] leading-relaxed mb-8 font-medium">
                     "{t.reviews.items[activeReview].text}"
                   </p>
                   <div className="flex items-center gap-4">
@@ -1025,7 +1047,7 @@ export default function Home() {
                       {t.reviews.items[activeReview].name.charAt(0)}
                     </div>
                     <div>
-                      <div className="font-bold text-[#1a1410] text-lg">{t.reviews.items[activeReview].name}</div>
+                      <div className="font-bold text-[#212121] text-lg">{t.reviews.items[activeReview].name}</div>
                       <div className="text-sm text-[#b8965a]">{t.reviews.items[activeReview].role}</div>
                     </div>
                   </div>
@@ -1037,7 +1059,7 @@ export default function Home() {
                   <button
                     key={i}
                     onClick={() => setActiveReview(i)}
-                    className={`h-2 rounded-full transition-all ${activeReview === i ? "w-8 bg-[#b8965a]" : "w-2 bg-[#1a1410]/15"}`}
+                    className={`h-2 rounded-full transition-all ${activeReview === i ? "w-8 bg-[#b8965a]" : "w-2 bg-[#212121]/15"}`}
                   />
                 ))}
               </div>
@@ -1050,9 +1072,9 @@ export default function Home() {
       <section id="booking" className="py-32 lg:py-40 relative overflow-hidden">
         {/* Background image — beautiful Gulf woman */}
         <div className="absolute inset-0">
-          <img src={IMG.bookingBg} alt="" aria-hidden className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-[#1a1410]/85" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1a1410] via-[#1a1410]/80 to-[#1a1410]/60" />
+          <img loading="lazy" src={IMG.bookingBg} alt="" aria-hidden className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-[#212121]/85" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#212121] via-[#212121]/80 to-[#212121]/60" />
         </div>
 
         {/* Floating decorative blobs */}
@@ -1073,7 +1095,7 @@ export default function Home() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                    <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                       <User className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.name} <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -1082,12 +1104,12 @@ export default function Home() {
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder={t.booking.fields.namePh}
-                      className="bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#1a1410] placeholder:text-[#7a6f63] focus-visible:ring-0"
-                      style={{ color: "#1a1410", caretColor: "#b8965a" }}
+                      className="bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#212121] placeholder:text-[#7a6f63] focus-visible:ring-0"
+                      style={{ color: "#212121", caretColor: "#b8965a" }}
                     />
                   </div>
                   <div>
-                    <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                    <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                       <Phone className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.phone} <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -1096,13 +1118,13 @@ export default function Home() {
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder={t.booking.fields.phonePh}
-                      className="bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#1a1410] placeholder:text-[#7a6f63] focus-visible:ring-0"
-                      style={{ color: "#1a1410", caretColor: "#b8965a" }}
+                      className="bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#212121] placeholder:text-[#7a6f63] focus-visible:ring-0"
+                      style={{ color: "#212121", caretColor: "#b8965a" }}
                       dir="ltr"
                     />
                   </div>
                   <div>
-                    <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                    <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                       <Mail className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.email}
                     </Label>
                     <Input
@@ -1110,20 +1132,20 @@ export default function Home() {
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       placeholder={t.booking.fields.emailPh}
-                      className="bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#1a1410] placeholder:text-[#7a6f63] focus-visible:ring-0"
-                      style={{ color: "#1a1410", caretColor: "#b8965a" }}
+                      className="bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#212121] placeholder:text-[#7a6f63] focus-visible:ring-0"
+                      style={{ color: "#212121", caretColor: "#b8965a" }}
                       dir="ltr"
                     />
                   </div>
                   <div>
-                    <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                    <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                       <FileText className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.service}
                     </Label>
                     <select
                       value={form.service}
                       onChange={(e) => setForm({ ...form, service: e.target.value })}
-                      className="w-full bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] text-[#1a1410] rounded-xl py-3 px-3 h-12 focus:outline-none focus:ring-0 font-medium cursor-pointer"
-                      style={{ color: "#1a1410" }}
+                      className="w-full bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] text-[#212121] rounded-xl py-3 px-3 h-12 focus:outline-none focus:ring-0 font-medium cursor-pointer"
+                      style={{ color: "#212121" }}
                     >
                       <option value="">{isAR ? "اختاري الخدمة" : "Select Service"}</option>
                       {t.services.items.map((s, i) => (
@@ -1132,7 +1154,7 @@ export default function Home() {
                     </select>
                   </div>
                   <div>
-                    <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                    <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                       <Calendar className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.date}
                     </Label>
                     <Input
@@ -1140,19 +1162,19 @@ export default function Home() {
                       min={new Date().toISOString().split("T")[0]}
                       value={form.date}
                       onChange={(e) => setForm({ ...form, date: e.target.value })}
-                      className="bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#1a1410] focus-visible:ring-0"
-                      style={{ color: "#1a1410" }}
+                      className="bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 h-12 text-[#212121] focus-visible:ring-0"
+                      style={{ color: "#212121" }}
                     />
                   </div>
                   <div>
-                    <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                    <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                       <Clock className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.time}
                     </Label>
                     <select
                       value={form.time}
                       onChange={(e) => setForm({ ...form, time: e.target.value })}
-                      className="w-full bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] text-[#1a1410] rounded-xl py-3 px-3 h-12 focus:outline-none focus:ring-0 font-medium cursor-pointer"
-                      style={{ color: "#1a1410" }}
+                      className="w-full bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] text-[#212121] rounded-xl py-3 px-3 h-12 focus:outline-none focus:ring-0 font-medium cursor-pointer"
+                      style={{ color: "#212121" }}
                     >
                       <option value="">{isAR ? "اختاري الوقت" : "Select Time"}</option>
                       <option value="10:00">10:00 AM</option>
@@ -1168,7 +1190,7 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <Label className="font-semibold text-[#1a1410] mb-2 block flex items-center gap-1.5 text-sm">
+                  <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
                     <FileText className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.notes}
                   </Label>
                   <Textarea
@@ -1176,8 +1198,8 @@ export default function Home() {
                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     placeholder={t.booking.fields.notesPh}
                     rows={3}
-                    className="bg-[#f8f4ee] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 text-[#1a1410] placeholder:text-[#7a6f63] focus-visible:ring-0 resize-none"
-                    style={{ color: "#1a1410", caretColor: "#b8965a" }}
+                    className="bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] rounded-xl py-3 text-[#212121] placeholder:text-[#7a6f63] focus-visible:ring-0 resize-none"
+                    style={{ color: "#212121", caretColor: "#b8965a" }}
                   />
                 </div>
 
@@ -1204,13 +1226,13 @@ export default function Home() {
       </section>
 
       {/* ===== Contact ===== */}
-      <section id="contact" className="py-32 lg:py-40 bg-[#f8f4ee] relative overflow-hidden">
+      <section id="contact" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-4">
               <MapPin className="w-4 h-4" /> {t.contact.tag}
             </div>
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#1a1410] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.contact.title}</h2>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.contact.title}</h2>
             <div className="w-20 h-px divider-gold mx-auto" />
           </Reveal>
 
@@ -1231,7 +1253,7 @@ export default function Home() {
                       </div>
                       <div>
                         <div className="text-[#7a6f63] text-sm mb-1">{item.t}</div>
-                        <div className="text-[#1a1410] font-bold" dir={item.icon === Phone || item.icon === Mail ? "ltr" : "auto"}>{item.v}</div>
+                        <div className="text-[#212121] font-bold" dir={item.icon === Phone || item.icon === Mail ? "ltr" : "auto"}>{item.v}</div>
                       </div>
                     </a>
                   </Reveal>
@@ -1256,7 +1278,7 @@ export default function Home() {
       </section>
 
       {/* ===== Footer ===== */}
-      <footer className="bg-[#1a1410] text-white pt-16 pb-8 relative overflow-hidden">
+      <footer className="bg-[#212121] text-white pt-16 pb-8 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-px divider-gold" />
         <div className="relative max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-10 mb-12">
@@ -1365,7 +1387,7 @@ export default function Home() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="w-12 h-12 rounded-full bg-[#1a1410] text-[#d4b888] shadow-xl flex items-center justify-center"
+              className="w-12 h-12 rounded-full bg-[#212121] text-[#d4b888] shadow-xl flex items-center justify-center"
             >
               <ArrowUp className="w-5 h-5" />
             </motion.button>
@@ -1393,11 +1415,11 @@ export default function Home() {
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="font-bold text-[#1a1410] text-sm">{isAR ? "واتساب" : "WhatsApp"}</div>
+                  <div className="font-bold text-[#212121] text-sm">{isAR ? "واتساب" : "WhatsApp"}</div>
                   <div className="text-xs text-green-600">● Online</div>
                 </div>
               </div>
-              <p className="text-sm text-[#1a1410]/70 mb-4">
+              <p className="text-sm text-[#212121]/70 mb-4">
                 {isAR ? "مرحباً! كيف يمكننا مساعدتك؟" : "Hello! How can we help you?"}
               </p>
               <a
