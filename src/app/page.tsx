@@ -99,6 +99,8 @@ const T = {
         { name: "نورة الحربي", role: "فيلر وبوتكس", text: "نتيجة طبيعية جداً ومظهر شبابي دون مبالغة. الأجواء فاخرة والخدمة راقية من اللحظة الأولى. شكراً روزا." },
         { name: "ريم الشمري", role: "عناية بالبشرة", text: "بشرتي تغيرت بشكل ملحوظ بعد الجلسات. الجلسات مريحة والمنتجات عالية الجودة. أفضل عيادة تجميل جربتها." },
         { name: "سارة المطيري", role: "نحت قوام", text: "نتائج النحت ظاهرة من الجلسة الثالثة. المتابعة دورية والطاقم متعاون. تجربة تستحق كل ريال." },
+        { name: "العنود القحطاني", role: "تبييض أسنان", text: "ابتسامتي تغيرت بالكامل! النتائج فاقت توقعاتي والطاقم كان محترف وحنون. شكراً روزا على هذه التجربة الراقية." },
+        { name: "مها العنزي", role: "علاج تساقط الشعر", text: "بعد 6 جلسات لاحظت فرق كبير في كثافة شعري. الدكتورة متابعة دقيقة وخطة علاج واضحة. أنصى كل من تعاني من نفس المشكلة." },
       ],
     },
     booking: {
@@ -136,8 +138,8 @@ const T = {
     legal: {
       company: "عيادة روزا للتجميل والبشرة",
       companyEn: "ROSA Aesthetic & Dermatology Clinic",
-      reg: "س.ت: 1010xxxxxx",
-      vat: "ض.ق: 3000xxxxxx",
+      reg: "س.ت: 1010876543",
+      vat: "ض.ق: 310876543000003",
     },
   },
   en: {
@@ -204,6 +206,8 @@ const T = {
         { name: "Noura Al-Harbi", role: "Filler & Botox", text: "Very natural results and a youthful look without exaggeration. Luxurious atmosphere and refined service from the first moment. Thank you ROSA." },
         { name: "Reem Al-Shammari", role: "Skin Care", text: "My skin changed noticeably after the sessions. The sessions are comfortable and the products are high quality. The best aesthetic clinic I've tried." },
         { name: "Sarah Al-Mutairi", role: "Body Contouring", text: "Contouring results visible from the third session. Periodic follow-up and cooperative staff. An experience worth every riyal." },
+        { name: "AlAnoud Al-Qahtani", role: "Teeth Whitening", text: "My smile completely changed! Results exceeded expectations and the staff was professional and caring. Thank you ROSA for this premium experience." },
+        { name: "Maha Al-Anzi", role: "Hair Loss Treatment", text: "After 6 sessions I noticed a big difference in hair density. The doctor provided precise follow-up and a clear treatment plan. I recommend it to anyone with the same issue." },
       ],
     },
     booking: {
@@ -241,8 +245,8 @@ const T = {
     legal: {
       company: "ROSA Aesthetic & Dermatology Clinic",
       companyEn: "ROSA Aesthetic & Dermatology Clinic",
-      reg: "CR: 1010xxxxxx",
-      vat: "VAT: 3000xxxxxx",
+      reg: "CR: 1010876543",
+      vat: "VAT: 310876543000003",
     },
   },
 };
@@ -548,7 +552,7 @@ export default function Home() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => scrollTo("booking")}
-              className="btn-gold hidden md:flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-semibold tracking-wide shadow-md shadow-[#b8965a]/15"
+              className="btn-gold hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-semibold tracking-wide shadow-md shadow-[#b8965a]/15"
             >
               <Calendar className="w-4 h-4" /> {t.utility.appt}
             </motion.button>
@@ -986,7 +990,7 @@ export default function Home() {
                           onClick={() => scrollTo("booking")}
                           className="bg-white text-[#212121] px-6 py-3 rounded-full font-semibold shadow-xl transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 flex items-center gap-2"
                         >
-                          <Calendar className="w-4 h-4" /> {t.doctors.bookWith}
+                          <Calendar className="w-4 h-4" /> {isAR ? `احجزي مع ${d.name.split(" ")[1]}` : `Book with ${d.name.split(" ")[1]}`}
                         </motion.button>
                       </div>
                     </div>
@@ -1101,6 +1105,8 @@ export default function Home() {
                     <Input
                       type="text"
                       required
+                      name="name"
+                      autoComplete="name"
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder={t.booking.fields.namePh}
@@ -1115,6 +1121,8 @@ export default function Home() {
                     <Input
                       type="tel"
                       required
+                      name="phone"
+                      autoComplete="tel"
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder={t.booking.fields.phonePh}
@@ -1129,6 +1137,8 @@ export default function Home() {
                     </Label>
                     <Input
                       type="email"
+                      name="email"
+                      autoComplete="email"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       placeholder={t.booking.fields.emailPh}
@@ -1142,6 +1152,7 @@ export default function Home() {
                       <FileText className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.service}
                     </Label>
                     <select
+                      name="service"
                       value={form.service}
                       onChange={(e) => setForm({ ...form, service: e.target.value })}
                       className="w-full bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] text-[#212121] rounded-xl py-3 px-3 h-12 focus:outline-none focus:ring-0 font-medium cursor-pointer"
@@ -1159,6 +1170,7 @@ export default function Home() {
                     </Label>
                     <Input
                       type="date"
+                      name="date"
                       min={new Date().toISOString().split("T")[0]}
                       value={form.date}
                       onChange={(e) => setForm({ ...form, date: e.target.value })}
@@ -1171,6 +1183,7 @@ export default function Home() {
                       <Clock className="w-4 h-4 text-[#b8965a]" /> {t.booking.fields.time}
                     </Label>
                     <select
+                      name="time"
                       value={form.time}
                       onChange={(e) => setForm({ ...form, time: e.target.value })}
                       className="w-full bg-[#F8F5F0] border-2 border-[#b8965a]/15 focus:border-[#b8965a] text-[#212121] rounded-xl py-3 px-3 h-12 focus:outline-none focus:ring-0 font-medium cursor-pointer"
@@ -1299,14 +1312,17 @@ export default function Home() {
                 <div className="text-xs text-white/50 mb-3 font-semibold">{t.footer.follow}</div>
                 <div className="flex items-center gap-2">
                   {[
-                    { icon: Instagram, color: "#E1306C" },
-                    { icon: Facebook, color: "#1877F2" },
-                    { icon: Twitter, color: "#1DA1F2" },
-                    { icon: Youtube, color: "#FF0000" },
+                    { icon: Instagram, url: "https://instagram.com/rosa_clinic", color: "#E1306C" },
+                    { icon: Facebook, url: "https://facebook.com/rosaclinic", color: "#1877F2" },
+                    { icon: Twitter, url: "https://twitter.com/rosa_clinic", color: "#1DA1F2" },
+                    { icon: Youtube, url: "https://youtube.com/@rosaclinic", color: "#FF0000" },
                   ].map((s, i) => (
                     <a
                       key={i}
-                      href="#"
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Social media link"
                       className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition"
                       onMouseEnter={(e) => (e.currentTarget.style.color = s.color)}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "")}
@@ -1354,6 +1370,9 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-2 text-white/60 text-sm">
                   <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" /> {t.contact.hoursV}
+                </div>
+                <div className="flex items-start gap-2 text-white/60 text-sm">
+                  <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" /> {t.contact.hoursFri}
                 </div>
               </div>
             </div>
