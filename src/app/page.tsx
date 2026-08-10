@@ -543,16 +543,15 @@ export default function Home() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             onClick={() => scrollTo("home")}
-            className={`flex items-center gap-3 group ${isAR ? "justify-start" : "justify-start"}`}
+            className={`flex items-center gap-2 group ${isAR ? "justify-start" : "justify-start"}`}
           >
-            <div className="relative w-11 h-11 rounded-full bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center shadow-md">
-              <Flower2 className="w-5 h-5 text-white" />
-              <div className="absolute inset-0 rounded-full border border-[#d4b888]/40" />
-            </div>
-            <div className="text-right">
-              <div className={`font-bold text-[#212121] leading-tight tracking-[0.15em] ${isAR ? "text-lg" : "text-base font-display"}`}>{isAR ? "روزا" : "ROSA"}</div>
-              <div className="text-[9px] text-[#b8965a] tracking-[0.3em] uppercase font-medium">{isAR ? "للتجميل والبشرة" : "AESTHETIC CLINIC"}</div>
-            </div>
+            <motion.img
+              src="/logo.png"
+              alt="ROSA Clinic Logo"
+              className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-md"
+              whileHover={{ scale: 1.05, rotate: 3 }}
+              transition={{ duration: 0.4 }}
+            />
           </motion.button>
 
           {/* Nav links — centered with refined spacing */}
@@ -1549,15 +1548,14 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             <div className="md:col-span-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center shadow-lg">
-                  <Flower2 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="font-bold text-xl tracking-wider">{isAR ? "روزا" : "ROSA"}</div>
-                  <div className="text-xs text-[#b8965a] tracking-[0.2em] uppercase">{t.brand.sub}</div>
-                </div>
-              </div>
+              <motion.img
+                src="/logo.png"
+                alt="ROSA Clinic Logo"
+                className="w-20 h-20 object-contain drop-shadow-lg mb-3"
+                whileHover={{ scale: 1.05, rotate: 3 }}
+                transition={{ duration: 0.4 }}
+              />
+              <div className="text-xs text-[#b8965a] tracking-[0.25em] uppercase mb-3">{t.brand.sub}</div>
               <p className="text-white/60 text-sm leading-relaxed mb-5">
                 {isAR ? "عيادة تجميل وجراحة جلدية راقية، نقدم أحدث العلاجات بأيدي نخبة الاستشاريين في أجواء فاخرة" : "Premium aesthetic and dermatology clinic, offering the latest treatments by elite consultants in a luxurious atmosphere"}
               </p>
