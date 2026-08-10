@@ -811,7 +811,7 @@ export default function Home() {
       </section>
 
       {/* ===== Marquee strip ===== */}
-      <div className="bg-[#212121] border-y border-[#b8965a]/15 py-4 overflow-hidden">
+      <div className="bg-[#2D1E14] border-y border-[#D4A843]/25 py-4 overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...Array(2)].map((_, idx) => (
             <div key={idx} className="flex items-center gap-12 px-6">
@@ -835,7 +835,7 @@ export default function Home() {
       </div>
 
       {/* ===== About ===== */}
-      <section id="about" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
+      <section id="about" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden border-t-4 border-[#D4A843]/30">
         {/* Watermark logo */}
         <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="absolute top-40 right-0 w-72 h-72 rounded-full bg-[#b8965a]/8 blur-3xl" />
@@ -1030,7 +1030,7 @@ export default function Home() {
       </section>
 
       {/* ===== Services ===== */}
-      <section id="services" className="py-32 lg:py-40 bg-white relative overflow-hidden">
+      <section id="services" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden border-t-4 border-[#D4A843]/30">
         {/* Watermark logo */}
         <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="absolute top-20 right-0 w-80 h-80 bg-[#b8965a]/5 blur-3xl rounded-full" />
@@ -1089,7 +1089,7 @@ export default function Home() {
       </section>
 
       {/* ===== CTA Banner ===== */}
-      <section className="relative py-32 lg:py-40 overflow-hidden bg-[#212121]">
+      <section className="relative py-32 lg:py-40 overflow-hidden bg-[#2D1E14]">
         <motion.div
           initial={{ scale: 1.1 }}
           whileInView={{ scale: 1 }}
@@ -1128,7 +1128,7 @@ export default function Home() {
       </section>
 
       {/* ===== Doctors ===== */}
-      <section id="doctors" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
+      <section id="doctors" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden border-t-4 border-[#D4A843]/30">
         {/* Watermark logo */}
         <img src="/logo.png" alt="" aria-hidden className="absolute top-10 right-10 w-16 h-16 opacity-10 pointer-events-none -rotate-12" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#b8965a]/5 blur-3xl rounded-full" />
@@ -1194,7 +1194,7 @@ export default function Home() {
       </section>
 
       {/* ===== Reviews ===== */}
-      <section id="reviews" className="py-32 lg:py-40 bg-white relative overflow-hidden">
+      <section id="reviews" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden border-t-4 border-[#D4A843]/30">
         {/* Watermark logo */}
         <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="absolute top-20 left-20 w-64 h-64 bg-[#c9a0a0]/10 blur-3xl rounded-full" />
@@ -1522,7 +1522,7 @@ export default function Home() {
       </section>
 
       {/* ===== Contact ===== */}
-      <section id="contact" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
+      <section id="contact" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden border-t-4 border-[#D4A843]/30">
         {/* Watermark logo */}
         <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="max-w-7xl mx-auto px-4">
@@ -1576,7 +1576,7 @@ export default function Home() {
       </section>
 
       {/* ===== Footer ===== */}
-      <footer className="bg-[#212121] text-white pt-16 pb-8 relative overflow-hidden">
+      <footer className="bg-[#2D1E14] text-white pt-16 pb-8 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-px divider-gold" />
         <div className="relative max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-10 mb-12">
@@ -1690,7 +1690,7 @@ export default function Home() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="w-12 h-12 rounded-full bg-[#212121] text-[#d4b888] shadow-xl flex items-center justify-center"
+              className="w-12 h-12 rounded-full bg-[#2D1E14] text-[#D4A843] shadow-xl flex items-center justify-center"
             >
               <ArrowUp className="w-5 h-5" />
             </motion.button>
