@@ -414,10 +414,33 @@ export default function Home() {
         @keyframes pulse-ring { 0%{transform:scale(0.95);opacity:1} 100%{transform:scale(1.4);opacity:0} }
         @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes shine-sweep { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(184,150,90,0.3)} 50%{box-shadow:0 0 40px rgba(184,150,90,0.6)} }
+        @keyframes fade-in-up { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes zoom-fade { from{opacity:0;transform:scale(1.1)} to{opacity:1;transform:scale(1)} }
+        @keyframes slide-in-right { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes bounce-subtle { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        @keyframes gradient-shift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
 
         .animate-float { animation: float 6s ease-in-out infinite; }
         .animate-blob { animation: blob 10s ease-in-out infinite; }
         .animate-marquee { animation: marquee 40s linear infinite; }
+        .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out forwards; }
+        .animate-zoom-fade { animation: zoom-fade 1s ease-out forwards; }
+        .animate-bounce-subtle { animation: bounce-subtle 2s ease-in-out infinite; }
+        .gradient-animate { background-size: 200% 200%; animation: gradient-shift 4s ease infinite; }
+
+        /* Shimmer sweep overlay on images */
+        .img-shimmer { position: relative; overflow: hidden; }
+        .img-shimmer::after {
+          content: '';
+          position: absolute; inset: 0;
+          background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+          transform: translateX(-100%);
+          transition: transform 0.8s ease;
+        }
+        .img-shimmer:hover::after { transform: translateX(100%); }
 
         .glass { background: rgba(255,255,255,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .glass-cream { background: rgba(248,245,240,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
@@ -890,13 +913,16 @@ export default function Home() {
                     whileHover={{ y: -8 }}
                     className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl card-luxury cursor-pointer h-full border border-[#b8965a]/8"
                   >
-                    <div className="relative h-56 overflow-hidden">
+                    <div className="relative h-56 overflow-hidden img-shimmer">
                       <motion.img
                         src={img}
                         alt={s.t}
                         className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.6 }}
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        whileHover={{ scale: 1.15 }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/85 via-[#212121]/25 to-transparent" />
                       <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/95 flex items-center justify-center shadow-lg group-hover:bg-gradient-to-br group-hover:from-[#b8965a] group-hover:to-[#8a6d3b] transition-all duration-300">
@@ -979,8 +1005,18 @@ export default function Home() {
               return (
                 <StaggerItem key={d.name}>
                   <motion.div whileHover={{ y: -8 }} className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl card-luxury cursor-pointer h-full border border-[#b8965a]/8">
-                    <div className="relative h-80 overflow-hidden">
-                      <img loading="lazy" src={img} alt={d.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="relative h-80 overflow-hidden img-shimmer">
+                      <motion.img
+                        loading="lazy"
+                        src={img}
+                        alt={d.name}
+                        className="w-full h-full object-cover"
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        whileHover={{ scale: 1.12 }}
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/90 via-[#212121]/20 to-transparent" />
                       <div className="absolute bottom-3 left-3 right-3">
                         <div className="bg-gradient-to-r from-[#b8965a] to-[#8a6d3b] text-white text-xs font-medium px-3 py-1.5 rounded-full inline-block shadow-lg">{d.exp}</div>
@@ -1072,31 +1108,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== Booking — with Gulf woman background ===== */}
-      <section id="booking" className="py-32 lg:py-40 relative overflow-hidden">
-        {/* Background image — beautiful Gulf woman */}
-        <div className="absolute inset-0">
-          <img loading="lazy" src={IMG.bookingBg} alt="" aria-hidden className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-[#212121]/85" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#212121] via-[#212121]/80 to-[#212121]/60" />
+      {/* ===== Booking — Split layout: model image + form, golden luxury bg ===== */}
+      <section id="booking" className="py-32 lg:py-40 relative overflow-hidden bg-gradient-to-br from-[#D4A843] via-[#C9A227] to-[#B8965A]">
+        {/* Decorative animated background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-white/10 blur-3xl animate-float" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-[#8A6D3B]/30 blur-3xl animate-blob" />
+          <div className="absolute top-1/2 left-1/3 w-80 h-80 rounded-full bg-[#F8F5F0]/20 blur-3xl animate-float" style={{ animationDelay: "2s" }} />
         </div>
 
-        {/* Floating decorative blobs */}
-        <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-[#b8965a]/20 blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-[#c9a0a0]/15 blur-3xl animate-blob" />
+        {/* Floating particles */}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 rounded-full bg-white/40"
+            style={{
+              left: `${8 + i * 11}%`,
+              top: `${15 + (i % 4) * 22}%`,
+              animation: `float ${4 + i * 0.5}s ease-in-out infinite`,
+              animationDelay: `${i * 0.4}s`,
+            }}
+          />
+        ))}
 
-        <div className="relative max-w-5xl mx-auto px-4">
-          <Reveal className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 glass border border-[#d4b888]/30 text-[#d4b888] px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <Calendar className="w-4 h-4" /> {t.booking.tag}
-            </div>
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 ${isAR ? "font-tajawal" : "font-display"}`}>{t.booking.title}</h2>
-            <p className="text-white/75 text-lg">{t.booking.desc}</p>
-          </Reveal>
+        <div className="relative max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left column — Form */}
+            <div className="order-2 lg:order-1">
+              <Reveal>
+                <div className="inline-flex items-center gap-2 glass border border-white/40 text-[#212121] px-4 py-2 rounded-full text-sm font-semibold mb-5 shadow-md">
+                  <Calendar className="w-4 h-4" /> {t.booking.tag}
+                </div>
+                <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-3 leading-tight ${isAR ? "font-tajawal" : "font-display"}`}>{t.booking.title}</h2>
+                <p className="text-[#212121]/75 text-lg mb-8 font-light">{t.booking.desc}</p>
+              </Reveal>
 
-          <Reveal delay={0.2}>
-            <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10" style={{ direction: isAR ? "rtl" : "ltr" }}>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <Reveal delay={0.2}>
+                <div className="bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl p-6 md:p-8 border border-white/60" style={{ direction: isAR ? "rtl" : "ltr" }}>
+                  <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <Label className="font-semibold text-[#212121] mb-2 block flex items-center gap-1.5 text-sm">
@@ -1235,6 +1284,93 @@ export default function Home() {
               </form>
             </div>
           </Reveal>
+        </div>
+
+            {/* Right column — Model image with animations */}
+            <div className="order-1 lg:order-2 relative">
+              <Reveal delay={0.3}>
+                <div className="relative">
+                  {/* Decorative frame */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
+                    whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute -top-6 -right-6 w-32 h-32 border-2 border-white/40 rounded-3xl"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="absolute -bottom-6 -left-6 w-40 h-40 bg-white/20 backdrop-blur-sm rounded-3xl"
+                  />
+
+                  {/* Main image with shimmer effect */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/5] group"
+                  >
+                    <motion.img
+                      src="/booking-model.jpg"
+                      alt={isAR ? "ابدئي رحلتك نحو الجمال" : "Begin your beauty journey"}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.7 }}
+                    />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/40 via-transparent to-transparent" />
+                    {/* Shimmer sweep */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                      initial={{ x: "-100%" }}
+                      animate={{ x: "200%" }}
+                      transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+                    />
+                  </motion.div>
+
+                  {/* Floating badge — top */}
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5, type: "spring" }}
+                    className="absolute -top-4 -left-4 bg-white p-3 rounded-2xl shadow-2xl flex items-center gap-2.5"
+                    style={{ animation: "float 5s ease-in-out infinite" }}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-[#212121]">{isAR ? "نتائج فورية" : "Instant Results"}</div>
+                      <div className="text-xs text-[#7a6f63]">{isAR ? "مضمونة" : "Guaranteed"}</div>
+                    </div>
+                  </motion.div>
+
+                  {/* Floating badge — bottom */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.7, type: "spring" }}
+                    className="absolute -bottom-4 -right-4 bg-white p-3 rounded-2xl shadow-2xl flex items-center gap-2.5"
+                    style={{ animation: "float 6s ease-in-out infinite", animationDelay: "1s" }}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c9a0a0] to-[#b8965a] flex items-center justify-center">
+                      <Crown className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-[#212121]">{isAR ? "خبرة +15 سنة" : "+15 Years"}</div>
+                      <div className="text-xs text-[#7a6f63]">{isAR ? "استشاريون" : "Consultants"}</div>
+                    </div>
+                  </motion.div>
+                </div>
+              </Reveal>
+            </div>
+          </div>
         </div>
       </section>
 
