@@ -824,18 +824,41 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <Reveal>
               <div className="relative">
-                <div className="absolute -top-6 -right-6 w-32 h-32 border border-[#b8965a]/30 rounded-3xl" />
-                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#b8965a]/15 to-transparent rounded-3xl" />
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                  <img loading="lazy" src={IMG.about} alt="About" className="w-full h-[560px] object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/40 to-transparent" />
-                </div>
+                <div className="absolute -top-6 -right-6 w-32 h-32 border border-[#b8965a]/30 rounded-3xl animate-float" />
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#b8965a]/15 to-transparent rounded-3xl animate-blob" />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative rounded-[2.5rem] overflow-hidden shadow-2xl img-shimmer group"
+                >
+                  <motion.img
+                    loading="lazy"
+                    src="/whyus-hijab.png"
+                    alt={isAR ? "لماذا تختارين عيادة روزا" : "Why choose ROSA Clinic"}
+                    className="w-full h-[560px] object-cover"
+                    initial={{ scale: 1.1 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2 }}
+                    whileHover={{ scale: 1.05 }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/50 via-transparent to-transparent" />
+                  {/* Shimmer sweep */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    initial={{ x: "-100%" }}
+                    animate={{ x: "200%" }}
+                    transition={{ duration: 3, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+                  />
+                </motion.div>
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.3 }}
-                  className="absolute -bottom-8 right-8 bg-white p-6 rounded-2xl shadow-2xl flex items-center gap-4"
+                  transition={{ delay: 0.3, type: "spring" }}
+                  className="absolute -bottom-8 right-8 bg-white p-6 rounded-2xl shadow-2xl flex items-center gap-4 animate-float"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#b8965a] to-[#8a6d3b] flex items-center justify-center">
                     <Crown className="w-7 h-7 text-white" />
@@ -849,10 +872,23 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute -top-6 -left-6 w-36 h-36 rounded-3xl overflow-hidden shadow-2xl border-4 border-white hidden lg:block"
+                  transition={{ delay: 0.5, type: "spring" }}
+                  className="absolute -top-6 -left-6 w-36 h-36 rounded-3xl overflow-hidden shadow-2xl border-4 border-white hidden lg:block animate-float"
+                  style={{ animationDelay: "1s" }}
                 >
                   <img loading="lazy" src={IMG.about2} alt="Detail" className="w-full h-full object-cover" />
+                </motion.div>
+                {/* Floating badge — top left */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.7, type: "spring" }}
+                  className="absolute top-6 left-6 glass border border-white/40 text-[#212121] px-4 py-2 rounded-full text-sm font-semibold shadow-md"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#b8965a]" /> {isAR ? "كادر طبي محترم" : "Respectful Staff"}
+                  </span>
                 </motion.div>
               </div>
             </Reveal>
@@ -887,6 +923,87 @@ export default function Home() {
               </StaggerGroup>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ===== Specialties / متخصصون في التجميل بخبرة طبية ===== */}
+      <section id="specialties" className="py-32 lg:py-40 relative overflow-hidden bg-gradient-to-br from-[#D4A843] via-[#C9A227] to-[#B8965A]">
+        {/* Decorative animated background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-white/10 blur-3xl animate-float" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-[#8A6D3B]/30 blur-3xl animate-blob" />
+        </div>
+
+        {/* Floating particles */}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 rounded-full bg-white/40"
+            style={{
+              left: `${8 + i * 11}%`,
+              top: `${15 + (i % 4) * 22}%`,
+              animation: `float ${4 + i * 0.5}s ease-in-out infinite`,
+              animationDelay: `${i * 0.4}s`,
+            }}
+          />
+        ))}
+
+        <div className="relative max-w-7xl mx-auto px-4">
+          <Reveal className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 glass border border-white/40 text-[#212121] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
+              <Sparkles className="w-4 h-4" /> {isAR ? "متخصصون في التجميل" : "Aesthetic Specialists"}
+            </div>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold text-[#212121] mb-4 leading-tight ${isAR ? "font-tajawal" : "font-display"}`}>
+              {isAR ? "متخصصون في التجميل بخبرة طبية" : "Specialists in Medical Aesthetics"}
+            </h2>
+            <div className="w-20 h-px divider-gold mx-auto mb-4" />
+            <p className="text-[#212121]/80 text-lg font-light">
+              {isAR ? "فريق طبي متخصص يقدم أحدث العلاجات التجميلية والجلدية بأعلى معايير الجودة والأمان" : "A specialized medical team offering the latest aesthetic and dermatology treatments with the highest quality and safety standards"}
+            </p>
+          </Reveal>
+
+          <StaggerGroup className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" stagger={0.1}>
+            {[
+              { img: "/service-derma.png", t: isAR ? "الجلدية والتجميل" : "Dermatology & Aesthetics", d: isAR ? "علاج جميع مشاكل البشرة" : "Treat all skin issues" },
+              { img: "/service-body.png", t: isAR ? "تنسيق القوام" : "Body Contouring", d: isAR ? "نحت الجسم وإذابة الدهون" : "Body sculpting & fat reduction" },
+              { img: "/service-nutrition.png", t: isAR ? "التغذية العلاجية" : "Clinical Nutrition", d: isAR ? "خطط غذائية مخصصة" : "Customized nutrition plans" },
+              { img: "/service-physio.png", t: isAR ? "العلاج الطبيعي" : "Physical Therapy", d: isAR ? "تأهيل وعلاج الآلام" : "Rehabilitation & pain relief" },
+              { img: "/service-hijama.png", t: isAR ? "الحجامة" : "Cupping Therapy", d: isAR ? "علاج بالطب النبوي" : "Prophetic medicine therapy" },
+            ].map((s, i) => (
+              <StaggerItem key={i}>
+                <motion.div
+                  whileHover={{ y: -10, scale: 1.03 }}
+                  className="group bg-white/95 backdrop-blur-xl rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl card-luxury cursor-pointer h-full border border-white/60"
+                >
+                  <div className="relative aspect-square overflow-hidden img-shimmer">
+                    <motion.img
+                      src={s.img}
+                      alt={s.t}
+                      className="w-full h-full object-cover"
+                      initial={{ opacity: 0, scale: 1.15 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      whileHover={{ scale: 1.18 }}
+                    />
+                    {/* Golden glow overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#D4A843]/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    {/* Shimmer sweep */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                      initial={{ x: "-100%" }}
+                      whileHover={{ x: "200%" }}
+                      transition={{ duration: 0.8 }}
+                    />
+                  </div>
+                  <div className="p-4 text-center">
+                    <h3 className="font-bold text-[#212121] text-sm md:text-base mb-1">{s.t}</h3>
+                    <p className="text-[#7a6f63] text-xs">{s.d}</p>
+                  </div>
+                </motion.div>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
         </div>
       </section>
 
