@@ -29,7 +29,9 @@ export const metadata: Metadata = {
   description: "عيادة روزا للتجميل والبشرة - أحدث علاجات التجميل والجلدية بأيدي نخبة الاستشاريين في أجواء فاخرة. ROSA Aesthetic & Dermatology Clinic.",
   keywords: ["عيادة روزا", "ROSA Clinic", "تجميل", "بشرة", "جلدية", "aesthetic", "dermatology", "laser", "filler", "botox"],
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 

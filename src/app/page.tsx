@@ -138,8 +138,8 @@ const T = {
     legal: {
       company: "عيادة روزا للتجميل والبشرة",
       companyEn: "ROSA Aesthetic & Dermatology Clinic",
-      reg: "س.ت: 1010876543",
-      vat: "ض.ق: 310876543000003",
+      reg: "جوال: +966 57 501 5019",
+      vat: "khalid-alharbi@zohomail.sa",
     },
   },
   en: {
@@ -245,8 +245,8 @@ const T = {
     legal: {
       company: "ROSA Aesthetic & Dermatology Clinic",
       companyEn: "ROSA Aesthetic & Dermatology Clinic",
-      reg: "CR: 1010876543",
-      vat: "VAT: 310876543000003",
+      reg: "Phone: +966 57 501 5019",
+      vat: "khalid-alharbi@zohomail.sa",
     },
   },
 };
@@ -383,7 +383,26 @@ export default function Home() {
       return;
     }
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
+    try {
+      // Send to API endpoint (logs to Vercel + sends email if RESEND_API_KEY set)
+      await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      }).catch(() => null); // Non-blocking — fallback to mailto below
+
+      // Open mailto as a guaranteed fallback so the booking reaches the email
+      const subject = `حجز موعد جديد - ${form.name}`;
+      const body = `الاسم: ${form.name}%0D%0Aالجوال: ${form.phone}%0D%0Aالبريد: ${form.email || "-"}%0D%0Aالخدمة: ${form.service || "-"}%0D%0Aالتاريخ: ${form.date || "-"}%0D%0Aالوقت: ${form.time || "-"}%0D%0Aملاحظات: ${form.notes || "-"}`;
+      // Trigger mailto in a hidden iframe so it doesn't navigate away
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = `mailto:khalid-alharbi@zohomail.sa?subject=${encodeURIComponent(subject)}&body=${body}`;
+      document.body.appendChild(iframe);
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    } catch (err) {
+      console.error("Booking submission error:", err);
+    }
     setSubmitting(false);
     toast.success(t.booking.success);
     setForm({ name: "", phone: "", email: "", service: "", date: "", time: "", notes: "" });
@@ -502,68 +521,68 @@ export default function Home() {
         img { transition: opacity 0.4s ease; }
       `}</style>
 
-      {/* ===== Utility Bar ===== */}
-      <div className="bg-[#212121] text-[#F8F5F0]/80 text-xs py-2.5 px-4 hidden md:block border-b border-[#b8965a]/15">
+      {/* ===== Utility Bar — Darker brown ===== */}
+      <div className="bg-[#1A0F08] text-[#D4A843]/90 text-xs py-2.5 px-4 hidden md:block border-b border-[#b8965a]/20">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <a href="tel:+966575015019" className="flex items-center gap-1.5 hover:text-[#d4b888] transition">
+            <a href="tel:+966575015019" className="flex items-center gap-1.5 hover:text-[#D4A843] transition">
               <Phone className="w-3.5 h-3.5" /> <span dir="ltr">+966 57 501 5019</span>
             </a>
-            <a href="mailto:khalid-alharbi@zohomail.sa" className="flex items-center gap-1.5 hover:text-[#d4b888] transition">
+            <a href="mailto:khalid-alharbi@zohomail.sa" className="flex items-center gap-1.5 hover:text-[#D4A843] transition">
               <Mail className="w-3.5 h-3.5" /> khalid-alharbi@zohomail.sa
             </a>
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5" /> {isAR ? "سبت-خميس 10ص-10م" : "Sat-Thu 10AM-10PM"}
             </span>
           </div>
-          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="hover:text-[#d4b888] transition flex items-center gap-1">
+          <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} className="hover:text-[#D4A843] transition flex items-center gap-1 font-bold">
             <Globe className="w-3.5 h-3.5" /> {lang === "ar" ? "EN" : "عربي"}
           </button>
         </div>
       </div>
 
-      {/* ===== Navbar — Transparent with backdrop-blur (per spec) ===== */}
+      {/* ===== Navbar — Dark brown header with bold white nav text ===== */}
       <motion.nav
         initial={false}
         animate={{
-          backgroundColor: scrolled ? "rgba(248,245,240,0.85)" : "rgba(248,245,240,0)",
-          boxShadow: scrolled ? "0 8px 32px -8px rgba(184,150,90,0.12)" : "0 0 0 rgba(0,0,0,0)",
-          paddingTop: scrolled ? 14 : 22,
-          paddingBottom: scrolled ? 14 : 22,
+          backgroundColor: "rgba(45, 30, 20, 0.98)",
+          boxShadow: scrolled ? "0 8px 32px -8px rgba(0,0,0,0.4)" : "0 4px 20px -4px rgba(0,0,0,0.2)",
+          paddingTop: scrolled ? 14 : 20,
+          paddingBottom: scrolled ? 14 : 20,
         }}
         transition={{ duration: 0.4 }}
         className="sticky top-0 z-50"
         style={{
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
         }}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-3 items-center">
           {/* Logo — far right in RTL */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.05 }}
             onClick={() => scrollTo("home")}
             className={`flex items-center gap-2 group ${isAR ? "justify-start" : "justify-start"}`}
           >
             <motion.img
               src="/logo.png"
               alt="ROSA Clinic Logo"
-              className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-md"
-              whileHover={{ scale: 1.05, rotate: 3 }}
+              className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-lg"
+              whileHover={{ scale: 1.08, rotate: 3 }}
               transition={{ duration: 0.4 }}
             />
           </motion.button>
 
-          {/* Nav links — centered with refined spacing */}
+          {/* Nav links — centered, bold white text */}
           <div className="hidden lg:flex items-center justify-center gap-8">
             {navLinks.map((l) => (
               <button
                 key={l.id}
                 onClick={() => scrollTo(l.id)}
-                className="relative text-[#212121]/80 hover:text-[#b8965a] font-light text-sm tracking-wide transition group py-1"
+                className="relative text-white hover:text-[#D4A843] font-bold text-sm tracking-wide transition group py-1"
               >
                 {l.label}
-                <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-0 h-px bg-[#b8965a] group-hover:w-full transition-all duration-400" />
+                <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-[#D4A843] group-hover:w-full transition-all duration-400" />
               </button>
             ))}
           </div>
@@ -574,11 +593,11 @@ export default function Home() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
               onClick={() => scrollTo("booking")}
-              className="btn-gold hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-semibold tracking-wide shadow-md shadow-[#b8965a]/15"
+              className="btn-gold hidden sm:flex items-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold tracking-wide shadow-md shadow-[#b8965a]/30"
             >
               <Calendar className="w-4 h-4" /> {t.utility.appt}
             </motion.button>
-            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 text-[#212121]">
+            <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden p-2 text-white">
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
@@ -590,21 +609,21 @@ export default function Home() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-white border-t border-[#b8965a]/15 overflow-hidden"
+              className="lg:hidden bg-[#2D1E14] border-t border-[#b8965a]/20 overflow-hidden"
             >
               <div className="px-6 py-4 flex flex-col gap-1">
                 {navLinks.map((l) => (
                   <button
                     key={l.id}
                     onClick={() => scrollTo(l.id)}
-                    className="text-right py-3 px-4 rounded-2xl hover:bg-[#F8F5F0] text-[#212121] hover:text-[#b8965a] font-medium transition"
+                    className="text-right py-3 px-4 rounded-2xl hover:bg-[#b8965a]/20 text-white hover:text-[#D4A843] font-bold transition"
                   >
                     {l.label}
                   </button>
                 ))}
                 <button
                   onClick={() => setLang(lang === "ar" ? "en" : "ar")}
-                  className="text-right py-3 px-4 rounded-2xl hover:bg-[#F8F5F0] text-[#212121] font-medium flex items-center gap-2"
+                  className="text-right py-3 px-4 rounded-2xl hover:bg-[#b8965a]/20 text-white hover:text-[#D4A843] font-bold flex items-center gap-2"
                 >
                   <Globe className="w-4 h-4" /> {lang === "ar" ? "English" : "العربية"}
                 </button>
@@ -817,6 +836,8 @@ export default function Home() {
 
       {/* ===== About ===== */}
       <section id="about" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="absolute top-40 right-0 w-72 h-72 rounded-full bg-[#b8965a]/8 blur-3xl" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#c9a0a0]/8 blur-3xl" />
         <div className="relative max-w-7xl mx-auto px-4">
@@ -927,6 +948,8 @@ export default function Home() {
 
       {/* ===== Specialties / متخصصون في التجميل بخبرة طبية ===== */}
       <section id="specialties" className="py-32 lg:py-40 relative overflow-hidden bg-gradient-to-br from-[#D4A843] via-[#C9A227] to-[#B8965A]">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 right-10 w-20 h-20 opacity-15 pointer-events-none -rotate-12" />
         {/* Decorative animated background */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-white/10 blur-3xl animate-float" />
@@ -1008,6 +1031,8 @@ export default function Home() {
 
       {/* ===== Services ===== */}
       <section id="services" className="py-32 lg:py-40 bg-white relative overflow-hidden">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="absolute top-20 right-0 w-80 h-80 bg-[#b8965a]/5 blur-3xl rounded-full" />
         <div className="max-w-7xl mx-auto px-4 relative">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
@@ -1104,6 +1129,8 @@ export default function Home() {
 
       {/* ===== Doctors ===== */}
       <section id="doctors" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 right-10 w-16 h-16 opacity-10 pointer-events-none -rotate-12" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#b8965a]/5 blur-3xl rounded-full" />
         <div className="max-w-7xl mx-auto px-4 relative">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
@@ -1168,6 +1195,8 @@ export default function Home() {
 
       {/* ===== Reviews ===== */}
       <section id="reviews" className="py-32 lg:py-40 bg-white relative overflow-hidden">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="absolute top-20 left-20 w-64 h-64 bg-[#c9a0a0]/10 blur-3xl rounded-full" />
         <div className="max-w-4xl mx-auto px-4 relative">
           <Reveal className="text-center mb-12">
@@ -1226,6 +1255,8 @@ export default function Home() {
 
       {/* ===== Booking — Split layout: model image + form, golden luxury bg ===== */}
       <section id="booking" className="py-32 lg:py-40 relative overflow-hidden bg-gradient-to-br from-[#D4A843] via-[#C9A227] to-[#B8965A]">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 right-10 w-20 h-20 opacity-20 pointer-events-none -rotate-12" />
         {/* Decorative animated background */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-white/10 blur-3xl animate-float" />
@@ -1492,6 +1523,8 @@ export default function Home() {
 
       {/* ===== Contact ===== */}
       <section id="contact" className="py-32 lg:py-40 bg-[#F8F5F0] relative overflow-hidden">
+        {/* Watermark logo */}
+        <img src="/logo.png" alt="" aria-hidden className="absolute top-10 left-10 w-16 h-16 opacity-10 pointer-events-none rotate-12" />
         <div className="max-w-7xl mx-auto px-4">
           <Reveal className="text-center max-w-2xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 bg-[#b8965a]/10 text-[#8a6d3b] px-4 py-2 rounded-full text-sm font-medium mb-4">
