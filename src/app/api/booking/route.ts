@@ -4,16 +4,17 @@ import nodemailer from "nodemailer";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Gmail credentials from env vars
-const GMAIL_USER = process.env.GMAIL_USER || "";
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || "";
+// SMTP credentials — works with Zoho, Gmail, or any SMTP
+const SMTP_HOST = process.env.SMTP_HOST || "smtp.zoho.com";
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || "465");
+const SMTP_USER = process.env.SMTP_USER || "khalid-alharbi@zohomail.sa";
+const SMTP_PASS = process.env.SMTP_PASS || ""; // Zoho App Password
 const TO_EMAIL = "khalid-alharbi@zohomail.sa";
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    // Validate required fields
     if (!data.name || !data.phone) {
       return NextResponse.json(
         { success: false, error: "Name and phone are required" },
@@ -62,28 +63,27 @@ export async function POST(req: NextRequest) {
 ${new Date().toLocaleString("ar-SA", { timeZone: "Asia/Riyadh" })}
     `.trim();
 
-    // Check if Gmail credentials are configured
-    if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-      console.log("⚠️ GMAIL_USER/GMAIL_APP_PASSWORD not set — booking logged only:", JSON.stringify(data, null, 2));
+    if (!SMTP_PASS) {
+      console.log("⚠️ SMTP_PASS not set — booking logged only:", JSON.stringify(data, null, 2));
       return NextResponse.json({
         success: false,
-        error: "Email service not configured. Please set GMAIL_USER and GMAIL_APP_PASSWORD env vars.",
-        bookingId: `BK-${Date.now()}`,
+        error: "Email service not configured. Set SMTP_PASS env var with Zoho App Password.",
       }, { status: 500 });
     }
 
-    // Create Nodemailer transporter with Gmail
+    // Create Nodemailer transporter with Zoho SMTP
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
       auth: {
-        user: GMAIL_USER,
-        pass: GMAIL_APP_PASSWORD,
+        user: SMTP_USER,
+        pass: SMTP_PASS,
       },
     });
 
-    // Send email
     const info = await transporter.sendMail({
-      from: `ROSA Clinic <${GMAIL_USER}>`,
+      from: `ROSA Clinic <${SMTP_USER}>`,
       to: TO_EMAIL,
       subject,
       html: htmlBody,
