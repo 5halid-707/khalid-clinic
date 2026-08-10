@@ -384,24 +384,19 @@ export default function Home() {
     }
     setSubmitting(true);
     try {
-      // Send to API endpoint (logs to Vercel + sends email if RESEND_API_KEY set)
-      await fetch("/api/booking", {
+      // Send to API endpoint — sends email automatically to khalid-alharbi@zohomail.sa
+      const res = await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
-      }).catch(() => null); // Non-blocking — fallback to mailto below
-
-      // Open mailto as a guaranteed fallback so the booking reaches the email
-      const subject = `حجز موعد جديد - ${form.name}`;
-      const body = `الاسم: ${form.name}%0D%0Aالجوال: ${form.phone}%0D%0Aالبريد: ${form.email || "-"}%0D%0Aالخدمة: ${form.service || "-"}%0D%0Aالتاريخ: ${form.date || "-"}%0D%0Aالوقت: ${form.time || "-"}%0D%0Aملاحظات: ${form.notes || "-"}`;
-      // Trigger mailto in a hidden iframe so it doesn't navigate away
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = `mailto:khalid-alharbi@zohomail.sa?subject=${encodeURIComponent(subject)}&body=${body}`;
-      document.body.appendChild(iframe);
-      setTimeout(() => document.body.removeChild(iframe), 1000);
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
     } catch (err) {
       console.error("Booking submission error:", err);
+      toast.error(isAR ? "حدث خطأ، يرجى المحاولة مرة أخرى" : "An error occurred, please try again");
+      setSubmitting(false);
+      return;
     }
     setSubmitting(false);
     toast.success(t.booking.success);
@@ -420,7 +415,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F8F5F0] overflow-x-hidden" dir={t.dir}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@200;300;400;500;600;700&display=swap');
         * { -webkit-font-smoothing: antialiased; }
         body { font-family: ${isAR ? "'Tajawal', sans-serif" : "'Inter', sans-serif"}; background: ${C.cream}; color: ${C.ink}; font-weight: 300; }
         .font-display { font-family: ${isAR ? "'Tajawal', sans-serif" : "'Cormorant Garamond', serif"}; font-weight: 700; }
@@ -641,7 +635,7 @@ export default function Home() {
         <div className="absolute bottom-32 left-32 w-80 h-80 rounded-full bg-[#c9a0a0]/12 blur-3xl animate-blob" />
 
         {/* Floating particles */}
-        {[...Array(5)].map((_, i) => (
+        {[...Array(3)].map((_, i) => (
           <div
             key={i}
             className="absolute w-1.5 h-1.5 rounded-full bg-[#b8965a]/40"
@@ -865,12 +859,12 @@ export default function Home() {
                     whileHover={{ scale: 1.05 }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/50 via-transparent to-transparent" />
-                  {/* Shimmer sweep */}
+                  {/* Shimmer sweep on hover only */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"
                     initial={{ x: "-100%" }}
-                    animate={{ x: "200%" }}
-                    transition={{ duration: 3, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+                    whileHover={{ x: "200%" }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
                   />
                 </motion.div>
                 <motion.div
@@ -957,7 +951,7 @@ export default function Home() {
         </div>
 
         {/* Floating particles */}
-        {[...Array(8)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <div
             key={i}
             className="absolute w-2 h-2 rounded-full bg-white/40"
@@ -1265,7 +1259,7 @@ export default function Home() {
         </div>
 
         {/* Floating particles */}
-        {[...Array(8)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <div
             key={i}
             className="absolute w-2 h-2 rounded-full bg-white/40"
@@ -1470,12 +1464,12 @@ export default function Home() {
                     />
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-[#212121]/40 via-transparent to-transparent" />
-                    {/* Shimmer sweep */}
+                    {/* Shimmer sweep on hover only */}
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"
                       initial={{ x: "-100%" }}
-                      animate={{ x: "200%" }}
-                      transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+                      whileHover={{ x: "200%" }}
+                      transition={{ duration: 0.8, ease: "easeInOut" }}
                     />
                   </motion.div>
 
