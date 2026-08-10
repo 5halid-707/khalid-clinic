@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+upload
+tool-results
+*.mp4
+*.log
+.env
+.env.local
+.DS_Store
+db
+scripts
